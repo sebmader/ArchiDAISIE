@@ -47,53 +47,12 @@ inline int drawUniEvent(const int &botBoundary, const int &topBoundary, mt19937_
 // ------------ CLASS DEFINITIONS ------------ //
 
 #include "Species.h"
+#include "Island.h"
 
 
 class Archipelago {         // class for the whole archipelago
 public:
-    class Island {        // class for ONE island within archipelago
-    public:
-        explicit Island(const int k) : mIK{k} {assert(k >= 0);} // island constructor based on island-wide K
 
-        // int sizeIsl() const {return static_cast<int>(mvIsland.size());}  // returns size of island vector
-        int specAlive() const {return static_cast<int>(mvIslSpecAlive.size());} // returns number of species alive
-        double returnLogGrowth() { return 1 - static_cast<double>(mvIslSpecAlive.size()) / mIK;}   // returns the logistic growth term (1-n/K)
-
-        int findPos(const int &ID) const;    // find the position of certain species (input) in IslandPhylo vector
-
-        const int createNewID();       // returns new species ID and maxID += 1
-
-        double calculateIslRates(const vector<double> &, const int &, const int &, const double &);
-                                            // initialise/calculate rates and store them in EventRates vector
-                                            // gam_i, gam_m, lamb_cl, lamb_al, mu_l
-                                            // per island -> doesn't include global rates !!!
-                                            const double extractSumIslRate() const noexcept;      // return the per-island rates vector
-
-        vector<int> sampleLocalEvent(mt19937_64, const int&);   // in case a local event is drawn, sample island, event and species
-                                            // it happens to
-
-        void immigrate(const int&, const double& BirthT);                   // mainland species immigrates to that island
-        int migrate(const int &, vector<double> &, const double &, mt19937_64);                     // island species migrates to other island
-        void speciateClado(const int &);               // island species cladogenetically speciates
-        void speciateAna(const int &);                 // island species anagenetically speciates
-        void goExtinct(const int &);                   // island species goes extinct
-
-        Species returnSpecies(const int &iPos) { return mvIsland[iPos]; }   // returns specific species from species vector
-        void pushbackSp(const Species &spNew) { mvIsland.push_back(spNew); }    // adds new species to species vector
-
-        void addIsland(const Island &);     // add island to THIS islandd
-
-        void printIsland();                 // prints island vector of species to the screen
-
-        const vector<Species>& returnIsland() const { return mvIsland; }    // return island vector of species
-        const vector<int>& returnIslSpecAlive() const { return mvIslSpecAlive; }  // return extant species vector
-    private:
-        vector<Species> mvIsland;           // phylogeny vector of species on island
-        vector<int> mvIslSpecAlive;            // vector of species' IDs of alive species (.size() = n species on island)
-        vector<double> mvLocalRates;        // vector of rates for events PER ISLAND (5 rates: gamI, gamM, lambC, lambA, mu)
-        int mIK; // Carrying capacity (should be const one day)
-                 // for now: mIk = mAK / iNumIslands
-    };
 
     Archipelago(const int &, const int &);  // constructor of archipelago based on number of islands and
                                             // archipelago-wide K
@@ -144,8 +103,8 @@ int Archipelago::mMaxSpID = 0;  // defining the static int MaxSp (on archipelago
 
 // ------------ Abbreviations ------------ //
 
-using Isl = Archipelago::Island;
-using Archi = Archipelago;
+//using Isl = Archipelago::Island;
+//using Archi = Archipelago;
 
 
 // ------------ Class Member Functions ------------ //
@@ -310,9 +269,12 @@ void Archipelago::Island::addIsland(const Island &islNew)
     if (!vSpecNew.empty()) {
         // intermediate vector of species
         vector<Species> vTempSpec = mvIsland;
+        cerr << mvIsland.size() << '\n';
+        cerr << vSpecNew.size() << '\n';
         vTempSpec.reserve(mvIsland.size() + vSpecNew.size());   // ### CAUTION ### : problem is the const type of ALL outputs and functions
-                                                                                //  associated with .reserve()
+        std::cerr << "HERE\n";                                                                        //  associated with .reserve()
         vTempSpec.insert(vTempSpec.end(), vSpecNew.begin(), vSpecNew.end());
+        std::cerr << "PAST\n";
         // mvIsland.reserve(mvIsland.size() + vSpecNew.size());   // preallocate memory
         // mvIsland.insert(mvIsland.end(), vSpecNew.begin(), vSpecNew.end());
     }
@@ -583,7 +545,12 @@ void Archipelago::addArchi(const Archipelago &aNewArchi)
 
     // consolidate single islands together
     for (int i = 0; i < mvArchipel.size(); ++i) {
+        assert(i >= 0);
+        assert(i < static_cast<int>(mvArchipel.size()));
+
         if (!vAddArch[i].returnIsland().empty())    // ### CAUTION ### : does this make sense ??
+            assert(i >= 0);
+            assert(i < static_cast<int>(mvArchipel.size()));
             mvArchipel[i].addIsland(vAddArch[i]);
     }
 }
@@ -738,9 +705,19 @@ vector<vector<Species> > ArchiDAISIE(const double &dAge, const unsigned int iMai
 }
 
 
+void test_island()
+{
+    {
+        const int k{12};
+        const Island island(k);
+        assert(k == island.get_carrying_capacity());
+    }
+
+}
+
 int main() {
 
-    cout << "hi" << endl;
+    test_island();
     vector<double> vPars( {0.1, 0.1, 0.2, 0.12, 0.3, 0.2, 0.1, 0.12, 50} );
     ArchiDAISIE(5, 50, vPars, 2, 100);
     mt19937_64 prng;

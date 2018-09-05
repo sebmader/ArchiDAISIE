@@ -12,13 +12,13 @@
 class Species {
 
 public:
-    Species(const double birthT, const int parentId, const int speciesId);
+    Species(double birthT, int parentId, int speciesId);
 
-    void goExtinct(const double &time) {dExtinctT = time;}
+    void goExtinct(const double time) {dExtinctT = time;}
     bool isExtant() const noexcept;
-    const double& readBirth() const noexcept {return dBirthT;}
-    const int& readParID() const noexcept {return iParentId;}
-    const int& readSpID() const noexcept {return iSpecId;}
+    double readBirth() const noexcept {return dBirthT;}
+    int readParID() const noexcept {return iParentId;}
+    int readSpID() const noexcept {return iSpecId;}
     const double& readExtinct() const noexcept {return dExtinctT;}
 
     void printSpec() {
