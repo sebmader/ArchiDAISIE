@@ -5,6 +5,9 @@
 #ifndef ARCHIDAISIE_SPECIES_H
 #define ARCHIDAISIE_SPECIES_H
 
+#include <iostream>
+#include <cassert>
+
 
 class Species {
 
@@ -12,7 +15,7 @@ public:
     Species(const double birthT, const int parentId, const int speciesId);
 
     void goExtinct(const double &time) {dExtinctT = time;}
-    bool isExtant() const noexcept {return dExtinctT == -1.0;}
+    bool isExtant() const noexcept;
     const double& readBirth() const noexcept {return dBirthT;}
     const int& readParID() const noexcept {return iParentId;}
     const int& readSpID() const noexcept {return iSpecId;}
@@ -29,13 +32,6 @@ private:
     double dExtinctT;   //Will be -1 when extant
 };
 
-Species::Species(const double birthT, const int parentId, const int speciesId)
-        : dBirthT{birthT}, iParentId{parentId}, iSpecId{speciesId}, dExtinctT{-1.0}
-{
-    assert(dBirthT >= 0.0);
-    assert(iParentId >= 0);
-    assert(iSpecId >= 0);
-    assert(isExtant());
-}
+
 
 #endif //ARCHIDAISIE_SPECIES_H
