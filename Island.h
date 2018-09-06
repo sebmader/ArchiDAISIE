@@ -1,5 +1,17 @@
-#ifndef ISLAND_H
-#define ISLAND_H
+//
+// Created by Sebastian Mader on 05.09.2018.
+//
+
+#ifndef ARCHIDAISIE_ISLAND_H
+#define ARCHIDAISIE_ISLAND_H
+
+#include <vector>
+#include <cassert>
+#include <random>
+#include "Species.h"
+
+using namespace std;
+
 
 class Island {        // class for ONE island within archipelago
 public:
@@ -32,7 +44,7 @@ public:
     Species returnSpecies(const int &iPos) { return mvIsland[iPos]; }   // returns specific species from species vector
     void pushbackSp(const Species &spNew) { mvIsland.push_back(spNew); }    // adds new species to species vector
 
-    void addIsland(const Island &);     // add island to THIS islandd
+    void addIsland(const Island &);     // add island to THIS island
 
     void printIsland();                 // prints island vector of species to the screen
 
@@ -46,4 +58,4 @@ private:
     // for now: mIk = mAK / iNumIslands
 };
 
-#endif // ISLAND_H
+#endif // ARCHIDAISIE_ISLAND_H

@@ -7,5 +7,6 @@ include_directories(.)
 
 add_executable(ArchiDAISIE
         ArchiMainSource.cpp
+        Species.cpp
         Island.cpp
-        Species.cpp)
+        Archipelago.cpp)
