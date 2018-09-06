@@ -22,8 +22,8 @@ int Island::findPos(const int &ID) const    // find the position of certain spec
 
 const int Island::createNewID()
 {
-    incrementMaxID();
-    return returnMaxID();
+    Archipelago::incrementMaxID();
+    return Archipelago::returnMaxID();
 }
 
 double Island::calculateIslRates(const vector<double> &vIslPars, const int &iM, const int &iNumIsl,

@@ -7,6 +7,7 @@ include_directories(.)
 
 add_executable(ArchiDAISIE
         ArchiMainSource.cpp
+        DrawEvents.cpp
         Species.cpp
         Island.cpp
         Archipelago.cpp)

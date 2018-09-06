@@ -4,6 +4,10 @@
 
 #include "Archipelago.h"
 
+using namespace std;
+
+
+
 Archipelago::Archipelago(const int &nI, const int &AK)  // constructor of archipelago based on number
 {                                                            // of islands and archipelago-wide K
     assert(nI >= 0); assert(AK >= 0); assert(AK % nI == 0);   // ### CAUTION ### : let the archipelago-wide K be a double ??

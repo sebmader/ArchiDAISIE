@@ -28,21 +28,6 @@ using namespace std;
 
 // ------------ FUNCTION DEFINITIONS ------------ //
 
-// --- distribution functions ---
-inline int drawDisEvent(const vector<double> &vecRates, mt19937_64 &prng) {
-//draw a discrete distribution event
-    discrete_distribution<int> drawEvent(vecRates.begin(), vecRates.end());
-    return drawEvent(prng);
-}
-
-inline int drawUniEvent(const int &botBoundary, const int &topBoundary, mt19937_64 &prng) {
-//draw a uniform distribution event
-    // using "topBoundary" (= size of vector - 1 = position of last element of vector)
-    // because this function works with different types of vectors: vector<int> & vector<pair<int,int> >
-    uniform_int_distribution<int> drawEvent(0, topBoundary);
-    return drawEvent(prng);
-}
-
 
 // ------------ CLASS DEFINITIONS ------------ //
 
@@ -135,7 +120,7 @@ vector<vector<Species> > ArchiDAISIE(const double &dAge, const unsigned int iMai
         // how to combine the multiple data types? and which types btw?
 
         // set max species ID to amount of mainland species
-        Archi::setMaxID(iMainSp_n);
+        Archipelago::setMaxID(iMainSp_n);
 
         // loop through replicates
         for (int i = 1; i <= iReplicates; ++i) {
@@ -174,18 +159,14 @@ void test_island()
 
 int main() {
 
-    test_island();
-    vector<double> vPars( {0.1, 0.1, 0.2, 0.12, 0.3, 0.2, 0.1, 0.12, 50} );
-    ArchiDAISIE(5, 50, vPars, 2, 100);
-    mt19937_64 prng;
-    vector<double> vIni = vPars;
-    vIni.pop_back();
-    Archi::setMaxID(50);
-    Archipelago arch = ArchiDAISIE_core(2, 50, vIni, static_cast<int>(vPars[8]), 3, prng);
-    arch.printArchi();
-    vector<Isl> test = arch.returnArchi();
-    cout << test.empty() << endl;
+//    test_island();
+//    vector<double> vPars( {0.1, 0.1, 0.2, 0.12, 0.3, 0.2, 0.1, 0.12, 50} );
+//    ArchiDAISIE(5, 50, vPars, 2, 100);
+//    mt19937_64 prng;
+//    vector<double> vIni = vPars;
+//    vIni.pop_back();
+//    Archipelago::setMaxID(50);
+//    Archipelago arch = ArchiDAISIE_core(2, 50, vIni, static_cast<int>(vPars[8]), 3, prng);
 
     return 0;
-}//testt
-//testt
+}
