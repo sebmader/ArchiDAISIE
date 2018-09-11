@@ -208,15 +208,15 @@ void Archipelago::updateArchi(
 
     if (vHappening.size() == 2) {   // -> global
         //assert(iEvent <= 7 && iEvent >= 5);
-        assert(iEvent == event_type::global_anagenesis ||
+        assert(iEvent == event_type::global_cladogenesis || iEvent == event_type::global_anagenesis || iEvent == event_type::global_extinction)
         switch(iEvent) {
-            case 5:
+            case event_type::global_cladogenesis:
                 speciateGlobalClado(iSpecID, prng, dTime);
                 break;
-            case 6:
+            case event_type::global_anagenesis:
                 speciateGlobalAna(iSpecID, dTime);
                 break;
-            case 7:
+            case event_type::global_extintion:
                 goGlobalExtinct(iSpecID, dTime);
                 break;
             default:
@@ -233,7 +233,7 @@ void Archipelago::updateArchi(
                 mvArchipel[iIsl].immigrate(iSpecID, dImBirthT, dTime);
                 break;
             }
-            case 1:
+            case event_type::local_migration:
             {
                 // ### CAUTION ### : this also includes the island the species is on, right?? -> take care of that !!
                 vector<double> vLogs(mvArchipel.size());
@@ -249,13 +249,13 @@ void Archipelago::updateArchi(
                                                                             // to drawn island of destination
                 break;
             }
-            case 2:
+            case event_type::local_cladogenesis:
                 mvArchipel[iIsl].speciateClado(iSpecID, dTime);
                 break;
-            case 3:
+            case event_type::local_anagenesis:
                 mvArchipel[iIsl].speciateAna(iSpecID, dTime);
                 break;
-            case 4:
+            case event_type::global_anagenesis:
                 mvArchipel[iIsl].goExtinct(iSpecID, dTime);
                 break;
             default:
