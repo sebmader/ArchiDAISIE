@@ -208,7 +208,7 @@ void Archipelago::updateArchi(
 
     if (vHappening.size() == 2) {   // -> global
         //assert(iEvent <= 7 && iEvent >= 5);
-        assert(iEvent == event_type::global_cladogenesis || iEvent == event_type::global_anagenesis || iEvent == event_type::global_extinction)
+        assert(is_global(iEvent));
         switch(iEvent) {
             case event_type::global_cladogenesis:
                 speciateGlobalClado(iSpecID, prng, dTime);
@@ -216,7 +216,7 @@ void Archipelago::updateArchi(
             case event_type::global_anagenesis:
                 speciateGlobalAna(iSpecID, dTime);
                 break;
-            case event_type::global_extintion:
+            case event_type::global_extinction:
                 goGlobalExtinct(iSpecID, dTime);
                 break;
             default:
@@ -224,13 +224,14 @@ void Archipelago::updateArchi(
         }
     }
     else if (vHappening.size() == 3) {  // -> local
-        assert(iEvent >= 0 && iEvent <= 4);
+        assert(is_local(iEvent));
         const int iIsl = vHappening[2];
         switch(iEvent)
         {
             case event_type::immigration:
             {
-                mvArchipel[iIsl].immigrate(iSpecID, dImBirthT, dTime);
+                assert(!"TODO");
+                //mvArchipel[iIsl].immigrate(iSpecID, dImBirthT, dTime);
                 break;
             }
             case event_type::local_migration:

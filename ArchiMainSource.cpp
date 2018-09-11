@@ -35,13 +35,19 @@ using namespace std;
 
 // ------------ ArchiDAISIE FUNCTIONS ------------ //
 
-Archipelago ArchiDAISIE_core(const double &dAge, const unsigned long int &M, const vector<double> &vIniPars,
-                                const int &iAK, const unsigned int &iNumIslands, mt19937_64 &prng)
+Archipelago ArchiDAISIE_core(
+    const double island_age,
+    const int n_mainland_species,
+    const vector<double> &vIniPars,
+    const int archipelago_carrying_capacity,
+    const int n_islands,
+    mt19937_64 &prng
+)
 {
     try {
         // initialise Archipelago data frame and set time and max species ID to initial values
-        Archipelago aArchi(iNumIslands, iAK);
-        double dTime = dAge;
+        Archipelago aArchi(n_islands, archipelago_carrying_capacity);
+        double dTime = island_age;
 
         // initialise a mainland species vector to sample from for immigration
             // PROBABLY: not even needed; you can sample from uniform distribution of 1 to M
@@ -56,7 +62,7 @@ Archipelago ArchiDAISIE_core(const double &dAge, const unsigned long int &M, con
         for (;;) {
 
             // calculate the rates of events
-            vector<double> pLAndGRates = aArchi.calculateAllRates(vIniPars, (int) M, iNumIslands);
+            vector<double> pLAndGRates = aArchi.calculateAllRates(vIniPars, (int) n_mainland_species, n_islands);
 
             // draw time interval to next event
             const double dSumRates = pLAndGRates[0] + pLAndGRates[1];
@@ -71,7 +77,7 @@ Archipelago ArchiDAISIE_core(const double &dAge, const unsigned long int &M, con
                 break;
 
             // sample which event happens
-            vector<int> vHappening = aArchi.sampleNextEvent(pLAndGRates, prng, (int) M);
+            vector<int> vHappening = aArchi.sampleNextEvent(pLAndGRates, prng, (int) n_mainland_species);
 
             // update the phylogeny
             aArchi.updateArchi(vHappening, vIniPars[1], prng, dTime);

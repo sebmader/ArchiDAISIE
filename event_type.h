@@ -11,7 +11,11 @@ enum class event_type
     immigration,
     global_anagenesis,
     global_cladogenesis,
-    global_extintion,
+    global_extinction,
 };
+
+bool is_global(const event_type t) noexcept;
+bool is_local(const event_type t) noexcept;
+
 
 #endif // EVENT_TYPE_H
