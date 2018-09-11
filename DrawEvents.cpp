@@ -15,6 +15,6 @@ inline int drawUniEvent(const int &botBoundary, const int &topBoundary, std::mt1
 //draw a uniform distribution event
     // using "topBoundary" (= size of vector - 1 = position of last element of vector)
     // because this function works with different types of vectors: vector<int> & vector<pair<int,int> >
-    std::uniform_int_distribution<int> drawEvent(0, topBoundary);
+    std::uniform_int_distribution<int> drawEvent(botBoundary, topBoundary);
     return drawEvent(prng);
 }

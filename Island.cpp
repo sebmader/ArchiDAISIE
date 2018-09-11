@@ -81,7 +81,7 @@ vector<int> Island::sampleLocalEvent(mt19937_64 prng, const int &iM)
 }
 
 // local updates:
-void Island::immigrate(const int& iSpecID, const double& BirthT = dTime)
+void Island::immigrate(const int& iSpecID, const double& BirthT, double dTime)
 {   // immigration from the mainland to THIS island
     // check if species is already present on island
     const int iPos = findPos(iSpecID);
@@ -116,7 +116,7 @@ int Island::migrate(const int &iSpecID, vector<double> &vLogs, const double &dIn
     return iDestinationIsl;
 }
 
-void Island::speciateClado(const int &iSpecID)
+void Island::speciateClado(const int& iSpecID, double dTime)
 {   // island species cladogenetically diverges
     // find species
     const int iPos = findPos(iSpecID);
@@ -131,7 +131,7 @@ void Island::speciateClado(const int &iSpecID)
     mvIsland.push_back(spNew2);
 }
 
-void Island::speciateAna(const int &iSpecID)
+void Island::speciateAna(const int& iSpecID, double dTime)
 {   // anagenetic speciation: only immigrants can undergo anagenesis !!!
     // find species
     const int iPos = findPos(iSpecID);
@@ -144,7 +144,7 @@ void Island::speciateAna(const int &iSpecID)
     mvIsland.push_back(spNew);
 }
 
-void Island::goExtinct(const int &iSpecID)
+void Island::goExtinct(const int& iSpecID, double dTime)
 {   // species goes extinct
     // find species
     const int iPos = findPos(iSpecID);

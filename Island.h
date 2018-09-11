@@ -18,7 +18,7 @@ class Island {        // class for ONE island within archipelago
 public:
     explicit Island(const int k) : mIK{k} {assert(k >= 0);} // island constructor based on island-wide K
 
-    int get_carrying_capacity() { return mIK; }
+    int getCarryingCap() { return mIK; }
     // int sizeIsl() const {return static_cast<int>(mvIsland.size());}  // returns size of island vector
     int specAlive() const {return static_cast<int>(mvIslSpecAlive.size());} // returns number of species alive
     double returnLogGrowth() { return 1 - static_cast<double>(mvIslSpecAlive.size()) / mIK;}   // returns the logistic growth term (1-n/K)
@@ -36,11 +36,11 @@ public:
     vector<int> sampleLocalEvent(mt19937_64, const int&);   // in case a local event is drawn, sample island, event and species
     // it happens to
 
-    void immigrate(const int&, const double& BirthT);                   // mainland species immigrates to that island
+    void immigrate(const int&, const double&, double dTime);                   // mainland species immigrates to that island
     int migrate(const int &, vector<double> &, const double &, mt19937_64);                     // island species migrates to other island
-    void speciateClado(const int &);               // island species cladogenetically speciates
-    void speciateAna(const int &);                 // island species anagenetically speciates
-    void goExtinct(const int &);                   // island species goes extinct
+    void speciateClado(const int&, double dTime);               // island species cladogenetically speciates
+    void speciateAna(const int&, double dTime);                 // island species anagenetically speciates
+    void goExtinct(const int&, double);                   // island species goes extinct
 
     Species returnSpecies(const int &iPos) { return mvIsland[iPos]; }   // returns specific species from species vector
     void pushbackSp(const Species &spNew) { mvIsland.push_back(spNew); }    // adds new species to species vector

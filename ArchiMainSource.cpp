@@ -24,8 +24,6 @@ using namespace std;
     // do I even need globals?
     // should be provided as function parameters, right?
 
-    double dTime;
-
 // ------------ FUNCTION DEFINITIONS ------------ //
 
 
@@ -33,7 +31,7 @@ using namespace std;
 
 #include "Species.h"
 #include "Island.h"
-
+#include "Archipelago.h"
 
 // ------------ ArchiDAISIE FUNCTIONS ------------ //
 
@@ -43,7 +41,7 @@ Archipelago ArchiDAISIE_core(const double &dAge, const unsigned long int &M, con
     try {
         // initialise Archipelago data frame and set time and max species ID to initial values
         Archipelago aArchi(iNumIslands, iAK);
-        dTime = dAge;
+        double dTime = dAge;
 
         // initialise a mainland species vector to sample from for immigration
             // PROBABLY: not even needed; you can sample from uniform distribution of 1 to M
@@ -76,7 +74,7 @@ Archipelago ArchiDAISIE_core(const double &dAge, const unsigned long int &M, con
             vector<int> vHappening = aArchi.sampleNextEvent(pLAndGRates, prng, (int) M);
 
             // update the phylogeny
-            aArchi.updateArchi(vHappening, vIniPars[1], prng);
+            aArchi.updateArchi(vHappening, vIniPars[1], prng, dTime);
         }
         return aArchi;
     }
@@ -152,7 +150,7 @@ void test_island()
     {
         const int k{12};
         const Island island(k);
-        assert(k == island.get_carrying_capacity());
+        assert(k ==island.getCarryingCap());
     }
 
 }
