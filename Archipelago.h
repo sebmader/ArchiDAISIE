@@ -34,10 +34,16 @@ public:
     void speciateGlobalAna(const int&, double dTime);           // island species collectively (on all islands) diverges from mainland ancestor
     void goGlobalExtinct(const int&, double dTime);             // island species goes extinct on all islands it occures on
 
-    void updateArchi(const std::vector<int>&, const double&, std::mt19937_64, double); // switch-statement that calls event functions
+    void updateArchi(
+      const std::vector<int>&,
+      const double&,
+      std::mt19937_64,
+      double
+    ); // switch-statement that calls event functions
     // updates the ArchiPhylo vector
     // LOCAL events indicated by 3 elements: event ([0]), species ([1]), island ([2])
     // GLOBAL events indicated by 2 elements: event ([0]), species ([1])
+
     void addArchi(const Archipelago&);  // add an ArchiPhylo to this one / consolidate them
 
     std::vector<Species> aggregateArchi() const;   // aggregate all islands in ArchiPylo vector as it would be one and return it

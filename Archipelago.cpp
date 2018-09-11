@@ -192,10 +192,16 @@ void Archipelago::speciateGlobalClado(const int& iSpecID, mt19937_64 prng, doubl
     }
 }
 
-void Archipelago::updateArchi(const vector<int>& vHappening, const double& dIniMigRate, mt19937_64 prng, double dTime)
+void Archipelago::updateArchi(
+  const vector<int>& vHappening,
+  const double& dIniMigRate,
+  mt19937_64 prng,
+  double dTime
+)
 {   // based on the outcome of sampleNextEvent-function it will update the data frame(s)
     // order of input: event [0], species [1], (island [2])
     // order of parameter indexes (Event): gam_i (0), gam_m (1), lamb_cl (2), lamb_al (3), mu_l (4), lamb_cg (5), lamb_ag (6), mu_g (7)
+    assert(vHappening.size() == 2 || vHappening.size() == 3);
 
     const int iEvent = vHappening[0];
     const int iSpecID = vHappening[1];

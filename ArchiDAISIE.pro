@@ -1,5 +1,7 @@
-SOURCES += *.cpp
-HEADERS += *.h
+SOURCES += *.cpp \
+    event.cpp
+HEADERS += *.h \
+    event.h
 
 # C++14
 CONFIG += c++14
