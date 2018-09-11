@@ -24,6 +24,13 @@ int Island::findPos(const int &ID) const    // find the position of certain spec
     return -1;
 }
 
+const Species& Island::findSpecies(const int species_id) const
+{
+    const int index = findPos(species_id);
+    assert(index >= 0);
+    return mvIsland[index];
+}
+
 int Island::createNewID()
 {
     Archipelago::incrementMaxID();

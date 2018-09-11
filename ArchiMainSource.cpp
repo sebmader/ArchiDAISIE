@@ -170,8 +170,8 @@ void test_island()
       Island island(10);
       assert(island.getNspecies() == 0);
       island.immigrate(42, 3.14);
-      assert(island.returnSpecies(island.findPos(42)).readBirth() == 3.14);
       assert(island.getNspecies() == 1);
+      assert(island.findSpecies(42).readBirth() == 3.14);
     }
     {
       Island island(10);
@@ -185,7 +185,7 @@ void test_island()
       assert(island.getNspecies() == 0);
       island.immigrate(42, 3.14);
       island.immigrate(42, 6.28);
-      assert(island.returnSpecies(island.findPos(42)).readBirth() == 6.28);
+      assert(island.findSpecies(42).readBirth() == 6.28);
     }
 }
 
