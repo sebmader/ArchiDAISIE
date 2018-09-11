@@ -229,9 +229,6 @@ void Archipelago::updateArchi(
         {
             case 0:
             {
-                const int iImPos = mvArchipel[iIsl].findPos(iSpecID);
-                assert(iImPos >= 0);
-                const double dImBirthT = mvArchipel[iIsl].returnSpecies(iImPos).readBirth();
                 mvArchipel[iIsl].immigrate(iSpecID, dImBirthT, dTime);
                 break;
             }
