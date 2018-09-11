@@ -23,6 +23,7 @@ public:
     double returnLogGrowth() { return 1 - static_cast<double>(mvIslSpecAlive.size()) / mIK;}   // returns the logistic growth term (1-n/K)
 
     int findPos(const int &ID) const;    // find the position of certain species (input) in IslandPhylo vector
+    int getNspecies() const noexcept { return this->mvIsland.size(); }
 
     int createNewID();       // returns new species ID and maxID += 1
 

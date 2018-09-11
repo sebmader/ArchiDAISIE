@@ -160,7 +160,13 @@ void test_island()
         const Island island(k);
         assert(k ==island.getCarryingCap());
     }
-
+    {
+      const int
+      Island island(10);
+      assert(island.getNspecies() == 0);
+      island.pushbackSp(Species(0, -1, 0));
+      assert(island.getNspecies() == 1);
+    }
 }
 
 int main() {
