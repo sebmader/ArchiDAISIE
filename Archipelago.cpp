@@ -246,7 +246,7 @@ void Archipelago::updateArchi(
                 const int iMigPos = mvArchipel[iIsl].findPos(iSpecID);
                 assert(iMigPos >= 0);
                 const double dMigBirthT = mvArchipel[iIsl].returnSpecies(iMigPos).readBirth();
-                mvArchipel[iDestinationIsl].immigrate(iSpecID, dMigBirthT, dTime);   // species (iSpec) "immigrates" from the original event island
+                mvArchipel[iDestinationIsl].immigrate(iSpecID, dTime);   // species (iSpec) "immigrates" from the original event island
                                                                             // to drawn island of destination
                 break;
             }

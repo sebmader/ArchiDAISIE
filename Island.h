@@ -36,7 +36,7 @@ public:
     std::vector<int> sampleLocalEvent(std::mt19937_64, const int&);   // in case a local event is drawn, sample island, event and species
     // it happens to
 
-    void immigrate(const int&, const double&, double dTime);                   // mainland species immigrates to that island
+    void immigrate(const int&, double dTime);                   // mainland species immigrates to that island
     int migrate(const int, std::vector<double> &, const double &, std::mt19937_64);                     // island species migrates to other island
     void speciateClado(const int&, double dTime);               // island species cladogenetically speciates
     void speciateAna(const int&, double dTime);                 // island species anagenetically speciates

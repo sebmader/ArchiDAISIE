@@ -86,30 +86,24 @@ vector<int> Island::sampleLocalEvent(mt19937_64 prng, const int &iM)
 }
 
 // local updates:
-void Island::immigrate(const int& iSpecID, const double& BirthT, double dTime)
+void Island::immigrate(const int& iSpecID, double dTime)
 {   // immigration from the mainland to THIS island
     // check if species is already present on island
     const int iPos = findPos(iSpecID);
     // if mainland sp -> BirthT = Time; else (if island sp) -> BirthT = old BirthT (because this function is used for migration as well !!
-    
+    Species newSpecies(dTime, iSpecID, iSpecID);
     if (iPos >= 0) {
-        double BirthT = mvIsland[iPos].readBirth();
-        Species spNew(BirthT, iSpecID, iSpecID);    // immigrant
-    }
-    if (BirthT != dTime)                        // if not an immigrant:
-        spNew = Species(BirthT, iSpecID, createNewID());
-    if (iPos == -1) {    // not present
-        mvIsland.push_back(spNew);
-        mvIslSpecAlive.push_back(iSpecID);
+        double newBirthT = mvIsland[iPos].readBirth();
+        newSpecies = Species(newBirthT, iSpecID, iSpecID);    // immigrant
     }
     else {  // if present
         if (!mvIsland[iPos].isExtant()) {   // if extinct
-            mvIsland.push_back(spNew);
-            mvIslSpecAlive.push_back(iSpecID);
+            mvIsland.push_back(newSpecies);
         }
         else  // if extant -> re-immigration ("re-setting the clock" (= BirthT))
-            mvIsland[iPos] = spNew;
+            mvIsland[iPos] = newSpecies;
     }
+    mvIslSpecAlive.push_back(iSpecID);
 }
 
 int Island::migrate(
