@@ -48,7 +48,7 @@ script:
   # Get my folder
   - my_github=${PWD##*/}  
   # SLOCcount
-  - cd ..; sloccount --overhead 1 --personcost 22614 ArchieDAISIE; cd $my_github
+  - cd ..; sloccount --overhead 1 --personcost 22614 ArchiDAISIE; cd $my_github
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
