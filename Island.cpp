@@ -104,11 +104,15 @@ void Island::immigrate(const int& iSpecID, double dTime)
         assert(iPos < static_cast<int>(mvIsland.size()));
         if (!mvIsland[iPos].isExtant()) {   // if extinct
             mvIsland.push_back(newSpecies);
+            mvIslSpecAlive.push_back(iSpecID);
         }
         else  // if extant -> re-immigration ("re-setting the clock" (= BirthT))
             mvIsland[iPos] = newSpecies;
     }
-    mvIslSpecAlive.push_back(iSpecID);
+    else {
+        mvIsland.push_back(newSpecies);
+        mvIslSpecAlive.push_back(iSpecID);
+    }
 }
 
 int Island::migrate(
