@@ -269,7 +269,8 @@ void Archipelago::addArchi(const Archipelago &aNewArchi)
     const vector<Island> &vAddArch = aNewArchi.returnArchi();
 
     // consolidate single islands together
-    for (int i = 0; i < mvArchipel.size(); ++i) {
+    const int n_islands = mvArchipel.size();
+    for (int i = 0; i < n_islands; ++i) {
         assert(i >= 0);
         assert(i < static_cast<int>(mvArchipel.size()));
 
@@ -280,7 +281,7 @@ void Archipelago::addArchi(const Archipelago &aNewArchi)
     }
 }
 
-const vector<Species>& Archipelago::aggregateArchi()
+vector<Species> Archipelago::aggregateArchi() const
 {   // put islands of archipelago together in one Island vector, delete duplicates sort by time of event (birth or extinction)
     vector<Species> vAggregatedArchi;
 
@@ -292,8 +293,8 @@ const vector<Species>& Archipelago::aggregateArchi()
     }
 
     // delete duplicates; ### CAUTION ### : what birth time ?!
-    for (int j = 0; j < vAggregatedArchi.size(); ++j) {
-        for (int k = j + 1; k < vAggregatedArchi.size(); ++k)
+    for (int j = 0; j < static_cast<int>(vAggregatedArchi.size()); ++j) {
+        for (int k = j + 1; k < static_cast<int>(vAggregatedArchi.size()); ++k)
             if (vAggregatedArchi[j].readSpID() == vAggregatedArchi[k].readSpID()) {
                 // take the oldest birth time (initial colonisation) or the latest re-immigration time.. ### CAUTION ### : How??
 
@@ -303,7 +304,7 @@ const vector<Species>& Archipelago::aggregateArchi()
             }
     }
     // sort by birth time
-
+    return vAggregatedArchi;
 
 }
 

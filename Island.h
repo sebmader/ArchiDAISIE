@@ -36,7 +36,7 @@ public:
     // it happens to
 
     void immigrate(const int&, const double&, double dTime);                   // mainland species immigrates to that island
-    int migrate(const int &, std::vector<double> &, const double &, std::mt19937_64);                     // island species migrates to other island
+    int migrate(const int, std::vector<double> &, const double &, std::mt19937_64);                     // island species migrates to other island
     void speciateClado(const int&, double dTime);               // island species cladogenetically speciates
     void speciateAna(const int&, double dTime);                 // island species anagenetically speciates
     void goExtinct(const int&, double);                   // island species goes extinct

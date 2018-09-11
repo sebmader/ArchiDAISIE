@@ -9,8 +9,8 @@
 #include <iostream>
 #include <random>
 
-inline int drawDisEvent(const std::vector<double> &, std::mt19937_64&);
+int drawDisEvent(const std::vector<double> &, std::mt19937_64&);
 
-inline int drawUniEvent(const int &, const int &, std::mt19937_64&);
+int drawUniEvent(const int &, const int &, std::mt19937_64&);
 
 #endif //ARCHIDAISIE_DRAWEVENTS_H

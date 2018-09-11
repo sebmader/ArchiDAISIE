@@ -3,7 +3,10 @@
 //
 
 #include "Island.h"
+#include "Archipelago.h"
+#include <vector>
 
+using namespace std;
 // ------ Island member functions ------
 
 void Island::printIsland()
@@ -14,19 +17,21 @@ void Island::printIsland()
 
 int Island::findPos(const int &ID) const    // find the position of certain species (input) in species vector
 {                                                        // if not present: output = -1
-    for (int i = 0; i < mvIsland.size(); ++i)
+    const int n_species = mvIsland.size();
+    for (int i = 0; i < n_species; ++i)
         if (mvIsland[i].readSpID() == ID)
             return i;
     return -1;
 }
 
-const int Island::createNewID()
+int Island::createNewID()
 {
     Archipelago::incrementMaxID();
     return Archipelago::returnMaxID();
 }
 
-double Island::calculateIslRates(const vector<double> &vIslPars, const int &iM, const int &iNumIsl,
+double Island::calculateIslRates(
+  const std::vector<double> &vIslPars, const int &iM, const int &iNumIsl,
         const double &dThisMLG)
 {   // calculates the per-island rates of events, outputs them (for immidiate use)
     // and saves them within the island-class; input -> initial parameters
@@ -53,7 +58,7 @@ double Island::calculateIslRates(const vector<double> &vIslPars, const int &iM, 
     return dSumIslRates;
 }
 
-const double Island::extractSumIslRate() const noexcept
+double Island::extractSumIslRate() const noexcept
 {
     double dSumRates = 0;
     for (double mvLocalRate : mvLocalRates)
@@ -103,13 +108,18 @@ void Island::immigrate(const int& iSpecID, const double& BirthT, double dTime)
     }
 }
 
-int Island::migrate(const int &iSpecID, vector<double> &vLogs, const double &dIniMigRate, mt19937_64 prng)
+int Island::migrate(
+  const int /* iSpecID */,
+  vector<double> &vLogs,
+  const double &dIniMigRate,
+  mt19937_64 prng
+)
 {   // migration from THIS island to another; output: island of destination
     // draw island to which species migrates -> initial migration rate as parameter !!
-    const unsigned long iNumIsl = vLogs.size();
-    vector<double> vMigRates(iNumIsl);
-    for (int k = 0; k < iNumIsl; ++k) {
-        vMigRates[k] = max(0.0, (dIniMigRate * mvIslSpecAlive.size() * vLogs[k]) / iNumIsl*iNumIsl - iNumIsl);
+    const int n_islands = vLogs.size();
+    vector<double> vMigRates(n_islands);
+    for (int k = 0; k < n_islands; ++k) {
+        vMigRates[k] = max(0.0, (dIniMigRate * mvIslSpecAlive.size() * vLogs[k]) / n_islands*n_islands - n_islands);
     }
     const int iDestinationIsl = drawDisEvent(vMigRates, prng);
 

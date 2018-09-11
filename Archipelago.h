@@ -40,7 +40,7 @@ public:
     // GLOBAL events indicated by 2 elements: event ([0]), species ([1])
     void addArchi(const Archipelago&);  // add an ArchiPhylo to this one / consolidate them
 
-    const std::vector<Species>& aggregateArchi();   // aggregate all islands in ArchiPylo vector as it would be one and return it
+    std::vector<Species> aggregateArchi() const;   // aggregate all islands in ArchiPylo vector as it would be one and return it
     const std::vector<Island> & returnArchi() const {return mvArchipel;}      // return OneIslaArchiPylo vector (and output to file ?)
     // ### CAUTION ###: only const& if assigning this output to a variable copies it
     void printArchi();
