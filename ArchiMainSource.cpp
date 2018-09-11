@@ -161,11 +161,31 @@ void test_island()
         assert(k ==island.getCarryingCap());
     }
     {
-      const int
       Island island(10);
       assert(island.getNspecies() == 0);
-      island.pushbackSp(Species(0, -1, 0));
+      island.pushbackSp(Species(0, 0, 0));
       assert(island.getNspecies() == 1);
+    }
+    {
+      Island island(10);
+      assert(island.getNspecies() == 0);
+      island.immigrate(42, 3.14);
+      assert(island.returnSpecies(island.findPos(42)).readBirth() == 3.14);
+      assert(island.getNspecies() == 1);
+    }
+    {
+      Island island(10);
+      assert(island.getNspecies() == 0);
+      island.immigrate(42, 3.14);
+      island.immigrate(42, 6.28);
+      assert(island.getNspecies() == 1);
+    }
+    {
+      Island island(10);
+      assert(island.getNspecies() == 0);
+      island.immigrate(42, 3.14);
+      island.immigrate(42, 6.28);
+      assert(island.returnSpecies(island.findPos(42)).readBirth() == 6.28);
     }
 }
 

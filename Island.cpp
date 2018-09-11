@@ -97,6 +97,8 @@ void Island::immigrate(const int& iSpecID, double dTime)
         newSpecies = Species(newBirthT, iSpecID, iSpecID);    // immigrant
     }
     else {  // if present
+        assert(iPos >= 0);
+        assert(iPos < static_cast<int>(mvIsland.size()));
         if (!mvIsland[iPos].isExtant()) {   // if extinct
             mvIsland.push_back(newSpecies);
         }
