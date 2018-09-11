@@ -159,14 +159,14 @@ void test_island()
 
 int main() {
 
-//    test_island();
-//    vector<double> vPars( {0.1, 0.1, 0.2, 0.12, 0.3, 0.2, 0.1, 0.12, 50} );
-//    ArchiDAISIE(5, 50, vPars, 2, 100);
-//    mt19937_64 prng;
-//    vector<double> vIni = vPars;
-//    vIni.pop_back();
-//    Archipelago::setMaxID(50);
-//    Archipelago arch = ArchiDAISIE_core(2, 50, vIni, static_cast<int>(vPars[8]), 3, prng);
+    test_island();
+    vector<double> vPars( {0.1, 0.1, 0.2, 0.12, 0.3, 0.2, 0.1, 0.12, 50} );
+    ArchiDAISIE(5, 50, vPars, 2, 100);
+    mt19937_64 prng;
+    vector<double> vIni = vPars;
+    vIni.pop_back();
+    Archipelago::setMaxID(50);
+    Archipelago arch = ArchiDAISIE_core(2, 50, vIni, static_cast<int>(vPars[8]), 3, prng);
 
     return 0;
 }

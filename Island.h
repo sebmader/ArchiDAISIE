@@ -41,7 +41,7 @@ public:
     void speciateAna(const int&, double dTime);                 // island species anagenetically speciates
     void goExtinct(const int&, double);                   // island species goes extinct
 
-    Species returnSpecies(const int &iPos) { return mvIsland[iPos]; }   // returns specific species from species vector
+    const Species& returnSpecies(const int pos) const;   // returns specific species from species vector
     void pushbackSp(const Species &spNew) { mvIsland.push_back(spNew); }    // adds new species to species vector
 
     void addIsland(const Island &);     // add island to THIS island

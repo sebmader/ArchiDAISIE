@@ -192,3 +192,10 @@ void Island::addIsland(const Island &islNew)
         // mvIslSpecAlive.insert(mvIslSpecAlive.end(), vSpecAliveNew.begin(), vSpecAliveNew.end());
     }
 }
+
+const Species& Island::returnSpecies(const int pos) const
+{
+  assert(pos >= 0);
+  assert(pos < static_cast<int>(mvIsland.size()));
+  return mvIsland[pos];
+}   // returns specific species from species vector
