@@ -224,6 +224,7 @@ void Archipelago::updateArchi(const vector<int>& vHappening, const double& dIniM
             case 0:
             {
                 const int iImPos = mvArchipel[iIsl].findPos(iSpecID);
+                assert(iImPos >= 0);
                 const double dImBirthT = mvArchipel[iIsl].returnSpecies(iImPos).readBirth();
                 mvArchipel[iIsl].immigrate(iSpecID, dImBirthT, dTime);
                 break;
@@ -238,6 +239,7 @@ void Archipelago::updateArchi(const vector<int>& vHappening, const double& dIniM
                 int iDestinationIsl = mvArchipel[iIsl].migrate(iSpecID, vLogs, dIniMigRate, prng);    // output: position of island in mvArchipel
                                                                                                     // equals island ID
                 const int iMigPos = mvArchipel[iIsl].findPos(iSpecID);
+                assert(iMigPos >= 0);
                 const double dMigBirthT = mvArchipel[iIsl].returnSpecies(iMigPos).readBirth();
                 mvArchipel[iDestinationIsl].immigrate(iSpecID, dMigBirthT, dTime);   // species (iSpec) "immigrates" from the original event island
                                                                             // to drawn island of destination
