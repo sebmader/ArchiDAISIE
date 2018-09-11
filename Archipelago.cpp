@@ -43,8 +43,8 @@ vector<int> Archipelago::findIsl(const int &ID) const    // find the island(s) w
 // ### CAUTION ### : maybe vector<pairs<int, int> > with island ID and position ??
 {
     vector<int> vLocations;
-    int i;
-    for (i = 0; i < mvArchipel.size(); ++i) {
+    const int n_islands = mvArchipel.size();
+    for (int i = 0; i < n_islands; ++i) {
         if (mvArchipel[i].findPos(ID) >= 0)
             vLocations.push_back(i);
     }
@@ -118,7 +118,8 @@ vector<int> Archipelago::sampleNextEvent(const vector<double> &pLocalGlobalRates
     else {  // -> iScale=1 => if local event
         // draw island
         vector<double> vSumIslRates(mvArchipel.size(),0);
-        for (int i = 0; i < mvArchipel.size(); ++i) {
+        const int n_islands = mvArchipel.size();
+        for (int i = 0; i < n_islands; ++i) {
             vSumIslRates[i] += mvArchipel[i].extractSumIslRate();
         }
         const int iIsl = drawDisEvent(vSumIslRates, prng);
@@ -129,7 +130,7 @@ vector<int> Archipelago::sampleNextEvent(const vector<double> &pLocalGlobalRates
     return vHappening;
 }
 
-const int Archipelago::createNewID()
+int Archipelago::createNewID()
 {
     incrementMaxID();
     return returnMaxID();
@@ -218,16 +219,21 @@ void Archipelago::updateArchi(const vector<int>& vHappening, const double& dIniM
     else if (vHappening.size() == 3) {  // -> local
         assert(iEvent >= 0 && iEvent <= 4);
         const int iIsl = vHappening[2];
-        switch(iEvent) {
+        switch(iEvent)
+        {
             case 0:
+            {
                 const int iImPos = mvArchipel[iIsl].findPos(iSpecID);
                 const double dImBirthT = mvArchipel[iIsl].returnSpecies(iImPos).readBirth();
                 mvArchipel[iIsl].immigrate(iSpecID, dImBirthT, dTime);
                 break;
-            case 1: {
+            }
+            case 1:
+            {
                 // ### CAUTION ### : this also includes the island the species is on, right?? -> take care of that !!
                 vector<double> vLogs(mvArchipel.size());
-                for (int j = 0; j < mvArchipel.size(); ++j)
+                const int n_islands = mvArchipel.size();
+                for (int j = 0; j < n_islands; ++j)
                     vLogs[j] = mvArchipel[j].returnLogGrowth();
                 int iDestinationIsl = mvArchipel[iIsl].migrate(iSpecID, vLogs, dIniMigRate, prng);    // output: position of island in mvArchipel
                                                                                                     // equals island ID

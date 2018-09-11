@@ -26,15 +26,15 @@ public:
     // Also, output of sum of both global (.first) and local (.second) rates
     std::vector<int> sampleNextEvent(const std::vector<double> &, std::mt19937_64, const int &);   // draw next event; output -> {event(0-7), species(ID)(,island(0-i))}
     // if global event -> vector.size() = 2, if local -> size = 3
-    const int createNewID();       // returns new species ID and maxID += 1
+    int createNewID();       // returns new species ID and maxID += 1
 
-    void speciateGlobalClado(const int&, mt19937_64, double dTime);         // island species cladogenetically speciates over all islands
+    void speciateGlobalClado(const int&, std::mt19937_64, double dTime);         // island species cladogenetically speciates over all islands
     // (one population gets replaced by two new species populations)
     // with random separation of archipelago into two groups/populations
     void speciateGlobalAna(const int&, double dTime);           // island species collectively (on all islands) diverges from mainland ancestor
     void goGlobalExtinct(const int&, double dTime);             // island species goes extinct on all islands it occures on
 
-    void updateArchi(const vector<int>&, const double&, mt19937_64, double); // switch-statement that calls event functions
+    void updateArchi(const std::vector<int>&, const double&, std::mt19937_64, double); // switch-statement that calls event functions
     // updates the ArchiPhylo vector
     // LOCAL events indicated by 3 elements: event ([0]), species ([1]), island ([2])
     // GLOBAL events indicated by 2 elements: event ([0]), species ([1])

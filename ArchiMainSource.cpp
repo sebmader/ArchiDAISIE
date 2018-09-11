@@ -83,8 +83,8 @@ Archipelago ArchiDAISIE_core(const double &dAge, const unsigned long int &M, con
     }
 }
 
-vector<vector<Species> > ArchiDAISIE(const double &dAge, const unsigned int iMainSp_n, vector<double> &vIniPars,
-                                        const unsigned int &iNumIslands, const unsigned int iReplicates)
+vector<vector<Species> > ArchiDAISIE(const double &dAge, const int iMainSp_n, vector<double> &vIniPars,
+                                        const unsigned int &iNumIslands, const int iReplicates)
 {   // ### CAUTION ### : output unclear !!
     try {
         // check given parameters

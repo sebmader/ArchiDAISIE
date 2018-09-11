@@ -9,35 +9,34 @@
 #include <cassert>
 #include "DrawEvents.h"
 #include "Species.h"
-#include "Archipelago.h"
+//#include "Archipelago.h"
 
-using namespace std;
-
+//using namespace std;
 
 class Island {        // class for ONE island within archipelago
 public:
     explicit Island(const int k) : mIK{k} {assert(k >= 0);} // island constructor based on island-wide K
 
-    int getCarryingCap() { return mIK; }
+    int getCarryingCap() const noexcept { return mIK; }
     // int sizeIsl() const {return static_cast<int>(mvIsland.size());}  // returns size of island vector
     int specAlive() const {return static_cast<int>(mvIslSpecAlive.size());} // returns number of species alive
     double returnLogGrowth() { return 1 - static_cast<double>(mvIslSpecAlive.size()) / mIK;}   // returns the logistic growth term (1-n/K)
 
     int findPos(const int &ID) const;    // find the position of certain species (input) in IslandPhylo vector
 
-    const int createNewID();       // returns new species ID and maxID += 1
+    int createNewID();       // returns new species ID and maxID += 1
 
-    double calculateIslRates(const vector<double> &, const int &, const int &, const double &);
+    double calculateIslRates(const std::vector<double> &, const int &, const int &, const double &);
     // initialise/calculate rates and store them in EventRates vector
     // gam_i, gam_m, lamb_cl, lamb_al, mu_l
     // per island -> doesn't include global rates !!!
-    const double extractSumIslRate() const noexcept;      // return the per-island rates vector
+    double extractSumIslRate() const noexcept;      // return the per-island rates vector
 
-    vector<int> sampleLocalEvent(mt19937_64, const int&);   // in case a local event is drawn, sample island, event and species
+    std::vector<int> sampleLocalEvent(std::mt19937_64, const int&);   // in case a local event is drawn, sample island, event and species
     // it happens to
 
     void immigrate(const int&, const double&, double dTime);                   // mainland species immigrates to that island
-    int migrate(const int &, vector<double> &, const double &, mt19937_64);                     // island species migrates to other island
+    int migrate(const int &, std::vector<double> &, const double &, std::mt19937_64);                     // island species migrates to other island
     void speciateClado(const int&, double dTime);               // island species cladogenetically speciates
     void speciateAna(const int&, double dTime);                 // island species anagenetically speciates
     void goExtinct(const int&, double);                   // island species goes extinct
@@ -49,12 +48,12 @@ public:
 
     void printIsland();                 // prints island vector of species to the screen
 
-    const vector<Species>& returnIsland() const { return mvIsland; }    // return island vector of species
-    const vector<int>& returnIslSpecAlive() const { return mvIslSpecAlive; }  // return extant species vector
+    const std::vector<Species>& returnIsland() const { return mvIsland; }    // return island vector of species
+    const std::vector<int>& returnIslSpecAlive() const { return mvIslSpecAlive; }  // return extant species vector
 private:
-    vector<Species> mvIsland;           // phylogeny vector of species on island
-    vector<int> mvIslSpecAlive;            // vector of species' IDs of alive species (.size() = n species on island)
-    vector<double> mvLocalRates;        // vector of rates for events PER ISLAND (5 rates: gamI, gamM, lambC, lambA, mu)
+    std::vector<Species> mvIsland;           // phylogeny vector of species on island
+    std::vector<int> mvIslSpecAlive;            // vector of species' IDs of alive species (.size() = n species on island)
+    std::vector<double> mvLocalRates;        // vector of rates for events PER ISLAND (5 rates: gamI, gamM, lambC, lambA, mu)
     int mIK; // Carrying capacity (should be const one day)
     // for now: mIk = mAK / iNumIslands
 };
