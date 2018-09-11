@@ -90,8 +90,12 @@ void Island::immigrate(const int& iSpecID, const double& BirthT, double dTime)
 {   // immigration from the mainland to THIS island
     // check if species is already present on island
     const int iPos = findPos(iSpecID);
-    // if mainland sp -> BirthT = Time; else (if island sp) -> BirthT = old BirthT (because this function is used for migration as well !!)
-    Species spNew(BirthT, iSpecID, iSpecID);    // immigrant
+    // if mainland sp -> BirthT = Time; else (if island sp) -> BirthT = old BirthT (because this function is used for migration as well !!
+    
+    if (iPos >= 0) {
+        double BirthT = mvIsland[iPos].readBirth();
+        Species spNew(BirthT, iSpecID, iSpecID);    // immigrant
+    }
     if (BirthT != dTime)                        // if not an immigrant:
         spNew = Species(BirthT, iSpecID, createNewID());
     if (iPos == -1) {    // not present
