@@ -80,6 +80,8 @@ Archipelago ArchiDAISIE_core(const double &dAge, const unsigned long int &M, con
     }
     catch (string &str) {
         std::cerr << "Warning: " << str;
+        assert(!"should never get here!");
+        return Archipelago();
     }
 }
 
