@@ -92,11 +92,7 @@ void Island::immigrate(const int& iSpecID, double dTime)
     const int iPos = findPos(iSpecID);
     // if mainland sp -> BirthT = Time; else (if island sp) -> BirthT = old BirthT (because this function is used for migration as well !!
     Species newSpecies(dTime, iSpecID, iSpecID);
-    if (iPos >= 0) {
-        double newBirthT = mvIsland[iPos].readBirth();
-        newSpecies = Species(newBirthT, iSpecID, iSpecID);    // immigrant
-    }
-    else {  // if present
+    if (iPos >= 0) {  // if present
         assert(iPos >= 0);
         assert(iPos < static_cast<int>(mvIsland.size()));
         if (!mvIsland[iPos].isExtant()) {   // if extinct
