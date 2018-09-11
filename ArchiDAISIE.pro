@@ -1,7 +1,9 @@
 SOURCES += *.cpp \
-    event.cpp
+    event.cpp \
+    event_type.cpp
 HEADERS += *.h \
-    event.h
+    event.h \
+    event_type.h
 
 # C++14
 CONFIG += c++14

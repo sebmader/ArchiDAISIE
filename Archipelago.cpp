@@ -3,7 +3,7 @@
 //
 
 #include "Archipelago.h"
-
+#include "event_type.h"
 using namespace std;
 
 
@@ -203,11 +203,12 @@ void Archipelago::updateArchi(
     // order of parameter indexes (Event): gam_i (0), gam_m (1), lamb_cl (2), lamb_al (3), mu_l (4), lamb_cg (5), lamb_ag (6), mu_g (7)
     assert(vHappening.size() == 2 || vHappening.size() == 3);
 
-    const int iEvent = vHappening[0];
+    const event_type iEvent = static_cast<event_type>(vHappening[0]);
     const int iSpecID = vHappening[1];
 
     if (vHappening.size() == 2) {   // -> global
-        assert(iEvent <= 7 && iEvent >= 5);
+        //assert(iEvent <= 7 && iEvent >= 5);
+        assert(iEvent == event_type::global_anagenesis ||
         switch(iEvent) {
             case 5:
                 speciateGlobalClado(iSpecID, prng, dTime);
@@ -227,7 +228,7 @@ void Archipelago::updateArchi(
         const int iIsl = vHappening[2];
         switch(iEvent)
         {
-            case 0:
+            case event_type::immigration:
             {
                 mvArchipel[iIsl].immigrate(iSpecID, dImBirthT, dTime);
                 break;
