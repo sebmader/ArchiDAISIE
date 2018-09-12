@@ -48,6 +48,7 @@ script:
   # Get my folder
   - my_github=${PWD##*/}  
   # SLOCcount
+  - rm -rf oclint-0.10.3
   - cd ..; sloccount --overhead 1 --personcost 22614 ArchiDAISIE; cd $my_github
 
 after_success:
