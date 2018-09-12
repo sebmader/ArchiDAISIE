@@ -3,13 +3,13 @@
 //
 
 #include <cassert>
-#include "MaxSpeciesID.h"
+#include "SpeciesID.h"
 
-MaxSpeciesID::MaxSpeciesID(const int maxID) : maxSpeciesID{maxID} {
+SpeciesID::SpeciesID(const int maxID) : maxSpeciesID{maxID} {
     assert(maxID >= 0);
 }
 
-int MaxSpeciesID::createNewSpeciesID()
+int SpeciesID::createNewSpeciesID()
 {
     incrementMaxSpeciesID();
     return getMaxSpeciesID();

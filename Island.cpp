@@ -93,45 +93,45 @@ double Island::extractSumIslRate() const noexcept
     return dSumRates;
 }
 
-vector<int> Island::sampleLocalEvent(mt19937_64 prng, const int &iM)
+vector<int> Island::sampleLocalEvent(mt19937_64 prng, const int &n_mainlandSpecies)
 {   // samples local event and species it happens to on THIS island
     // draw event
-    const int iEvent = drawDisEvent(mvLocalRates, prng);
+    const int event = drawDisEvent(mvLocalRates, prng);
     // draw species
-    int iSpecID;
-    if (iEvent) {   // if not immigration (1-4) -> SpecID from extant island species
-        iSpecID = mvIslSpecAlive[drawUniEvent(0, static_cast<int>(mvIslSpecAlive.size()), prng)];
+    int speciesID;
+    if (event) {   // if not immigration (1-4) -> SpecID from extant island species
+        speciesID = mvIslSpecAlive[drawUniEvent(0, static_cast<int>(mvIslSpecAlive.size()), prng)];
     }
     else {  // if immigration (0) -> SpecID from mainland species pool
-        iSpecID = drawUniEvent(1, iM, prng);
+        speciesID = drawUniEvent(1, n_mainlandSpecies, prng);
     }
 
     // return event and specID
-    vector<int> vHappening = { iEvent, iSpecID };
+    vector<int> vHappening = { event, speciesID };
 
     return vHappening;
 }
 
 // local updates:
-void Island::immigrate(const int& iSpecID, double dTime)
+void Island::immigrate(const int& speciesID, double time)
 {   // immigration from the mainland to THIS island
     // check if species is already present on island
-    const int iPos = findPos(iSpecID);
+    const int iPos = findPos(speciesID);
     // if mainland sp -> BirthT = Time; else (if island sp) -> BirthT = old BirthT (because this function is used for migration as well !!
-    Species newSpecies(dTime, iSpecID, iSpecID);
+    Species newSpecies(time, speciesID, speciesID);
     if (iPos >= 0) {  // if present
         assert(iPos >= 0);
         assert(iPos < static_cast<int>(mvIsland.size()));
         if (!mvIsland[iPos].isExtant()) {   // if extinct
             mvIsland.push_back(newSpecies);
-            mvIslSpecAlive.push_back(iSpecID);
+            mvIslSpecAlive.push_back(speciesID);
         }
         else  // if extant -> re-immigration ("re-setting the clock" (= BirthT))
             mvIsland[iPos] = newSpecies;
     }
     else {
         mvIsland.push_back(newSpecies);
-        mvIslSpecAlive.push_back(iSpecID);
+        mvIslSpecAlive.push_back(speciesID);
     }
 }
 
@@ -161,26 +161,31 @@ int Island::drawMigDestinationIsland(
     return destinationIsland;
 }
 
-void Island::speciateClado(const int& speciesID, double time)
+void Island::speciateClado(const int& speciesID, double time,
+        SpeciesID maxSpeciesID)
 {   // island species cladogenetically diverges
     // find species
     const Species oldSpecies = findSpecies(speciesID);
     // 2 new species:
-    Species newSpecies1 = Species(oldSpecies.readBirth(), speciesID, createNewID());
-    Species newSpecies2 = Species(time, speciesID, createNewID());
+
+    Species newSpecies1 = Species(oldSpecies.readBirth(), speciesID,
+            maxSpeciesID.createNewSpeciesID());
+    Species newSpecies2 = Species(time, speciesID,
+            maxSpeciesID.createNewSpeciesID());
     // parent goes extinct
     goExtinct(speciesID, time);
     addSpecies(newSpecies1);
     addSpecies(newSpecies2);
 }
 
-void Island::speciateAna(const int& speciesID, double time)
+void Island::speciateAna(const int& speciesID, double time, SpeciesID& maxSpeciesID)
 {   // anagenetic speciation: only immigrants can undergo anagenesis !!!
     // find species
     const Species oldSpecies = findSpecies(speciesID);
     // new species
     const double birthT = oldSpecies.readBirth();
-    Species newSpecies = Species(birthT, speciesID, createNewID());
+    Species newSpecies = Species(birthT, speciesID,
+            maxSpeciesID.createNewSpeciesID());
     // parent goes extinct & daugther gets added to island
     goExtinct(speciesID, time);
     addSpecies(newSpecies);

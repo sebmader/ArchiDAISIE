@@ -15,7 +15,7 @@ add_executable(ArchiDAISIE
         ArchiMainSource.cpp
         DrawEvents.cpp
         event_type.cpp
-        MaxSpeciesID.cpp
+        SpeciesID.cpp
         Species.cpp
         Island.cpp
         Archipelago.cpp)

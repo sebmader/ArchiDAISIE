@@ -8,7 +8,7 @@
 #include <vector>
 #include <cassert>
 #include "DrawEvents.h"
-#include "MaxSpeciesID.h"
+#include "SpeciesID.h"
 #include "Species.h"
 
 class Island {        // class for ONE island within archipelago
@@ -39,8 +39,8 @@ public:
 
     void immigrate(const int&, double);                   // mainland species immigrates to that island
     int drawMigDestinationIsland(const int, std::vector<double>&, const double&, std::mt19937_64);                     // island species migrates to other island
-    void speciateClado(const int&, double);               // island species cladogenetically speciates
-    void speciateAna(const int&, double);                 // island species anagenetically speciates
+    void speciateClado(const int&, double, SpeciesID maxSpeciesID);               // island species cladogenetically speciates
+    void speciateAna(const int&, double, SpeciesID& maxSpeciesID);                 // island species anagenetically speciates
     void goExtinct(const int&, double);                   // island species goes extinct
 
     const std::vector<Species>& returnIsland() const { return mvIsland; }    // return island vector of species

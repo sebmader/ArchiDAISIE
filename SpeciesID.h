@@ -5,9 +5,9 @@
 #ifndef ARCHIDAISIE_SPECIESID_H
 #define ARCHIDAISIE_SPECIESID_H
 
-class MaxSpeciesID {
+class SpeciesID {
 public:
-    explicit MaxSpeciesID(const int);
+    explicit SpeciesID(const int);
 
     void incrementMaxSpeciesID() noexcept { ++maxSpeciesID; }
     int getMaxSpeciesID() const noexcept { return maxSpeciesID; }
