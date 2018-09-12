@@ -18,7 +18,7 @@ public:
     explicit Island(const int k) : mIK{k} {assert(k >= 0);} // island constructor based on island-wide K
 
     int getCarryingCap() const noexcept { return mIK; }
-    int getNSpeciesAlive() const noexcept {return static_cast<int>(mvIslSpecAlive.size());} // returns number of species alive
+    int getNSpeciesAlive() const; // returns number of species alive
     int getNAllSpecies() const noexcept { return this->mvIsland.size(); }
     double returnLogGrowth() { return 1 - static_cast<double>(mvIslSpecAlive.size()) / mIK;}   // returns the logistic growth term (1-n/K)
 

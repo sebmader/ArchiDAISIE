@@ -43,6 +43,16 @@ const Species& Island::findSpecies(const int species_id) const
     return mvIsland[index];
 }
 
+int Island::getNSpeciesAlive() const
+{
+    int extantSpeciesCounter = 0;
+    for (auto& species : mvIsland) {
+        if (species.isExtant())
+            ++extantSpeciesCounter;
+    }
+    return extantSpeciesCounter;
+}
+
 int Island::createNewID()
 {
     incrementMaxID();

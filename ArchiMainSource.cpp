@@ -212,13 +212,28 @@ void test_island()
         island.goExtinct(42, 2.95);
         assert(!island.findSpecies(42).isExtant());
         island.speciateAna(1, 2.80);
-        assert(island.getNAllSpecies()==3);
-        assert(island.getNSpeciesAlive()==1);
+        assert(island.getNAllSpecies()== 3);
+        assert(island.getNSpeciesAlive()== 1);
         assert(!island.findSpecies(1).isExtant());
         island.immigrate(42, 2.56);
         island.speciateClado(42, 2.50);
         assert(island.getNAllSpecies() == 6);
-        cout << island.getNSpeciesAlive() << '\n';
+        assert(island.getNSpeciesAlive() == 3);
+    }
+    {
+        Island island(10);
+        const int n_mainlandSpecies = 50;
+        island.setMaxID(n_mainlandSpecies);
+        island.immigrate(1, 3.14);
+        island.immigrate(42, 3.01);
+        island.goExtinct(42, 2.95);
+        island.speciateAna(1, 2.80);
+        island.immigrate(42, 2.56);
+        island.speciateClado(42, 2.50);
+        assert(island.getNAllSpecies() == 6);
+        assert(island.getNSpeciesAlive() == 3);
+        Island island2(20);
+        island.drawMigDestinationIsland(51,)
     }
 }
 
