@@ -115,22 +115,31 @@ void Island::immigrate(const int& iSpecID, double dTime)
     }
 }
 
-int Island::migrate(
-  const int /* iSpecID */,
-  vector<double> &vLogs,
-  const double &dIniMigRate,
-  mt19937_64 prng
+int Island::drawMigrationIsland(
+        const int originIsland,
+        vector<double>& LogGrowthTerms,
+        const double& IniMigrationRate,
+        mt19937_64 prng
 )
 {   // migration from THIS island to another; output: island of destination
     // draw island to which species migrates -> initial migration rate as parameter !!
-    const int n_islands = vLogs.size();
-    vector<double> vMigRates(n_islands);
+    const int n_islands = LogGrowthTerms.size();
+    const int n_speciesAlive = getNSpeciesAlive();
+    vector<double> migrationRates(n_islands);
     for (int k = 0; k < n_islands; ++k) {
-        vMigRates[k] = max(0.0, (dIniMigRate * mvIslSpecAlive.size() * vLogs[k]) / n_islands*n_islands - n_islands);
+        if (k == originIsland) {     // for the island it migrates from: LogGrowth = 0
+            // -> this event doesn't happen
+            migrationRates[k] = 0;
+            continue;
+        }
+        migrationRates[k] = max(0.0, (IniMigrationRate * n_speciesAlive * LogGrowthTerms[k])
+            / n_islands*n_islands - n_islands);
     }
-    const int iDestinationIsl = drawDisEvent(vMigRates, prng);
 
-    return iDestinationIsl;
+    const int destinationIsland = drawDisEvent(migrationRates, prng);
+    assert(destinationIsland != originIsland);
+
+    return destinationIsland;
 }
 
 void Island::speciateClado(const int& iSpecID, double dTime)
@@ -206,3 +215,10 @@ const Species& Island::returnSpecies(const int pos) const
   assert(pos < static_cast<int>(mvIsland.size()));
   return mvIsland[pos];
 }   // returns specific species from species vector
+
+void Island::addSpecies(const Species& newSpecies)
+{
+    mvIsland.push_back(newSpecies);
+    const int speciesID = newSpecies.readSpID();
+    mvIslSpecAlive.push_back(speciesID);
+}    // adds new species to island -> both species and alive species vector

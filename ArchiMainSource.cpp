@@ -162,27 +162,27 @@ void test_island()
     }
     {
       Island island(10);
-      assert(island.getNspecies() == 0);
-      island.pushbackSp(Species(0, 0, 0));
-      assert(island.getNspecies() == 1);
+      assert(island.getNAllSpecies() == 0);
+        island.addSpecies(Species(0, 0, 0));
+      assert(island.getNAllSpecies() == 1);
     }
     {
       Island island(10);
-      assert(island.getNspecies() == 0);
+      assert(island.getNAllSpecies() == 0);
       island.immigrate(42, 3.14);
-      assert(island.getNspecies() == 1);
+      assert(island.getNAllSpecies() == 1);
       assert(island.findSpecies(42).readBirth() == 3.14);
     }
     {
       Island island(10);
-      assert(island.getNspecies() == 0);
+      assert(island.getNAllSpecies() == 0);
       island.immigrate(42, 3.14);
       island.immigrate(42, 6.28);
-      assert(island.getNspecies() == 1);
+      assert(island.getNAllSpecies() == 1);
     }
     {
       Island island(10);
-      assert(island.getNspecies() == 0);
+      assert(island.getNAllSpecies() == 0);
       island.immigrate(42, 3.14);
       island.immigrate(42, 6.28);
       assert(island.findSpecies(42).readBirth() == 6.28);
