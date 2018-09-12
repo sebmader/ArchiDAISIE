@@ -127,9 +127,6 @@ vector<vector<Species> > ArchiDAISIE(const double &dAge,
         // ### CAUTION ### : need to implement the exact same output as DAISIE_sim
         // how to combine the multiple data types? and which types btw?
 
-        // set max species ID to amount of mainland species
-        Archipelago::setMaxID(iMainSp_n);
-
         // loop through replicates
         for (int i = 1; i <= iReplicates; ++i) {
 
@@ -221,8 +218,9 @@ void test_island()
             == n_mainlandSpecies+1);
         island.immigrate(42, 2.56);
         island.speciateClado(42, 2.50, maxSpeciesID);
+        cout << maxSpeciesID.getMaxSpeciesID();
         assert(maxSpeciesID.getMaxSpeciesID()
-                == n_mainlandSpecies+2);
+                == n_mainlandSpecies+3);
         assert(island.getNAllSpecies() == 6);
         assert(island.getNSpeciesAlive() == 3);
     }

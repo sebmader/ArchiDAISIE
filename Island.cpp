@@ -6,7 +6,6 @@
 
 using namespace std;
 
-int Island::maxSpeciesID = 0;
 
 // ------ Island member functions ------
 
@@ -24,7 +23,7 @@ int Island::findPos(const int &speciesID) const    // find the position of certa
             return i;
     return -1;
 }
-
+/*
 int Island::findPosAlive(const int &speciesID) const
 {
     const int aliveSpecies = getNSpeciesAlive();
@@ -33,6 +32,7 @@ int Island::findPosAlive(const int &speciesID) const
             return i;
     return -1;
 }
+*/
 
 const Species& Island::findSpecies(const int species_id) const
 {
@@ -51,31 +51,26 @@ int Island::getNSpeciesAlive() const
     return extantSpeciesCounter;
 }
 
-int Island::createNewID()
-{
-    incrementMaxID();
-    return returnMaxID();
-}
-
-double Island::calculateIslRates(
-  const std::vector<double> &vIslPars, const int &iM, const int &iNumIsl,
-        const double &dThisMLG)
+double Island::calculateIslRates(const std::vector<double>& islandParameters,
+        const int& n_mainlandSpecies,
+        const int& n_islands,
+        const double& dThisMLG)
 {   // calculates the per-island rates of events, outputs them (for immidiate use)
     // and saves them within the island-class; input -> initial parameters
     // order of island parameter vector: gam_i, gam_m, lamb_cl, lamb_al, mu_l
 
     // calculate the per-island rates
-    const int iN = static_cast<int>(mvIslSpecAlive.size());
-    int iNImmi = 0;    // number of immigrant species -> only ones that can undergo anagenesis
-    for (int g : mvIslSpecAlive)
-        if (g <= 1000)
-            ++iNImmi;
-    const double dGam_I = max(0.0, (vIslPars[0] * iM * (1 - static_cast<double>(iN) / mIK)) / iNumIsl);  // immigration to specific island
-    const double dGam_M = max(0.0, (vIslPars[1] * iN * dThisMLG) / iNumIsl*iNumIsl - iNumIsl); // migration from this island to all other islands
+    const int n_alive = getNSpeciesAlive();
+    int n_immiSpecies = 0;    // number of immigrant species -> only ones that can undergo anagenesis
+    for (auto& g : mvIsland)
+        if (g.readSpID() <= 1000)
+            ++n_immiSpecies;
+    const double dGam_I = max(0.0, (islandParameters[0] * n_mainlandSpecies * (1 - static_cast<double>(n_alive) / mIK)) / n_islands);  // immigration to specific island
+    const double dGam_M = max(0.0, (islandParameters[1] * n_alive * dThisMLG) / n_islands*n_islands - n_islands); // migration from this island to all other islands
     // all other islands: '/iNumIsl', one-way: '/iNumIsl^2 - iNumIsl' -> ### CAUTION ### : really ???
-    const double dLamb_Cl = max(0.0, vIslPars[2] * iN * (1 - (static_cast<double>(iN) / mIK))); // local cladogenesis
-    const double dLamb_Al = max(0.0, vIslPars[3] * iNImmi);   // local anagenesis
-    const double dMu_l = max(0.0, vIslPars[4] * iN);  // local extinction
+    const double dLamb_Cl = max(0.0, islandParameters[2] * n_alive * (1 - (static_cast<double>(n_alive) / mIK))); // local cladogenesis
+    const double dLamb_Al = max(0.0, islandParameters[3] * n_immiSpecies);   // local anagenesis
+    const double dMu_l = max(0.0, islandParameters[4] * n_alive);  // local extinction
 
     // save in rate vector
     mvLocalRates = { dGam_I, dGam_M, dLamb_Cl, dLamb_Al, dMu_l };
@@ -98,14 +93,16 @@ vector<int> Island::sampleLocalEvent(mt19937_64 prng, const int &n_mainlandSpeci
     // draw event
     const int event = drawDisEvent(mvLocalRates, prng);
     // draw species
-    int speciesID;
+    int speciesID = drawUniEvent(1, n_mainlandSpecies, prng); // in case of immigration
     if (event) {   // if not immigration (1-4) -> SpecID from extant island species
-        speciesID = mvIslSpecAlive[drawUniEvent(0, static_cast<int>(mvIslSpecAlive.size()), prng)];
+        vector<int> aliveSpecies;
+        for(auto& species : mvIsland) {
+            if (species.isExtant())
+                aliveSpecies.push_back(species.readSpID());
+        }
+        const int pos = drawUniEvent(0, static_cast<int>(aliveSpecies.size()), prng);
+        speciesID = aliveSpecies[pos];
     }
-    else {  // if immigration (0) -> SpecID from mainland species pool
-        speciesID = drawUniEvent(1, n_mainlandSpecies, prng);
-    }
-
     // return event and specID
     vector<int> vHappening = { event, speciesID };
 
@@ -115,23 +112,20 @@ vector<int> Island::sampleLocalEvent(mt19937_64 prng, const int &n_mainlandSpeci
 // local updates:
 void Island::immigrate(const int& speciesID, double time)
 {   // immigration from the mainland to THIS island
-    // check if species is already present on island
-    const int iPos = findPos(speciesID);
-    // if mainland sp -> BirthT = Time; else (if island sp) -> BirthT = old BirthT (because this function is used for migration as well !!
+    const int iPos = findPos(speciesID);  // check if species is already present on island
     Species newSpecies(time, speciesID, speciesID);
     if (iPos >= 0) {  // if present
-        assert(iPos >= 0);
         assert(iPos < static_cast<int>(mvIsland.size()));
         if (!mvIsland[iPos].isExtant()) {   // if extinct
             mvIsland.push_back(newSpecies);
-            mvIslSpecAlive.push_back(speciesID);
+        //    mvIslSpecAlive.push_back(speciesID);
         }
         else  // if extant -> re-immigration ("re-setting the clock" (= BirthT))
             mvIsland[iPos] = newSpecies;
     }
     else {
         mvIsland.push_back(newSpecies);
-        mvIslSpecAlive.push_back(speciesID);
+    //    mvIslSpecAlive.push_back(speciesID);
     }
 }
 
@@ -162,7 +156,7 @@ int Island::drawMigDestinationIsland(
 }
 
 void Island::speciateClado(const int& speciesID, double time,
-        SpeciesID maxSpeciesID)
+        SpeciesID& maxSpeciesID)
 {   // island species cladogenetically diverges
     // find species
     const Species oldSpecies = findSpecies(speciesID);
@@ -197,16 +191,16 @@ void Island::goExtinct(const int& speciesID, double time)
     const int pos = findPos(speciesID);
     assert(pos >= 0);
     mvIsland[pos].goExtinct(time);
-    const int posAlive = findPosAlive(speciesID);
-    mvIslSpecAlive[posAlive] = mvIslSpecAlive.back();
-    mvIslSpecAlive.pop_back();
+//    const int posAlive = findPosAlive(speciesID);
+//    mvIslSpecAlive[posAlive] = mvIslSpecAlive.back();
+//    mvIslSpecAlive.pop_back();
 }
 
 void Island::addIsland(const Island &islNew)
 {   // adds another island to THIS (for aggregating archipelagos)
     // extract data frames from island that's to be added
     const vector<Species>& vSpecNew = islNew.returnIsland();
-    const vector<int>& vSpecAliveNew = islNew.returnIslSpecAlive();
+    // const vector<int>& vSpecAliveNew = islNew.returnIslSpecAlive();
 
     // add species vector to THIS island
     if (!vSpecNew.empty()) {
@@ -214,13 +208,12 @@ void Island::addIsland(const Island &islNew)
         vector<Species> vTempSpec = mvIsland;
         cerr << mvIsland.size() << '\n';
         cerr << vSpecNew.size() << '\n';
-        vTempSpec.reserve(mvIsland.size() + vSpecNew.size());   // ### CAUTION ### : problem is the const type of ALL outputs and functions
-        std::cerr << "HERE\n";                                                                        //  associated with .reserve()
+        vTempSpec.reserve(mvIsland.size() + vSpecNew.size());
         vTempSpec.insert(vTempSpec.end(), vSpecNew.begin(), vSpecNew.end());
-        std::cerr << "PAST\n";
         // mvIsland.reserve(mvIsland.size() + vSpecNew.size());   // preallocate memory
         // mvIsland.insert(mvIsland.end(), vSpecNew.begin(), vSpecNew.end());
     }
+    /*
     // add alive species to THIS island
     if (!vSpecAliveNew.empty()) {
         vector<int> vTempAlive = mvIslSpecAlive;
@@ -229,6 +222,7 @@ void Island::addIsland(const Island &islNew)
         // mvIslSpecAlive.reserve(mvIslSpecAlive.size() + vSpecAliveNew.size());
         // mvIslSpecAlive.insert(mvIslSpecAlive.end(), vSpecAliveNew.begin(), vSpecAliveNew.end());
     }
+    */
 }
 
 const Species& Island::returnSpecies(const int pos) const
@@ -241,6 +235,6 @@ const Species& Island::returnSpecies(const int pos) const
 void Island::addSpecies(const Species& newSpecies)
 {
     mvIsland.push_back(newSpecies);
-    const int speciesID = newSpecies.readSpID();
-    mvIslSpecAlive.push_back(speciesID);
+//    const int speciesID = newSpecies.readSpID();
+//    mvIslSpecAlive.push_back(speciesID);
 }    // adds new species to island -> both species and alive species vector

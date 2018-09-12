@@ -7,18 +7,20 @@
 
 using namespace std;
 
-int Archipelago::mMaxSpID = 0;
-
-
 Archipelago::Archipelago(const int &nI, const int &AK)  // constructor of archipelago based on number
 {                                                            // of islands and archipelago-wide K
-    assert(nI >= 0); assert(AK >= 0); assert(AK % nI == 0);   // ### CAUTION ### : let the archipelago-wide K be a double ??
+    assert(nI >= 0); assert(AK >= 0);
+    if(AK % nI != 0)
+        throw logic_error("The carrying capacity needs to be dividable"
+                          " without remainder by the number of islands.");
+    // ### CAUTION ### : let the archipelago-wide K be a double ??
     if (nI == 0 || AK == 0)
         throw string("You are creating an archipelago without islands or a carrying capacity of zero.");
     mvArchipel = vector<Island>((unsigned) nI, Island(AK / nI));
     mAK = AK;
 }
 
+/*
 void Archipelago::updateAliveSpec()
 {   // update archipelago-wide extant species vector
     vector<int> vArchiTmpVec;
@@ -39,6 +41,7 @@ void Archipelago::updateAliveSpec()
             }
     }
 }
+*/
 
 vector<int> Archipelago::findIsl(const int &ID) const    // find the island(s) where certain species (input) is within archipelago
                                         // returns vector with island IDs (spot in mvArchipel vector)
@@ -68,14 +71,16 @@ vector<double> Archipelago::calculateAllRates(const vector<double> &vIniPars, co
         // for giving it to the island rates calculation function
 
     // count extant species on archipelago, for global rates
-    int iAliveSpecies = static_cast<int>(mvArchSpecAlive.size());
+    int iAliveSpecies = getNSpeciesAlive();
 
     // count immigrant species; only ones that can undergo anagenesis
     int iImmiAlive = 0;
-    for (auto& h : mvArchSpecAlive)
-        if (h <= iM)
-            ++iImmiAlive;
-
+    for (auto& isl : mvArchipel) {
+        vector<Species> tmpIsland = isl.returnIsland();
+        for (auto& species : tmpIsland)
+            if (species.readSpID() <= iM)
+                ++iImmiAlive;
+    }
     // calculate global rates
     const double dLamb_Cg = max(0.0, dIniLamb_Cg * iAliveSpecies * (1 - (static_cast<double>(iAliveSpecies)/mAK)));   // global cladogenesis
     const double dLamb_Ag = max(0.0, dIniLamb_Ag * iImmiAlive);    // global anagenesis
@@ -112,8 +117,15 @@ vector<int> Archipelago::sampleNextEvent(const vector<double> &pLocalGlobalRates
         // draw event (plus 5 to align it with all events: 0-4 -> local, 5-7 -> global: 5 -> clado, 6 -> ana, 7 -> extinc)
         const int iEvent = drawDisEvent(mvGlobalRates, prng) + 5;
         // draw species
-        const int iSpecID = mvArchSpecAlive[drawUniEvent(0, static_cast<int>(mvArchSpecAlive.size() - 1),
-                                                         prng)];
+        vector<int> aliveSpecies;
+        for(auto& island : mvArchipel) {
+            vector<Species> tmpIsland = island.returnIsland();
+            for(auto& species : tmpIsland)
+            if (species.isExtant())
+                aliveSpecies.push_back(species.readSpID());
+        }
+        const int pos = drawUniEvent(0, static_cast<int>(aliveSpecies.size() - 1), prng);
+        const int iSpecID = aliveSpecies[pos];
         // initialise vector with event and species
         vHappening = { iEvent, iSpecID };
     }
@@ -132,26 +144,19 @@ vector<int> Archipelago::sampleNextEvent(const vector<double> &pLocalGlobalRates
     return vHappening;
 }
 
-int Archipelago::createNewID()
-{
-    incrementMaxID();
-    return returnMaxID();
-}
-
-
 // global updates:
 
-void Archipelago::speciateGlobalClado(const int& iSpecID, mt19937_64 prng, double dTime)
+void Archipelago::speciateGlobalClado(const int& speciesID, mt19937_64 prng, double time, SpeciesID& maxSpeciesID)
 {   // species (input) globally cladogenetically speciates -> archipelago population splits into two new species
-    vector<int> vOnIslands = findIsl(iSpecID);  // vector with islandIDs (position in mvArchipel) where species is present
+    vector<int> vOnIslands = findIsl(speciesID);  // vector with islandIDs (position in mvArchipel) where species is present
     if (vOnIslands.empty())
         throw logic_error("Drawn species is not present on any island. Something's wrong.. (global cladogenesis)\n");
 
     // two daughter species
-    const int iOnePos = mvArchipel[vOnIslands[0]].findPos(iSpecID);
+    const int iOnePos = mvArchipel[vOnIslands[0]].findPos(speciesID);
     const double dBirthT = mvArchipel[vOnIslands[0]].returnSpecies(iOnePos).readBirth();
-    Species spNew1(dBirthT, iSpecID, createNewID());
-    Species spNew2(dTime, iSpecID, createNewID());
+    Species spNew1(dBirthT, speciesID, maxSpeciesID.createNewSpeciesID());
+    Species spNew2(time, speciesID, maxSpeciesID.createNewSpeciesID());
 
     // draw where to split the archipelago: 0 to i-1 -> split after the island number drawn
     int iNumIsl = static_cast<int>(mvArchipel.size());
@@ -160,28 +165,28 @@ void Archipelago::speciateGlobalClado(const int& iSpecID, mt19937_64 prng, doubl
     // update data frame
     for (auto& iIsl : vOnIslands) {
         if (iIsl <= iSplit) {
-            mvArchipel[iIsl].goExtinct(iSpecID, dTime);
+            mvArchipel[iIsl].goExtinct(speciesID, time);
             mvArchipel[iIsl].addSpecies(spNew1);
         }
         else {
-            mvArchipel[iIsl].goExtinct(iSpecID, dTime);
+            mvArchipel[iIsl].goExtinct(speciesID, time);
             mvArchipel[iIsl].addSpecies(spNew2);
         }
     }
 }
 
-void Archipelago::speciateGlobalAna(const int& iSpecID, double dTime)
+void Archipelago::speciateGlobalAna(const int& speciesID, double time, SpeciesID& maxSpeciesID)
 {   // species (input) globally anagenetically speciates -> whole archipelago population diverges from mainland sp
     // can only happen to immigrant species
-    vector<int> vOnIslands = findIsl(iSpecID);  // vector with islandIDs (position in mvArchipel) where species is present
+    vector<int> vOnIslands = findIsl(speciesID);  // vector with islandIDs (position in mvArchipel) where species is present
     if (vOnIslands.empty())
         throw logic_error("Drawn species is not present on any island. Something's wrong.. (global anagenesis)\n");
     // daughter species
-    const int iOnePos = mvArchipel[vOnIslands[0]].findPos(iSpecID);
+    const int iOnePos = mvArchipel[vOnIslands[0]].findPos(speciesID);
     const double dBirthT = mvArchipel[vOnIslands[0]].returnSpecies(iOnePos).readBirth();
-    Species spNew(dBirthT, iSpecID, createNewID());
+    Species spNew(dBirthT, speciesID, maxSpeciesID.createNewSpeciesID());
     for (auto& iIsl : vOnIslands) {
-        mvArchipel[iIsl].goExtinct(iSpecID, dTime);
+        mvArchipel[iIsl].goExtinct(speciesID, time);
         mvArchipel[iIsl].addSpecies(spNew);
     }
 }
@@ -214,10 +219,10 @@ void Archipelago::updateArchi(const vector<int>& happening,
         assert(is_global(iEvent));
         switch(iEvent) {
             case event_type::global_cladogenesis:
-                speciateGlobalClado(speciesID, prng, time);
+                speciateGlobalClado(speciesID, prng, time, maxSpeciesID);
                 break;
             case event_type::global_anagenesis:
-                speciateGlobalAna(speciesID, time);
+                speciateGlobalAna(speciesID, time, maxSpeciesID);
                 break;
             case event_type::global_extinction:
                 goGlobalExtinct(speciesID, time);
@@ -273,7 +278,7 @@ void Archipelago::updateArchi(const vector<int>& happening,
         throw runtime_error("vHappening.size() is neither 2 nor 3. Something is wrong.\n");
 
     // update archi-level extant species vector
-    updateAliveSpec();
+//    updateAliveSpec();
 }
 
 void Archipelago::addArchi(const Archipelago &aNewArchi)
@@ -330,4 +335,12 @@ void Archipelago::printArchi()
         cout << "BirthT" << '\t' << "ParentID" << '\t' << "SpecID" << '\t' << "ExtincT" << endl;
         z.printIsland();
     }
+}
+
+int Archipelago::getNSpeciesAlive()
+{
+    int aliveSpeciesCounter = 0;
+    for (auto& isl : mvArchipel)
+        aliveSpeciesCounter += isl.getNSpeciesAlive();
+    return aliveSpeciesCounter;
 }
