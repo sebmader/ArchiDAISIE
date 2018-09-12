@@ -156,36 +156,69 @@ vector<vector<Species> > ArchiDAISIE(const double &dAge, const int iMainSp_n, ve
 void test_island()
 {
     {
-        const int k{12};
+        const int k{ 12 };
         const Island island(k);
-        assert(k ==island.getCarryingCap());
+        assert(k==island.getCarryingCap());
     }
     {
-      Island island(10);
-      assert(island.getNAllSpecies() == 0);
+        Island island(10);
+        assert(island.getNAllSpecies()==0);
         island.addSpecies(Species(0, 0, 0));
-      assert(island.getNAllSpecies() == 1);
+        assert(island.getNAllSpecies()==1);
+        assert(island.getNSpeciesAlive()==1);
     }
     {
-      Island island(10);
-      assert(island.getNAllSpecies() == 0);
-      island.immigrate(42, 3.14);
-      assert(island.getNAllSpecies() == 1);
-      assert(island.findSpecies(42).readBirth() == 3.14);
+        Island island(10);
+        assert(island.getNAllSpecies()==0);
+        island.immigrate(42, 3.14);
+        assert(island.getNAllSpecies()==1);
+        assert(island.findSpecies(42).readBirth()==3.14);
+        assert(island.getNSpeciesAlive()==1);
     }
     {
-      Island island(10);
-      assert(island.getNAllSpecies() == 0);
-      island.immigrate(42, 3.14);
-      island.immigrate(42, 6.28);
-      assert(island.getNAllSpecies() == 1);
+        Island island(10);
+        assert(island.getNAllSpecies()==0);
+        island.immigrate(42, 3.14);
+        island.immigrate(42, 6.28);
+        assert(island.getNAllSpecies()==1);
+        assert(island.getNSpeciesAlive()==1);
     }
     {
-      Island island(10);
-      assert(island.getNAllSpecies() == 0);
-      island.immigrate(42, 3.14);
-      island.immigrate(42, 6.28);
-      assert(island.findSpecies(42).readBirth() == 6.28);
+        Island island(10);
+        assert(island.getNAllSpecies()==0);
+        island.immigrate(42, 3.14);
+        island.immigrate(42, 6.28);
+        assert(island.findSpecies(42).readBirth()==6.28);
+    }
+    {
+        Island island(10);
+        assert(island.getNAllSpecies()==0);
+        assert(island.getNSpeciesAlive()==0);
+        island.immigrate(1, 3.14);
+        island.immigrate(42, 6.28);
+        assert(island.getNAllSpecies()==2);
+        assert(island.getNSpeciesAlive()==2);
+        island.goExtinct(42, 7.30);
+        assert(island.getNAllSpecies()==2);
+        assert(!island.findSpecies(42).isExtant());
+        assert(island.getNSpeciesAlive()==1);
+    }
+    {
+        Island island(10);
+        const int n_mainlandSpecies = 50;
+        island.setMaxID(n_mainlandSpecies);
+        island.immigrate(1, 3.14);
+        island.immigrate(42, 3.01);
+        island.goExtinct(42, 2.95);
+        assert(!island.findSpecies(42).isExtant());
+        island.speciateAna(1, 2.80);
+        assert(island.getNAllSpecies()==3);
+        assert(island.getNSpeciesAlive()==1);
+        assert(!island.findSpecies(1).isExtant());
+        island.immigrate(42, 2.56);
+        island.speciateClado(42, 2.50);
+        assert(island.getNAllSpecies() == 6);
+        cout << island.getNSpeciesAlive() << '\n';
     }
 }
 

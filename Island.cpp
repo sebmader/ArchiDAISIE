@@ -7,6 +7,9 @@
 #include <vector>
 
 using namespace std;
+
+int Island::maxSpeciesID = 0;
+
 // ------ Island member functions ------
 
 void Island::printIsland()
@@ -15,11 +18,20 @@ void Island::printIsland()
         i.printSpec();
 }
 
-int Island::findPos(const int &ID) const    // find the position of certain species (input) in species vector
+int Island::findPos(const int &speciesID) const    // find the position of certain species (input) in species vector
 {                                                        // if not present: output = -1
     const int n_species = mvIsland.size();
-    for (int i = 0; i < n_species; ++i)
-        if (mvIsland[i].readSpID() == ID)
+    for (int i = n_species-1; i >= 0; --i)
+        if (mvIsland[i].readSpID() == speciesID)
+            return i;
+    return -1;
+}
+
+int Island::findPosAlive(const int &speciesID) const
+{
+    const int aliveSpecies = getNSpeciesAlive();
+    for (int i = 0; i < aliveSpecies; ++i)
+        if (mvIslSpecAlive[i] == speciesID)
             return i;
     return -1;
 }
@@ -33,8 +45,8 @@ const Species& Island::findSpecies(const int species_id) const
 
 int Island::createNewID()
 {
-    Archipelago::incrementMaxID();
-    return Archipelago::returnMaxID();
+    incrementMaxID();
+    return returnMaxID();
 }
 
 double Island::calculateIslRates(
@@ -115,7 +127,7 @@ void Island::immigrate(const int& iSpecID, double dTime)
     }
 }
 
-int Island::drawMigrationIsland(
+int Island::drawMigDestinationIsland(
         const int originIsland,
         vector<double>& LogGrowthTerms,
         const double& IniMigrationRate,
@@ -135,49 +147,46 @@ int Island::drawMigrationIsland(
         migrationRates[k] = max(0.0, (IniMigrationRate * n_speciesAlive * LogGrowthTerms[k])
             / n_islands*n_islands - n_islands);
     }
-
     const int destinationIsland = drawDisEvent(migrationRates, prng);
     assert(destinationIsland != originIsland);
 
     return destinationIsland;
 }
 
-void Island::speciateClado(const int& iSpecID, double dTime)
+void Island::speciateClado(const int& speciesID, double time)
 {   // island species cladogenetically diverges
     // find species
-    const int iPos = findPos(iSpecID);
-    if (iPos == -1)
-        throw logic_error("Drawn species is not present on island.. Something's wrong (Cladogenesis).\n");
+    const Species oldSpecies = findSpecies(speciesID);
     // 2 new species:
-    Species spNew1 = Species(mvIsland[iPos].readBirth(), iSpecID, createNewID());
-    Species spNew2 = Species(dTime, iSpecID, createNewID());
+    Species newSpecies1 = Species(oldSpecies.readBirth(), speciesID, createNewID());
+    Species newSpecies2 = Species(time, speciesID, createNewID());
     // parent goes extinct
-    mvIsland[iPos].goExtinct(dTime);
-    mvIsland.push_back(spNew1);
-    mvIsland.push_back(spNew2);
+    goExtinct(speciesID, time);
+    addSpecies(newSpecies1);
+    addSpecies(newSpecies2);
 }
 
-void Island::speciateAna(const int& iSpecID, double dTime)
+void Island::speciateAna(const int& speciesID, double time)
 {   // anagenetic speciation: only immigrants can undergo anagenesis !!!
     // find species
-    const int iPos = findPos(iSpecID);
-    if (iPos == -1)
-        throw logic_error("Drawn species is not present on island.. Something's wrong (Anagenesis).\n");
+    const Species oldSpecies = findSpecies(speciesID);
     // new species
-    Species spNew = Species(mvIsland[iPos].readBirth(), iSpecID, createNewID());
+    const double birthT = oldSpecies.readBirth();
+    Species newSpecies = Species(birthT, speciesID, createNewID());
     // parent goes extinct & daugther gets added to island
-    mvIsland[iPos].goExtinct(dTime);
-    mvIsland.push_back(spNew);
+    goExtinct(speciesID, time);
+    addSpecies(newSpecies);
 }
 
-void Island::goExtinct(const int& iSpecID, double dTime)
+void Island::goExtinct(const int& speciesID, double time)
 {   // species goes extinct
     // find species
-    const int iPos = findPos(iSpecID);
-    if (iPos == -1)
-        throw logic_error("Drawn species is not present on island.. Something's wrong (Extinction).\n");
-    // extinction
-    mvIsland[iPos].goExtinct(dTime);
+    const int pos = findPos(speciesID);
+    assert(pos >= 0);
+    mvIsland[pos].goExtinct(time);
+    const int posAlive = findPosAlive(speciesID);
+    mvIslSpecAlive[posAlive] = mvIslSpecAlive.back();
+    mvIslSpecAlive.pop_back();
 }
 
 void Island::addIsland(const Island &islNew)

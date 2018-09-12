@@ -23,7 +23,8 @@ public:
     double returnLogGrowth() { return 1 - static_cast<double>(mvIslSpecAlive.size()) / mIK;}   // returns the logistic growth term (1-n/K)
 
     void addSpecies(const Species& newSpecies);    // adds new species to species vector
-    int findPos(const int &ID) const;    // find the position of certain species (input) in IslandPhylo vector
+    int findPos(const int &speciesID) const;    // find the position of certain species (input) in IslandPhylo vector
+    int findPosAlive(const int &ID) const; // find position of species in AliveSpecies vector
     const Species& findSpecies(const int species_id) const;    // find the position of certain species (input) in IslandPhylo vector
     const Species& returnSpecies(const int pos) const;   // returns specific species from species vector
 
@@ -39,7 +40,7 @@ public:
     // it happens to
 
     void immigrate(const int&, double);                   // mainland species immigrates to that island
-    int drawMigrationIsland(const int originIsland, std::vector<double>&, const double&, std::mt19937_64);                     // island species migrates to other island
+    int drawMigDestinationIsland(const int, std::vector<double>&, const double&, std::mt19937_64);                     // island species migrates to other island
     void speciateClado(const int&, double);               // island species cladogenetically speciates
     void speciateAna(const int&, double);                 // island species anagenetically speciates
     void goExtinct(const int&, double);                   // island species goes extinct
@@ -51,6 +52,9 @@ public:
     void addIsland(const Island &);     // add island to THIS island
     // ### CAUTION ### : illogical! -> make this a nonmember function
 
+    static void setMaxID(const int &maxID) { maxSpeciesID = maxID; }
+    static void incrementMaxID() { ++maxSpeciesID; }
+    static int returnMaxID() { return maxSpeciesID; }
 
 private:
     std::vector<Species> mvIsland;           // phylogeny vector of species on island
@@ -58,6 +62,7 @@ private:
     std::vector<double> mvLocalRates;        // vector of rates for events PER ISLAND (5 rates: gamI, gamM, lambC, lambA, mu)
     int mIK; // Carrying capacity (should be const one day)
     // for now: mIk = mAK / iNumIslands
+    static int maxSpeciesID;
 };
 
 #endif // ARCHIDAISIE_ISLAND_H

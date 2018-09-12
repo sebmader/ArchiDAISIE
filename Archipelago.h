@@ -51,9 +51,9 @@ public:
     // ### CAUTION ###: only const& if assigning this output to a variable copies it
     void printArchi();
 
-    static void setMaxID(const int &maxID) {Archipelago::mMaxSpID = maxID;}
-    static int& returnMaxID() {return Archipelago::mMaxSpID;}
-    static void incrementMaxID() {++Archipelago::mMaxSpID;}
+    static void setMaxID(const int &maxID) {mMaxSpID = maxID;}
+    static int& returnMaxID() {return mMaxSpID;}
+    static void incrementMaxID() {++mMaxSpID;}
 
 private:
     std::vector<double> mvGlobalRates;           // vector of rates for global events (3 rates: lambC, lambA, mu)

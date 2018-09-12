@@ -4,14 +4,14 @@
 
 enum class event_type
 {
-    local_migration,
-    local_cladogenesis,
-    local_anagenesis,
-    local_extinction,
-    immigration,
-    global_anagenesis,
-    global_cladogenesis,
-    global_extinction,
+    immigration = 0,
+    local_migration = 1,
+    local_cladogenesis = 2,
+    local_anagenesis = 3,
+    local_extinction = 4,
+    global_anagenesis = 5,
+    global_cladogenesis = 6,
+    global_extinction =7,
 };
 
 bool is_global(const event_type t) noexcept;
