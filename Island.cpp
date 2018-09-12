@@ -3,8 +3,6 @@
 //
 
 #include "Island.h"
-#include "Archipelago.h"
-#include <vector>
 
 using namespace std;
 

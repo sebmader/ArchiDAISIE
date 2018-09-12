@@ -8,10 +8,8 @@
 #include <vector>
 #include <cassert>
 #include "DrawEvents.h"
+#include "MaxSpeciesID.h"
 #include "Species.h"
-//#include "Archipelago.h"
-
-//using namespace std;
 
 class Island {        // class for ONE island within archipelago
 public:

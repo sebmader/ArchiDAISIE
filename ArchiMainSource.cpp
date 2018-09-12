@@ -233,7 +233,7 @@ void test_island()
         assert(island.getNAllSpecies() == 6);
         assert(island.getNSpeciesAlive() == 3);
         Island island2(20);
-        island.drawMigDestinationIsland(51,)
+        
     }
 }
 

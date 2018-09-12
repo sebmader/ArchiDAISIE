@@ -8,8 +8,9 @@
 #include <random>
 #include <vector>
 #include <iostream>
-#include <random>
 #include "DrawEvents.h"
+#include "MaxSpeciesID.h"
+#include "event_type.h"
 #include "Species.h"
 #include "Island.h"
 
