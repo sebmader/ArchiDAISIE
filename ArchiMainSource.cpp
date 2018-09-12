@@ -35,14 +35,13 @@ using namespace std;
 
 // ------------ ArchiDAISIE FUNCTIONS ------------ //
 
-Archipelago ArchiDAISIE_core(
-    const double island_age,
-    const int n_mainland_species,
-    const vector<double> &vIniPars,
-    const int archipelago_carrying_capacity,
-    const int n_islands,
-    mt19937_64 &prng
-)
+Archipelago ArchiDAISIE_core(const double island_age,
+        const int n_mainland_species,
+        const vector<double>& vIniPars,
+        const int archipelago_carrying_capacity,
+        const int n_islands,
+        mt19937_64& prng,
+        SpeciesID& maxSpeciesID)
 {
     try {
         // initialise Archipelago data frame and set time and max species ID to initial values
@@ -62,7 +61,7 @@ Archipelago ArchiDAISIE_core(
         for (;;) {
 
             // calculate the rates of events
-            vector<double> pLAndGRates = aArchi.calculateAllRates(vIniPars, (int) n_mainland_species, n_islands);
+            vector<double> pLAndGRates = aArchi.calculateAllRates(vIniPars, n_mainland_species, n_islands);
 
             // draw time interval to next event
             const double dSumRates = pLAndGRates[0] + pLAndGRates[1];
@@ -77,10 +76,10 @@ Archipelago ArchiDAISIE_core(
                 break;
 
             // sample which event happens
-            vector<int> vHappening = aArchi.sampleNextEvent(pLAndGRates, prng, (int) n_mainland_species);
+            vector<int> vHappening = aArchi.sampleNextEvent(pLAndGRates, prng, n_mainland_species);
 
             // update the phylogeny
-            aArchi.updateArchi(vHappening, vIniPars[1], prng, dTime);
+            aArchi.updateArchi(vHappening, vIniPars[1], prng, dTime, maxSpeciesID);
         }
         return aArchi;
     }
@@ -91,8 +90,11 @@ Archipelago ArchiDAISIE_core(
     }
 }
 
-vector<vector<Species> > ArchiDAISIE(const double &dAge, const int iMainSp_n, vector<double> &vIniPars,
-                                        const unsigned int &iNumIslands, const int iReplicates)
+vector<vector<Species> > ArchiDAISIE(const double &dAge,
+        const int iMainSp_n,
+        vector<double> &vIniPars,
+        const unsigned int &iNumIslands,
+        const int iReplicates)
 {   // ### CAUTION ### : output unclear !!
     try {
         // check given parameters
@@ -134,10 +136,14 @@ vector<vector<Species> > ArchiDAISIE(const double &dAge, const int iMainSp_n, ve
             // initialise intermediate archipelago data frame
             Archipelago aAggregArchi(iNumIslands, iAK);
 
+            // initialise max species ID
+            SpeciesID maxSpeciesID(iMainSp_n);
+
             // run simulation for each mainland sp. seperately --> clade-specific carrying capacity
             for (int j = 0; j < iMainSp_n; ++j) {
 
-                aAggregArchi.addArchi(ArchiDAISIE_core(dAge, 1, vIniPars, iAK, iNumIslands, prng));
+                aAggregArchi.addArchi(ArchiDAISIE_core(dAge, 1, vIniPars,
+                        iAK, iNumIslands, prng, maxSpeciesID));
                 // ### CAUTION: ### :  have to implement that mainland species have different IDs (ID = j)
                     // or: make maxID static so that it increments for all Archipelagos
                     // (shared variable among all objects of class)
@@ -206,19 +212,19 @@ void test_island()
     {
         Island island(10);
         const int n_mainlandSpecies = 50;
-        island.setMaxID(n_mainlandSpecies);
+        SpeciesID maxSpeciesID(n_mainlandSpecies);
         island.immigrate(1, 3.14);
         island.immigrate(42, 3.01);
         island.goExtinct(42, 2.95);
-        assert(!island.findSpecies(42).isExtant());
-        island.speciateAna(1, 2.80);
-        assert(island.getNAllSpecies()==3);
-        assert(island.getNSpeciesAlive()==1);
-        assert(!island.findSpecies(1).isExtant());
+        island.speciateAna(1, 2.80, maxSpeciesID);
+        assert(maxSpeciesID.getMaxSpeciesID()
+            == n_mainlandSpecies+1);
         island.immigrate(42, 2.56);
-        island.speciateClado(42, 2.50);
+        island.speciateClado(42, 2.50, maxSpeciesID);
+        assert(maxSpeciesID.getMaxSpeciesID()
+                == n_mainlandSpecies+2);
         assert(island.getNAllSpecies() == 6);
-        cout << island.getNSpeciesAlive() << '\n';
+        assert(island.getNSpeciesAlive() == 3);
     }
 }
 
@@ -231,8 +237,8 @@ int main() {
     mt19937_64 prng;
     vector<double> vIni = vPars;
     vIni.pop_back();
-    Archipelago::setMaxID(50);
-    Archipelago arch = ArchiDAISIE_core(2, 50, vIni, static_cast<int>(vPars[8]), 3, prng);
+    SpeciesID maxSpeciesID(0);
+    Archipelago arch = ArchiDAISIE_core(2, 50, vIni, static_cast<int>(vPars[8]), 3, prng, maxSpeciesID);
 
     return 0;
 }

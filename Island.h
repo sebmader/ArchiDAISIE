@@ -8,17 +8,15 @@
 #include <vector>
 #include <cassert>
 #include "DrawEvents.h"
+#include "SpeciesID.h"
 #include "Species.h"
-//#include "Archipelago.h"
-
-//using namespace std;
 
 class Island {        // class for ONE island within archipelago
 public:
     explicit Island(const int k) : mIK{k} {assert(k >= 0);} // island constructor based on island-wide K
 
     int getCarryingCap() const noexcept { return mIK; }
-    int getNSpeciesAlive() const noexcept {return static_cast<int>(mvIslSpecAlive.size());} // returns number of species alive
+    int getNSpeciesAlive() const; // returns number of species alive
     int getNAllSpecies() const noexcept { return this->mvIsland.size(); }
     double returnLogGrowth() { return 1 - static_cast<double>(mvIslSpecAlive.size()) / mIK;}   // returns the logistic growth term (1-n/K)
 
@@ -41,8 +39,8 @@ public:
 
     void immigrate(const int&, double);                   // mainland species immigrates to that island
     int drawMigDestinationIsland(const int, std::vector<double>&, const double&, std::mt19937_64);                     // island species migrates to other island
-    void speciateClado(const int&, double);               // island species cladogenetically speciates
-    void speciateAna(const int&, double);                 // island species anagenetically speciates
+    void speciateClado(const int&, double, SpeciesID maxSpeciesID);               // island species cladogenetically speciates
+    void speciateAna(const int&, double, SpeciesID& maxSpeciesID);                 // island species anagenetically speciates
     void goExtinct(const int&, double);                   // island species goes extinct
 
     const std::vector<Species>& returnIsland() const { return mvIsland; }    // return island vector of species

@@ -2,8 +2,9 @@
 // Created by Bastophiles on 06.09.2018.
 //
 
+
 #include "Archipelago.h"
-#include "event_type.h"
+
 using namespace std;
 
 int Archipelago::mMaxSpID = 0;
@@ -137,32 +138,8 @@ int Archipelago::createNewID()
     return returnMaxID();
 }
 
-// global updates:
-void Archipelago::goGlobalExtinct(const int& iSpecID, double dTime)
-{   // one species (input) goes exinct on all islands it inhabits
-    vector<int> vOnIslands = findIsl(iSpecID);
-    if (vOnIslands.empty())
-        throw logic_error("Drawn species is not present on any island. Something's wrong.. (global extinction)\n");
-    for (auto& Isl : vOnIslands) {
-        mvArchipel[Isl].goExtinct(iSpecID, dTime);
-    }
-}
 
-void Archipelago::speciateGlobalAna(const int& iSpecID, double dTime)
-{   // species (input) globally anagenetically speciates -> whole archipelago population diverges from mainland sp
-    // can only happen to immigrant species
-    vector<int> vOnIslands = findIsl(iSpecID);  // vector with islandIDs (position in mvArchipel) where species is present
-    if (vOnIslands.empty())
-        throw logic_error("Drawn species is not present on any island. Something's wrong.. (global anagenesis)\n");
-    // daughter species
-    const int iOnePos = mvArchipel[vOnIslands[0]].findPos(iSpecID);
-    const double dBirthT = mvArchipel[vOnIslands[0]].returnSpecies(iOnePos).readBirth();
-    Species spNew(dBirthT, iSpecID, createNewID());
-    for (auto& iIsl : vOnIslands) {
-        mvArchipel[iIsl].goExtinct(iSpecID, dTime);
-        mvArchipel[iIsl].addSpecies(spNew);
-    }
-}
+// global updates:
 
 void Archipelago::speciateGlobalClado(const int& iSpecID, mt19937_64 prng, double dTime)
 {   // species (input) globally cladogenetically speciates -> archipelago population splits into two new species
@@ -193,46 +170,71 @@ void Archipelago::speciateGlobalClado(const int& iSpecID, mt19937_64 prng, doubl
     }
 }
 
-void Archipelago::updateArchi(
-  const vector<int>& vHappening,
-  const double& dIniMigRate,
-  mt19937_64 prng,
-  double dTime
-)
+void Archipelago::speciateGlobalAna(const int& iSpecID, double dTime)
+{   // species (input) globally anagenetically speciates -> whole archipelago population diverges from mainland sp
+    // can only happen to immigrant species
+    vector<int> vOnIslands = findIsl(iSpecID);  // vector with islandIDs (position in mvArchipel) where species is present
+    if (vOnIslands.empty())
+        throw logic_error("Drawn species is not present on any island. Something's wrong.. (global anagenesis)\n");
+    // daughter species
+    const int iOnePos = mvArchipel[vOnIslands[0]].findPos(iSpecID);
+    const double dBirthT = mvArchipel[vOnIslands[0]].returnSpecies(iOnePos).readBirth();
+    Species spNew(dBirthT, iSpecID, createNewID());
+    for (auto& iIsl : vOnIslands) {
+        mvArchipel[iIsl].goExtinct(iSpecID, dTime);
+        mvArchipel[iIsl].addSpecies(spNew);
+    }
+}
+
+void Archipelago::goGlobalExtinct(const int& iSpecID, double dTime)
+{   // one species (input) goes exinct on all islands it inhabits
+    vector<int> vOnIslands = findIsl(iSpecID);
+    if (vOnIslands.empty())
+        throw logic_error("Drawn species is not present on any island. Something's wrong.. (global extinction)\n");
+    for (auto& Isl : vOnIslands) {
+        mvArchipel[Isl].goExtinct(iSpecID, dTime);
+    }
+}
+
+void Archipelago::updateArchi(const vector<int>& happening,
+        const double& iniMigrationRate,
+        mt19937_64 prng,
+        double time,
+        SpeciesID& maxSpeciesID)
 {   // based on the outcome of sampleNextEvent-function it will update the data frame(s)
     // order of input: event [0], species [1], (island [2])
     // order of parameter indexes (Event): gam_i (0), gam_m (1), lamb_cl (2), lamb_al (3), mu_l (4), lamb_cg (5), lamb_ag (6), mu_g (7)
-    assert(vHappening.size() == 2 || vHappening.size() == 3);
+    assert(happening.size() == 2 || happening.size() == 3);
 
-    const event_type iEvent = static_cast<event_type>(vHappening[0]);
-    const int speciesID = vHappening[1];
+    const event_type iEvent = static_cast<event_type>(happening[0]);
+    const int speciesID = happening[1];
 
-    if (vHappening.size() == 2) {   // -> global
+    if (happening.size() == 2) {   // -> global
         //assert(iEvent <= 7 && iEvent >= 5);
         assert(is_global(iEvent));
         switch(iEvent) {
             case event_type::global_cladogenesis:
-                speciateGlobalClado(speciesID, prng, dTime);
+                speciateGlobalClado(speciesID, prng, time);
                 break;
             case event_type::global_anagenesis:
-                speciateGlobalAna(speciesID, dTime);
+                speciateGlobalAna(speciesID, time);
                 break;
             case event_type::global_extinction:
-                goGlobalExtinct(speciesID, dTime);
+                goGlobalExtinct(speciesID, time);
                 break;
             default:
                 throw logic_error("Event is not global, even though .size() == 2.\n");
         }
     }
-    else if (vHappening.size() == 3) {  // -> local
+    else if (happening.size() == 3) {  // -> local
         assert(is_local(iEvent));
-        const int isl = vHappening[2];
+        const int isl = happening[2];
         switch(iEvent)
         {
             case event_type::immigration:
             {
                 assert(!"TODO");
-                mvArchipel[isl].immigrate(speciesID, dTime);
+                mvArchipel[isl].immigrate(speciesID, time);
                 break;
             }
             case event_type::local_migration:
@@ -244,7 +246,7 @@ void Archipelago::updateArchi(
                     vLogs[j] = mvArchipel[j].returnLogGrowth();
                 }
                 int destinationIsland = mvArchipel[isl].drawMigDestinationIsland(speciesID,
-                        vLogs, dIniMigRate, prng);
+                        vLogs, iniMigrationRate, prng);
                     // output: position of island in mvArchipel equals island ID
                 const Species newSpecies = mvArchipel[isl].findSpecies(speciesID);
                 const int pos = mvArchipel[destinationIsland].findPos(speciesID);
@@ -255,13 +257,13 @@ void Archipelago::updateArchi(
                 break;
             }
             case event_type::local_cladogenesis:
-                mvArchipel[isl].speciateClado(speciesID, dTime);
+                mvArchipel[isl].speciateClado(speciesID, time, maxSpeciesID);
                 break;
             case event_type::local_anagenesis:
-                mvArchipel[isl].speciateAna(speciesID, dTime);
+                mvArchipel[isl].speciateAna(speciesID, time, maxSpeciesID);
                 break;
             case event_type::local_extinction:
-                mvArchipel[isl].goExtinct(speciesID, dTime);
+                mvArchipel[isl].goExtinct(speciesID, time);
                 break;
             default:
                 throw logic_error("Event is not local, even though .size() == 3.\n");
