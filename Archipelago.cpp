@@ -1,5 +1,5 @@
 //
-// Created by Bastophiles on 06.09.2018.
+// Created by Sebastian Mader on 06.09.2018.
 //
 
 
@@ -7,17 +7,20 @@
 
 using namespace std;
 
-Archipelago::Archipelago(const int &nI, const int &AK)  // constructor of archipelago based on number
-{                                                            // of islands and archipelago-wide K
-    assert(nI >= 0); assert(AK >= 0);
-    if(AK % nI != 0)
+Archipelago::Archipelago(const int &n_islands, const int &archiCarryingCap)
+    // constructor of archipelago based on number
+{   // of islands and archipelago-wide K
+    assert(n_islands >= 0); assert(archiCarryingCap >= 0);
+    if(archiCarryingCap % n_islands != 0)
         throw logic_error("The carrying capacity needs to be dividable"
-                          " without remainder by the number of islands.");
-    // ### CAUTION ### : let the archipelago-wide K be a double ??
-    if (nI == 0 || AK == 0)
-        throw string("You are creating an archipelago without islands or a carrying capacity of zero.");
-    mvArchipel = vector<Island>((unsigned) nI, Island(AK / nI));
-    mAK = AK;
+                          " by the number of islands without remainder.\n");
+    // ### CAUTION ### : let the archipelago-wide K be a floating point ??
+    if (n_islands == 0 || archiCarryingCap == 0)
+        throw string("You are creating an archipelago without islands"
+                     " and/or with a carrying capacity of zero.\n");
+    mvArchipel = vector<Island>((unsigned) n_islands,
+            Island(archiCarryingCap / n_islands));
+    mAK = archiCarryingCap;
 }
 
 /*
@@ -28,7 +31,8 @@ void Archipelago::updateAliveSpec()
         if(!i.returnIslSpecAlive().empty()) {
             const vector<int>& vIslTmpVec = i.returnIslSpecAlive();
             vArchiTmpVec.reserve(vArchiTmpVec.size() + vIslTmpVec.size());
-            vArchiTmpVec.insert(vArchiTmpVec.end(), vIslTmpVec.begin(), vIslTmpVec.end());
+            vArchiTmpVec.insert(vArchiTmpVec.end(), vIslTmpVec.begin(),
+                vIslTmpVec.end());
         }
     }
     // delete duplicates
@@ -43,9 +47,10 @@ void Archipelago::updateAliveSpec()
 }
 */
 
-vector<int> Archipelago::findIsl(const int &ID) const    // find the island(s) where certain species (input) is within archipelago
-                                        // returns vector with island IDs (spot in mvArchipel vector)
-// ### CAUTION ### : maybe vector<pairs<int, int> > with island ID and position ??
+vector<int> Archipelago::findIsl(const int &ID) const
+// find the island(s) where certain species (input) is within archipelago
+// returns vector with island IDs (spots in mvArchipel vector)
+// ### CAUTION ### : maybe vector<pairs<int, int> > with island ID and position?
 {
     vector<int> vLocations;
     const int n_islands = mvArchipel.size();
@@ -56,35 +61,41 @@ vector<int> Archipelago::findIsl(const int &ID) const    // find the island(s) w
     return vLocations;
 }
 
-vector<double> Archipelago::calculateAllRates(const vector<double> &vIniPars, const int &iM, const int &iNumIsl)
-{   // the rates for each event on each island are calculated and saved within the island-class
-    // order of output: first -> global, second -> local
-    // order of parameters (input): gam_i (0), gam_m (1), lamb_cl (2), lamb_al (3), mu_l (4), lamb_cg (5), lamb_ag (6), mu_g (7)
+vector<double> Archipelago::calculateAllRates(
+        const vector<double> &initialParameters,
+        const int &n_mainlandSpecies,
+        const int &n_islands)
+{   // the rates for each event (local/global) are calculated and saved
+    // order of output (vector.size()=2): first -> global, second -> local
+    // order of parameters (input): gam_i (0), gam_m (1), lamb_cl (2),
+        // lamb_al (3), mu_l (4), lamb_cg (5), lamb_ag (6), mu_g (7)
 
-    assert(vIniPars.size() == 8);
+    assert(initialParameters.size() == 8);
     // assign initial parameter values to variables
-    const double dIniLamb_Cg = vIniPars[5];
-    const double dIniLamb_Ag = vIniPars[6];
-    const double dIniMu_g = vIniPars[7];
-    const vector<double> vIslPars = { vIniPars[0], vIniPars[1], vIniPars[2], vIniPars[3], vIniPars[4] };
+    const double initialGlobalClado = initialParameters[5];
+    const double initialGlobalAna = initialParameters[6];
+    const double initialGlobalExtinct = initialParameters[7];
+    const vector<double> initialIslandPars = { initialParameters[0],
+               initialParameters[1], initialParameters[2],
+               initialParameters[3], initialParameters[4] };
     // order of island parameter vector: gam_i, gam_m, lamb_cl, lamb_al, mu_l
         // for giving it to the island rates calculation function
 
     // count extant species on archipelago, for global rates
-    int iAliveSpecies = getNSpeciesAlive();
+    int n_speciesAlive = getNSpeciesAlive();
 
     // count immigrant species; only ones that can undergo anagenesis
-    int iImmiAlive = 0;
+    int n_immigrantsAlive = 0;
     for (auto& isl : mvArchipel) {
         vector<Species> tmpIsland = isl.returnIsland();
         for (auto& species : tmpIsland)
-            if (species.readSpID() <= iM)
-                ++iImmiAlive;
+            if (species.readSpID() <= n_mainlandSpecies)
+                ++n_immigrantsAlive;
     }
     // calculate global rates
-    const double dLamb_Cg = max(0.0, dIniLamb_Cg * iAliveSpecies * (1 - (static_cast<double>(iAliveSpecies)/mAK)));   // global cladogenesis
-    const double dLamb_Ag = max(0.0, dIniLamb_Ag * iImmiAlive);    // global anagenesis
-    const double dMu_g = max(0.0, dIniMu_g * iAliveSpecies);  // global extinction
+    const double dLamb_Cg = max(0.0, initialGlobalClado * n_speciesAlive * (1 - (static_cast<double>(n_speciesAlive)/mAK)));   // global cladogenesis
+    const double dLamb_Ag = max(0.0, initialGlobalAna * n_immigrantsAlive);    // global anagenesis
+    const double dMu_g = max(0.0, initialGlobalExtinct * n_speciesAlive);  // global extinction
 
     const double dSumGlobal = dLamb_Cg + dLamb_Ag + dMu_g;
     mvGlobalRates = { dLamb_Cg, dLamb_Ag, dMu_g };
@@ -98,7 +109,7 @@ vector<double> Archipelago::calculateAllRates(const vector<double> &vIniPars, co
     double dSumLocal = 0;
     for (auto &i : mvArchipel) {
         double dThisMigLogGrowth = dSumLogGrowth - i.returnLogGrowth(); // sum of log-growth of all except THIS island
-        dSumLocal += i.calculateIslRates(vIslPars, iM, iNumIsl, dThisMigLogGrowth);
+        dSumLocal += i.calculateIslRates(initialIslandPars, n_mainlandSpecies, n_islands, dThisMigLogGrowth);
     }
 
     vector<double> pSums = { dSumGlobal, dSumLocal };
@@ -201,7 +212,7 @@ void Archipelago::goGlobalExtinct(const int& iSpecID, double dTime)
     }
 }
 
-void Archipelago::updateArchi(const vector<int>& happening,
+void Archipelago::doNextEvent(const vector<int>& happening,
         const double& iniMigrationRate,
         mt19937_64 prng,
         double time,

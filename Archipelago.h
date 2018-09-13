@@ -23,7 +23,7 @@ public:
     int getNSpeciesAlive();
     std::vector<int> findIsl(const int &) const;    // find the island(s) where certain species (input) is within archipelago
 
-    std::vector<double> calculateAllRates(const std::vector<double> &, const int &iM, const int &iNumIsl);    // calculate per-island rates and global rates
+    std::vector<double> calculateAllRates(const std::vector<double> &, const int &n_mainlandSpecies, const int &n_islands);    // calculate per-island rates and global rates
     // and save them in LocalRates and GlobalRates vector, resp.
     // Also, output of sum of both global (.first) and local (.second) rates
     std::vector<int> sampleNextEvent(const std::vector<double> &, std::mt19937_64, const int &);   // draw next event; output -> {event(0-7), species(ID)(,island(0-i))}
@@ -35,7 +35,7 @@ public:
     void speciateGlobalAna(const int&, double time, SpeciesID& maxSpeciesID);           // island species collectively (on all islands) diverges from mainland ancestor
     void goGlobalExtinct(const int&, double dTime);             // island species goes extinct on all islands it occures on
 
-    void updateArchi(const std::vector<int>&, const double&, std::mt19937_64, double, SpeciesID& maxSpeciesID); // switch-statement that calls event functions
+    void doNextEvent(const std::vector<int>&, const double&, std::mt19937_64, double, SpeciesID& maxSpeciesID); // switch-statement that calls event functions
     // updates the ArchiPhylo vector
     // LOCAL events indicated by 3 elements: event ([0]), species ([1]), island ([2])
     // GLOBAL events indicated by 2 elements: event ([0]), species ([1])

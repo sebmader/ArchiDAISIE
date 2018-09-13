@@ -35,51 +35,48 @@ using namespace std;
 
 // ------------ ArchiDAISIE FUNCTIONS ------------ //
 
-Archipelago ArchiDAISIE_core(const double island_age,
-        const int n_mainland_species,
-        const vector<double>& vIniPars,
-        const int archipelago_carrying_capacity,
+Archipelago ArchiDAISIE_core(const double islandAge,
+        const int n_mainlandSpecies,
+        const vector<double>& initialParameters,
+        const int archiCarryingCap,
         const int n_islands,
         mt19937_64& prng,
         SpeciesID& maxSpeciesID)
 {
     try {
-        // initialise Archipelago data frame and set time and max species ID to initial values
-        Archipelago aArchi(n_islands, archipelago_carrying_capacity);
-        double dTime = island_age;
-
-        // initialise a mainland species vector to sample from for immigration
-            // PROBABLY: not even needed; you can sample from uniform distribution of 1 to M
-            // and number drawn = species ID ..?
-/*        vector<int> vMainlandSp(M);
-        for (unsigned i = 0; i < vMainlandSp.size(); ++i) {
-            vMainlandSp[i] = i + 1;
-        }*/
-
+        // initialise Archipelago data frame and
+        // set time to island age (= emergence time of island)
+        Archipelago aArchi(n_islands, archiCarryingCap);
+        double timeNow = islandAge;
 
         // start looping through time
         for (;;) {
 
             // calculate the rates of events
-            vector<double> pLAndGRates = aArchi.calculateAllRates(vIniPars, n_mainland_species, n_islands);
+            vector<double> localGlobalRates = aArchi.calculateAllRates(
+                    initialParameters, n_mainlandSpecies, n_islands);
+            assert(localGlobalRates.size() == 2);
 
             // draw time interval to next event
-            const double dSumRates = pLAndGRates[0] + pLAndGRates[1];
-            if (dSumRates <= 0)
-                throw runtime_error("Event rate is zero or below. No event can be drawn.\n");
+            const double sumOfRates = localGlobalRates[0] + localGlobalRates[1];
+            if (sumOfRates <= 0)
+                throw runtime_error("Event rate is zero or below. "
+                                    "No event can be drawn.\n");
 
             // draw time to next event and take it off the actual time
-            exponential_distribution<double> waitingTime(dSumRates);
-            const double dDT = waitingTime(prng);
-            dTime -= dDT;
-            if (dTime <= 0)     // when dTime passes the present, stop simulation
+            exponential_distribution<double> waitingTime(sumOfRates);
+            const double dT = waitingTime(prng);
+            timeNow -= dT;
+            if (timeNow <= 0)  // when timeNow passes the present, stop simulation
                 break;
 
             // sample which event happens
-            vector<int> vHappening = aArchi.sampleNextEvent(pLAndGRates, prng, n_mainland_species);
+            vector<int> vHappening = aArchi.sampleNextEvent(localGlobalRates,
+                    prng, n_mainlandSpecies);
 
             // update the phylogeny
-            aArchi.updateArchi(vHappening, vIniPars[1], prng, dTime, maxSpeciesID);
+            aArchi.doNextEvent(vHappening, initialParameters[1], prng, timeNow,
+                    maxSpeciesID);
         }
         return aArchi;
     }
@@ -90,60 +87,61 @@ Archipelago ArchiDAISIE_core(const double island_age,
     }
 }
 
-vector<vector<Species> > ArchiDAISIE(const double &dAge,
-        const int iMainSp_n,
-        vector<double> &vIniPars,
-        const unsigned int &iNumIslands,
-        const int iReplicates)
+vector<vector<Species> > ArchiDAISIE(const double &islandAge,
+        const int n_mainlandSpecies,
+        vector<double> &initialParameters,
+        const unsigned int &n_islands,
+        const int replicates)
 {   // ### CAUTION ### : output unclear !!
     try {
         // check given parameters
-        if (dAge <= 0)
+        if (islandAge <= 0)
             throw logic_error("Age has to be higher than zero.");
-        if (iMainSp_n <= 0)
+        if (n_mainlandSpecies <= 0)
             throw logic_error("Simulation needs at least one mainland species.");
-        if(iNumIslands <= 0)
+        if(n_islands <= 0)
             throw logic_error("Simulation needs at least one island.");
-        if(vIniPars.size() != 9)
+        if(initialParameters.size() != 9)
             throw logic_error("Provide 9 parameter values.");
-        if(vIniPars[0] <= 0)
-            throw logic_error("Rate of colonisation is zero or below. The island cannot be colonised.");
+        if(initialParameters[0] <= 0)
+            throw logic_error("Rate of colonisation is zero or below."
+                              " The island cannot be colonised.");
 
         // declare and seed PRNG with system clock
         mt19937_64 prng;
 
         chrono::high_resolution_clock::time_point tp =
                 chrono::high_resolution_clock::now();
-        const unsigned seed = static_cast<unsigned>(tp.time_since_epoch().count());
+        const unsigned seed = static_cast<unsigned>(
+                tp.time_since_epoch().count());
         // ### CAUTION: ###   should print/output seed here
         prng.seed(seed);
 
-        // order of parameters (input): gam_i, gam_m, lamb_cl, lamb_al, mu_l, lamb_cg, lamb_ag, mu_g, ArchiK
-        const int iAK = static_cast<int>(vIniPars[8]);
-        vIniPars.pop_back();
+        // order of parameters (input):
+        // gam_i, gam_m, lamb_cl, lamb_al, mu_l,
+        // lamb_cg, lamb_ag, mu_g, archi-wide K
+        const int archiCarryingCap = static_cast<int>(initialParameters[8]);
+        initialParameters.pop_back();
 
         // initialise main data frame
-        vector< vector<Species> > vFinalIslandReplicates(iReplicates);
+        vector< vector<Species> > vFinalIslandReplicates(replicates);
         // ### CAUTION ### : need to implement the exact same output as DAISIE_sim
         // how to combine the multiple data types? and which types btw?
 
         // loop through replicates
-        for (int i = 1; i <= iReplicates; ++i) {
+        for (int i = 1; i <= replicates; ++i) {
 
             // initialise intermediate archipelago data frame
-            Archipelago aAggregArchi(iNumIslands, iAK);
+            Archipelago aAggregArchi(n_islands, archiCarryingCap);
 
             // initialise max species ID
-            SpeciesID maxSpeciesID(iMainSp_n);
+            SpeciesID maxSpeciesID(n_mainlandSpecies);
 
-            // run simulation for each mainland sp. seperately --> clade-specific carrying capacity
-            for (int j = 0; j < iMainSp_n; ++j) {
+            // run simulation for each mainland sp. separately -> clade-specific carrying capacity
+            for (int j = 0; j < n_mainlandSpecies; ++j) {
 
-                aAggregArchi.addArchi(ArchiDAISIE_core(dAge, 1, vIniPars,
-                        iAK, iNumIslands, prng, maxSpeciesID));
-                // ### CAUTION: ### :  have to implement that mainland species have different IDs (ID = j)
-                    // or: make maxID static so that it increments for all Archipelagos
-                    // (shared variable among all objects of class)
+                aAggregArchi.addArchi(ArchiDAISIE_core(islandAge, 1, initialParameters,
+                        archiCarryingCap, n_islands, prng, maxSpeciesID));
             }
             vFinalIslandReplicates[i] = aAggregArchi.aggregateArchi();
         }
@@ -236,7 +234,8 @@ int main() {
     vector<double> vIni = vPars;
     vIni.pop_back();
     SpeciesID maxSpeciesID(0);
-    Archipelago arch = ArchiDAISIE_core(2, 50, vIni, static_cast<int>(vPars[8]), 3, prng, maxSpeciesID);
+    Archipelago arch = ArchiDAISIE_core(2, 50, vIni, static_cast<int>(vPars[8]),
+            3, prng, maxSpeciesID);
 
     return 0;
 }
