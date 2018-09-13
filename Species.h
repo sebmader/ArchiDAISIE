@@ -22,7 +22,8 @@ public:
     const double& readExtinct() const noexcept {return dExtinctT;}
 
     void printSpec() {
-        std::cout << dBirthT << '\t' << iParentId << '\t' << iSpecId << '\t' << dExtinctT << std::endl;
+        std::cout << dBirthT << '\t' << iParentId << '\t'
+                  << iSpecId << '\t' << dExtinctT << '\n';
     }
 
 private:

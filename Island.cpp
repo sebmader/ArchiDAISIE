@@ -11,15 +11,17 @@ using namespace std;
 
 void Island::printIsland()
 {
-    for (auto &i : mvIsland)
+    for (auto &i : mIsland)
         i.printSpec();
+    cout << '\n';
 }
 
-int Island::findPos(const int &speciesID) const    // find the position of certain species (input) in species vector
-{                                                        // if not present: output = -1
-    const int n_species = mvIsland.size();
+int Island::findPos(const int &speciesID) const
+{   // find the position of certain species (input) in species vector
+        // if not present: output = -1
+    const int n_species = static_cast<int>(mIsland.size());
     for (int i = n_species-1; i >= 0; --i)
-        if (mvIsland[i].readSpID() == speciesID)
+        if (mIsland[i].readSpID() == speciesID)
             return i;
     return -1;
 }
@@ -34,73 +36,87 @@ int Island::findPosAlive(const int &speciesID) const
 }
 */
 
-const Species& Island::findSpecies(const int species_id) const
+const Species& Island::findSpecies(const int speciesID) const
 {
-    const int index = findPos(species_id);
+    const int index = findPos(speciesID);
     assert(index >= 0);
-    return mvIsland[index];
+    return mIsland[index];
 }
 
 int Island::getNSpeciesAlive() const
 {
     int extantSpeciesCounter = 0;
-    for (auto& species : mvIsland) {
+    for (auto& species : mIsland) {
         if (species.isExtant())
             ++extantSpeciesCounter;
     }
     return extantSpeciesCounter;
 }
 
-double Island::calculateIslRates(const std::vector<double>& islandParameters,
+double Island::calculateIslRates(
+        const std::vector<double>& islandParameters,
         const int& n_mainlandSpecies,
         const int& n_islands,
-        const double& dThisMLG)
+        const double& sumLogGrowthWOthisIsl)
 {   // calculates the per-island rates of events, outputs them (for immidiate use)
     // and saves them within the island-class; input -> initial parameters
     // order of island parameter vector: gam_i, gam_m, lamb_cl, lamb_al, mu_l
 
     // calculate the per-island rates
     const int n_alive = getNSpeciesAlive();
-    int n_immiSpecies = 0;    // number of immigrant species -> only ones that can undergo anagenesis
-    for (auto& g : mvIsland)
+    int n_immiSpecies = 0;    // number of immigrant species
+                              // -> only ones that can undergo anagenesis
+    for (auto& g : mIsland)
         if (g.readSpID() <= 1000)
             ++n_immiSpecies;
-    const double dGam_I = max(0.0, (islandParameters[0] * n_mainlandSpecies * (1 - static_cast<double>(n_alive) / mIK)) / n_islands);  // immigration to specific island
-    const double dGam_M = max(0.0, (islandParameters[1] * n_alive * dThisMLG) / n_islands*n_islands - n_islands); // migration from this island to all other islands
-    // all other islands: '/iNumIsl', one-way: '/iNumIsl^2 - iNumIsl' -> ### CAUTION ### : really ???
-    const double dLamb_Cl = max(0.0, islandParameters[2] * n_alive * (1 - (static_cast<double>(n_alive) / mIK))); // local cladogenesis
-    const double dLamb_Al = max(0.0, islandParameters[3] * n_immiSpecies);   // local anagenesis
-    const double dMu_l = max(0.0, islandParameters[4] * n_alive);  // local extinction
+
+    // immigration to specific island:
+    const double immigrationRate = max(0.0, islandParameters[0] * n_mainlandSpecies
+            * (1 - static_cast<double>(n_alive) / mIslandK) / n_islands);
+    // migration from this island to all other islands:
+    const double migrationRate = max(0.0, (islandParameters[1] * n_alive
+            * sumLogGrowthWOthisIsl) / n_islands*n_islands - n_islands);
+        // ### CAUTION ### : all other islands: '/iNumIsl',
+                // one-way: '/iNumIsl^2 - iNumIsl' ???
+    // local cladogenesis:
+    const double localCladoRate = max(0.0, islandParameters[2] * n_alive
+            * (1 - (static_cast<double>(n_alive) / mIslandK)));
+    // local anagenesis:
+    const double localAnaRate = max(0.0, islandParameters[3] * n_immiSpecies);
+    // local extinction:
+    const double localExtinctRate = max(0.0, islandParameters[4] * n_alive);
 
     // save in rate vector
-    mvLocalRates = { dGam_I, dGam_M, dLamb_Cl, dLamb_Al, dMu_l };
-
-    double dSumIslRates = dGam_I + dGam_M + dLamb_Cl + dLamb_Al + dMu_l;
-
-    return dSumIslRates;
+    mLocalRates = { immigrationRate, migrationRate, localCladoRate,
+                                   localAnaRate, localExtinctRate };
+    double sumPerIslRates = immigrationRate + migrationRate + localCladoRate
+                                         + localAnaRate + localExtinctRate;
+    return sumPerIslRates;
 }
 
 double Island::extractSumOfRates() const noexcept
 {
     double sumRates = 0;
-    for (double rate : mvLocalRates)
+    for (double rate : mLocalRates)
         sumRates += rate;
     return sumRates;
 }
 
-vector<int> Island::sampleLocalEvent(mt19937_64 prng, const int &n_mainlandSpecies)
+vector<int> Island::sampleLocalEvent(mt19937_64 prng,
+        const int &n_mainlandSpecies)
 {   // samples local event and species it happens to on THIS island
     // draw event
-    const int event = drawDisEvent(mvLocalRates, prng);
+    const int event = drawDisEvent(mLocalRates, prng);
     // draw species
     int speciesID = drawUniEvent(1, n_mainlandSpecies, prng); // in case of immigration
     if (event) {   // if not immigration (1-4) -> SpecID from extant island species
         vector<int> aliveSpecies;
-        for(auto& species : mvIsland) {
+        for(auto& species : mIsland) {
             if (species.isExtant())
                 aliveSpecies.push_back(species.readSpID());
         }
-        const int pos = drawUniEvent(0, static_cast<int>(aliveSpecies.size()), prng);
+        const int pos = drawUniEvent(0,
+                static_cast<int>(aliveSpecies.size()), prng);
         speciesID = aliveSpecies[pos];
     }
     // return event and specID
@@ -112,19 +128,21 @@ vector<int> Island::sampleLocalEvent(mt19937_64 prng, const int &n_mainlandSpeci
 // local updates:
 void Island::immigrate(const int& speciesID, double time)
 {   // immigration from the mainland to THIS island
-    const int iPos = findPos(speciesID);  // check if species is already present on island
+    const int iPos = findPos(speciesID);  // check if species is
+                                          // already present on island
     Species newSpecies(time, speciesID, speciesID);
     if (iPos >= 0) {  // if present
-        assert(iPos < static_cast<int>(mvIsland.size()));
-        if (!mvIsland[iPos].isExtant()) {   // if extinct
-            mvIsland.push_back(newSpecies);
+        assert(iPos < static_cast<int>(mIsland.size()));
+        if (!mIsland[iPos].isExtant()) {   // if extinct
+            mIsland.push_back(newSpecies);
         //    mvIslSpecAlive.push_back(speciesID);
         }
-        else  // if extant -> re-immigration ("re-setting the clock" (= BirthT))
-            mvIsland[iPos] = newSpecies;
+        else  // if extant -> re-immigration
+              // ("re-setting the clock" (= BirthT))
+            mIsland[iPos] = newSpecies;
     }
     else {
-        mvIsland.push_back(newSpecies);
+        mIsland.push_back(newSpecies);
     //    mvIslSpecAlive.push_back(speciesID);
     }
 }
@@ -132,11 +150,11 @@ void Island::immigrate(const int& speciesID, double time)
 int Island::drawMigDestinationIsland(
         const int originIsland,
         vector<double>& LogGrowthTerms,
-        const double& IniMigrationRate,
-        mt19937_64 prng
-)
+        const double& initialMigrationRate,
+        mt19937_64 prng)
 {   // migration from THIS island to another; output: island of destination
-    // draw island to which species migrates -> initial migration rate as parameter !!
+    // draw island to which species migrates
+        // -> initial migration rate as parameter !!
     const int n_islands = LogGrowthTerms.size();
     const int n_speciesAlive = getNSpeciesAlive();
     vector<double> migrationRates(n_islands);
@@ -146,7 +164,7 @@ int Island::drawMigDestinationIsland(
             migrationRates[k] = 0;
             continue;
         }
-        migrationRates[k] = max(0.0, (IniMigrationRate * n_speciesAlive * LogGrowthTerms[k])
+        migrationRates[k] = max(0.0, (initialMigrationRate * n_speciesAlive * LogGrowthTerms[k])
             / n_islands*n_islands - n_islands);
     }
     const int destinationIsland = drawDisEvent(migrationRates, prng);
@@ -190,7 +208,7 @@ void Island::goExtinct(const int& speciesID, double time)
     // find species
     const int pos = findPos(speciesID);
     assert(pos >= 0);
-    mvIsland[pos].goExtinct(time);
+    mIsland[pos].goExtinct(time);
 //    const int posAlive = findPosAlive(speciesID);
 //    mvIslSpecAlive[posAlive] = mvIslSpecAlive.back();
 //    mvIslSpecAlive.pop_back();
@@ -205,13 +223,13 @@ void Island::addIsland(const Island &islNew)
     // add species vector to THIS island
     if (!vSpecNew.empty()) {
         // intermediate vector of species
-        vector<Species> vTempSpec = mvIsland;
-        cerr << mvIsland.size() << '\n';
+        vector<Species> vTempSpec = mIsland;
+        cerr << mIsland.size() << '\n';
         cerr << vSpecNew.size() << '\n';
-        vTempSpec.reserve(mvIsland.size() + vSpecNew.size());
+        vTempSpec.reserve(mIsland.size() + vSpecNew.size());
         vTempSpec.insert(vTempSpec.end(), vSpecNew.begin(), vSpecNew.end());
-        // mvIsland.reserve(mvIsland.size() + vSpecNew.size());   // preallocate memory
-        // mvIsland.insert(mvIsland.end(), vSpecNew.begin(), vSpecNew.end());
+        // mIsland.reserve(mIsland.size() + vSpecNew.size());   // preallocate memory
+        // mIsland.insert(mIsland.end(), vSpecNew.begin(), vSpecNew.end());
     }
     /*
     // add alive species to THIS island
@@ -228,13 +246,13 @@ void Island::addIsland(const Island &islNew)
 const Species& Island::returnSpecies(const int pos) const
 {
   assert(pos >= 0);
-  assert(pos < static_cast<int>(mvIsland.size()));
-  return mvIsland[pos];
+  assert(pos < static_cast<int>(mIsland.size()));
+  return mIsland[pos];
 }   // returns specific species from species vector
 
 void Island::addSpecies(const Species& newSpecies)
 {   // adds new species to island -> both species and alive species vector
-    mvIsland.push_back(newSpecies);
+    mIsland.push_back(newSpecies);
 
 //    const int speciesID = newSpecies.readSpID();
 //    mvIslSpecAlive.push_back(speciesID);
@@ -243,7 +261,7 @@ void Island::addSpecies(const Species& newSpecies)
 std::vector<int> Island::getIDsSpeciesAlive() const
 {
     vector<int> aliveSpecies;
-    for (auto& species : mvIsland)
+    for (auto& species : mIsland)
         if (species.isExtant())
             aliveSpecies.push_back(species.readSpID());
     return aliveSpecies;

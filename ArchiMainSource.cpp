@@ -143,7 +143,7 @@ vector<vector<Species> > ArchiDAISIE(const double &islandAge,
                 aAggregArchi.addArchi(ArchiDAISIE_core(islandAge, 1, initialParameters,
                         archiCarryingCap, n_islands, prng, maxSpeciesID));
             }
-            vFinalIslandReplicates[i] = aAggregArchi.aggregateArchi();
+            vFinalIslandReplicates[i] = aAggregArchi.makeArchiTo1Island();
         }
         return vFinalIslandReplicates;
     }
