@@ -138,7 +138,8 @@ vector<int> Archipelago::sampleNextEvent(const vector<double> &sumsGloLoc,
     const int scale = drawDisEvent(sumsGloLoc, prng);
     if (scale == 0) {  // if global event:
 
-        // draw event (plus 5 to align it with all events: 0-4 -> local, 5-7 -> global: 5 -> clado, 6 -> ana, 7 -> extinc)
+        // draw event (plus 5 to align it with all events:
+            // 0-4 -> local, 5-7 -> global: 5 -> clado, 6 -> ana, 7 -> extinc)
         const int event = drawDisEvent(mGlobalRates, prng) + 5;
 
         // draw species
@@ -266,6 +267,7 @@ void Archipelago::doNextEvent(const vector<int>& happening,
                 break;
             default:
                 assert(!"Event is not global, even though .size() == 2.\n");
+                break;
         }
     }
     else if (happening.size() == 3) {  // -> local
@@ -310,6 +312,7 @@ void Archipelago::doNextEvent(const vector<int>& happening,
                 break;
             default:
                 assert(!"Event is not local, even though .size() == 3.\n");
+                break;
         }
     }
     else
