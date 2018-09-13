@@ -17,6 +17,7 @@ public:
 
     int getCarryingCap() const noexcept { return mIK; }
     int getNSpeciesAlive() const; // returns number of species alive
+    std::vector<int> getIDsSpeciesAlive() const;
     int getNAllSpecies() const noexcept { return this->mvIsland.size(); }
     double returnLogGrowth() { return 1 - static_cast<double>(getNSpeciesAlive()) / mIK;}   // returns the logistic growth term (1-n/K)
 
@@ -30,7 +31,7 @@ public:
     // initialise/calculate rates and store them in EventRates vector
     // gam_i, gam_m, lamb_cl, lamb_al, mu_l
     // per island -> doesn't include global rates !!!
-    double extractSumIslRate() const noexcept;      // return the per-island rates vector
+    double extractSumOfRates() const noexcept;      // return the per-island rates vector
 
     std::vector<int> sampleLocalEvent(std::mt19937_64, const int&);   // in case a local event is drawn, sample island, event and species
     // it happens to

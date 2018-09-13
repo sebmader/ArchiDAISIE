@@ -80,12 +80,12 @@ double Island::calculateIslRates(const std::vector<double>& islandParameters,
     return dSumIslRates;
 }
 
-double Island::extractSumIslRate() const noexcept
+double Island::extractSumOfRates() const noexcept
 {
-    double dSumRates = 0;
-    for (double mvLocalRate : mvLocalRates)
-        dSumRates += mvLocalRate;
-    return dSumRates;
+    double sumRates = 0;
+    for (double rate : mvLocalRates)
+        sumRates += rate;
+    return sumRates;
 }
 
 vector<int> Island::sampleLocalEvent(mt19937_64 prng, const int &n_mainlandSpecies)
@@ -233,8 +233,18 @@ const Species& Island::returnSpecies(const int pos) const
 }   // returns specific species from species vector
 
 void Island::addSpecies(const Species& newSpecies)
-{
+{   // adds new species to island -> both species and alive species vector
     mvIsland.push_back(newSpecies);
+
 //    const int speciesID = newSpecies.readSpID();
 //    mvIslSpecAlive.push_back(speciesID);
-}    // adds new species to island -> both species and alive species vector
+}
+
+std::vector<int> Island::getIDsSpeciesAlive() const
+{
+    vector<int> aliveSpecies;
+    for (auto& species : mvIsland)
+        if (species.isExtant())
+            aliveSpecies.push_back(species.readSpID());
+    return aliveSpecies;
+}

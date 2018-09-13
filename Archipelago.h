@@ -21,6 +21,7 @@ public:
 //    void updateAliveSpec();             // updating the archipelago-wide vector of extant species
 
     int getNSpeciesAlive();
+    std::vector<int> getIDsSpeciesAlive();
     std::vector<int> findIsl(const int &) const;    // find the island(s) where certain species (input) is within archipelago
 
     std::vector<double> calculateAllRates(const std::vector<double> &, const int &n_mainlandSpecies, const int &n_islands);    // calculate per-island rates and global rates
