@@ -156,7 +156,7 @@ vector<vector<Species> > ArchiDAISIE(const double &islandAge,
 
 void test_island()
 {
-    {
+    {   // testing basics
         const int k{ 12 };
         const Island island(k);
         assert(k==island.getCarryingCap());
@@ -179,24 +179,18 @@ void test_island()
     {
         Island island(10);
         assert(island.getNAllSpecies()==0);
-        island.immigrate(42, 3.14);
         island.immigrate(42, 6.28);
+        island.immigrate(42, 3.14);
+        assert(island.findSpecies(42).readBirth()==3.14);
         assert(island.getNAllSpecies()==1);
         assert(island.getNSpeciesAlive()==1);
     }
     {
         Island island(10);
         assert(island.getNAllSpecies()==0);
-        island.immigrate(42, 3.14);
-        island.immigrate(42, 6.28);
-        assert(island.findSpecies(42).readBirth()==6.28);
-    }
-    {
-        Island island(10);
-        assert(island.getNAllSpecies()==0);
         assert(island.getNSpeciesAlive()==0);
-        island.immigrate(1, 3.14);
         island.immigrate(42, 6.28);
+        island.immigrate(1, 3.14);
         assert(island.getNAllSpecies()==2);
         assert(island.getNSpeciesAlive()==2);
         island.goExtinct(42, 7.30);
@@ -244,7 +238,6 @@ void test_island()
         double sumLog = island1.returnLogGrowth() + island2.returnLogGrowth();
         const int n_mainlandSpecies = 50;
         const int n_islands = 2;
-        SpeciesID maxSpeciesID(n_mainlandSpecies);
         vector<double> islPars = { 0.1, 0.5, 0.2, 0.2, 0.15 };
         island1.calculateIslRates(islPars, n_mainlandSpecies,
                 n_islands, sumLog);
@@ -263,7 +256,7 @@ void test_island()
         assert(island1.findPos(sp.readSpID() == 0));
         assert(island1.returnIsland().size() == 1);
     }
-    {
+    {   // testing all
         Island island1(10);
         Island island2(20);
         double sumLogWO1 = island2.returnLogGrowth();
@@ -289,6 +282,7 @@ void test_island()
         island2.immigrate(50, 3.2);
         double sumLogWO2 = island1.returnLogGrowth();
         island2.calculateIslRates(islPars, n_mainlandSpecies, n_islands, sumLogWO2);
+        island1.immigrate(50, 2.8);
         island1.printIsland();
         island2.printIsland();
         island1.consolidateIsland(island2);
@@ -299,7 +293,7 @@ void test_island()
 int main() {
 
     test_island();
-    exit(0);
+    /*
     vector<double> vPars( {0.1, 0.1, 0.2, 0.12, 0.3, 0.2, 0.1, 0.12, 50} );
     ArchiDAISIE(5, 50, vPars, 2, 100);
     mt19937_64 prng;
@@ -308,6 +302,6 @@ int main() {
     SpeciesID maxSpeciesID(0);
     Archipelago arch = ArchiDAISIE_core(2, 50, vIni, static_cast<int>(vPars[8]),
             3, prng, maxSpeciesID);
-
+    */
     return 0;
 }

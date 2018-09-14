@@ -225,6 +225,7 @@ void Island::goExtinct(const int& speciesID, double time)
 void Island::consolidateIsland(const Island& islNew)
 {   // adds another island to THIS (for aggregating archipelagos)
     // extract data frames from island that's to be added
+
     const vector<Species>& vSpecNew = islNew.returnIsland();
     // const vector<int>& vSpecAliveNew = islNew.returnIslSpecAlive();
 
@@ -234,6 +235,21 @@ void Island::consolidateIsland(const Island& islNew)
         mIsland.insert(mIsland.end(), vSpecNew.begin(), vSpecNew.end());
         // mIsland.reserve(mIsland.size() + vSpecNew.size());   // preallocate memory
         // mIsland.insert(mIsland.end(), vSpecNew.begin(), vSpecNew.end());
+    }
+
+    // delete duplicates; ### CAUTION ### : what birth time ?!
+    const int islandSize = static_cast<int>(mIsland.size());
+    for (int j = 0; j < islandSize; ++j) {
+        for (int k = j + 1; k < islandSize; ++k)
+            if (mIsland[j].readSpID() ==
+                    mIsland[k].readSpID()) { // TODO
+                // ExtinctTime: take the extant one, or the later extinction
+                // BirthTime: take the oldest birth time (initial colonisation) or
+                // the latest re-immigration time.. ### CAUTION ### : How??
+                mIsland[k] = mIsland.back();
+                mIsland.pop_back();
+                --k;
+            }
     }
     /*
     // add alive species to THIS island
