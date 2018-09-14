@@ -64,10 +64,11 @@ double Island::calculateIslRates(
 
     // calculate the per-island rates
     const int n_alive = getNSpeciesAlive();
+    const vector<int> aliveSpecies = getIDsSpeciesAlive();
     int n_immiSpecies = 0;    // number of immigrant species
                               // -> only ones that can undergo anagenesis
-    for (auto& g : mIsland)
-        if (g.readSpID() <= 1000)
+    for (auto& g : aliveSpecies)
+        if (g <= n_mainlandSpecies)
             ++n_immiSpecies;
 
     // immigration to specific island:
@@ -110,13 +111,9 @@ vector<int> Island::sampleLocalEvent(mt19937_64 prng,
     // draw species
     int speciesID = drawUniEvent(1, n_mainlandSpecies, prng); // in case of immigration
     if (event) {   // if not immigration (1-4) -> SpecID from extant island species
-        vector<int> aliveSpecies;
-        for(auto& species : mIsland) {
-            if (species.isExtant())
-                aliveSpecies.push_back(species.readSpID());
-        }
+        vector<int> aliveSpecies = getIDsSpeciesAlive();
         const int pos = drawUniEvent(0,
-                static_cast<int>(aliveSpecies.size()), prng);
+                static_cast<int>(aliveSpecies.size()) - 1, prng);
         speciesID = aliveSpecies[pos];
     }
     // return event and specID
