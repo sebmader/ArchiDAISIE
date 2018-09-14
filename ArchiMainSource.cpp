@@ -277,10 +277,12 @@ void test_island()
         mt19937_64 prng;
         vector<int> happening = island1.sampleLocalEvent(prng, n_mainlandSpecies);
         island1.immigrate(happening[1], 3.8);
+        happening = island1.sampleLocalEvent(prng, n_mainlandSpecies);
         vector<double> logGrowthTerms = { island1.returnLogGrowth(), island2.returnLogGrowth() };
         const int destinationIsl = island1.drawMigDestinationIsland(0,
                                             logGrowthTerms, islPars[1], prng);
         assert(destinationIsl == 1);
+        island2.migrate(island1.findSpecies(happening[1]));
     }
 }
 
