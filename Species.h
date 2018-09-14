@@ -12,25 +12,25 @@
 class Species {
 
 public:
-    Species(double birthT, int parentId, int speciesId);
+    explicit Species(double = 0, int = 0, int = 0);
 
-    void goExtinct(const double time) {dExtinctT = time;}
+    void goExtinct(const double time) {extinctT = time;}
     bool isExtant() const noexcept;
-    double readBirth() const noexcept {return dBirthT;}
-    int readParID() const noexcept {return iParentId;}
-    int readSpID() const noexcept {return iSpecId;}
-    const double& readExtinct() const noexcept {return dExtinctT;}
+    double readBirth() const noexcept {return birthT;}
+    int readParID() const noexcept {return parentID;}
+    int readSpID() const noexcept {return speciesID;}
+    const double& readExtinct() const noexcept {return extinctT;}
 
     void printSpec() {
-        std::cout << dBirthT << '\t' << iParentId << '\t'
-                  << iSpecId << '\t' << dExtinctT << '\n';
+        std::cout << birthT << '\t' << parentID << '\t'
+                  << speciesID << '\t' << extinctT << '\n';
     }
 
 private:
-    double dBirthT;     //Should be const one day
-    int iParentId;      //Should be const one day
-    int iSpecId;        //Should be const one day
-    double dExtinctT;   //Will be -1 when extant
+    double birthT;     //Should be const one day
+    int parentID;      //Should be const one day
+    int speciesID;        //Should be const one day
+    double extinctT;   //Will be -1 when extant
 };
 
 

@@ -266,3 +266,9 @@ std::vector<int> Island::getIDsSpeciesAlive() const
             aliveSpecies.push_back(species.readSpID());
     return aliveSpecies;
 }
+
+double Island::returnLogGrowth()
+{
+    double logGrowth = 1.0 - static_cast<double>(getNSpeciesAlive()) / mIslandK;
+    return logGrowth;
+}

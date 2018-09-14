@@ -7,7 +7,7 @@
 
 class SpeciesID {
 public:
-    explicit SpeciesID(const int);
+    explicit SpeciesID(int = 0);
 
     void incrementMaxSpeciesID() noexcept { ++maxSpeciesID; }
     int getMaxSpeciesID() const noexcept { return maxSpeciesID; }

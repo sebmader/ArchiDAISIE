@@ -5,17 +5,17 @@
 #include "Species.h"
 
 Species::Species(const double birthT, const int parentId, const int speciesId)
-        : dBirthT{birthT}, iParentId{parentId}, iSpecId{speciesId}, dExtinctT{-1.0}
+        : birthT{birthT}, parentID{parentId}, speciesID{speciesId}, extinctT{-1.0}
 {
-    assert(dBirthT >= 0.0);
-    assert(iParentId >= 0);
-    assert(iSpecId >= 0);
+    assert(birthT >= 0.0);
+    assert(parentId >= 0);
+    assert(speciesID >= 0);
     assert(isExtant());
 }
 
 bool Species::isExtant() const noexcept
 {
-    return dExtinctT == -1.0;
+    return extinctT == -1.0;
 }
 
 
