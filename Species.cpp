@@ -4,12 +4,12 @@
 
 #include "Species.h"
 
-Species::Species(const double birthT, const int parentId, const int speciesId)
-        : birthT{birthT}, parentID{parentId}, speciesID{speciesId}, extinctT{-1.0}
+Species::Species(const double birthTime, const int parentId, const int speciesId)
+        : birthT{birthTime}, parentID{parentId}, speciesID{speciesId}, extinctT{-1.0}
 {
-    assert(birthT >= 0.0);
+    assert(birthTime >= 0.0);
     assert(parentId >= 0);
-    assert(speciesID >= 0);
+    assert(speciesId >= 0);
     assert(isExtant());
 }
 

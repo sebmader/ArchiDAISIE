@@ -216,11 +216,47 @@ void test_island()
             == n_mainlandSpecies+1);
         island.immigrate(42, 2.56);
         island.speciateClado(42, 2.50, maxSpeciesID);
-        cout << maxSpeciesID.getMaxSpeciesID();
         assert(maxSpeciesID.getMaxSpeciesID()
                 == n_mainlandSpecies+3);
         assert(island.getNAllSpecies() == 6);
         assert(island.getNSpeciesAlive() == 3);
+    }
+    {
+        Island island1(10);
+        Island island2(20);
+        double sumLog = island1.returnLogGrowth() + island2.returnLogGrowth();
+        const int n_mainlandSpecies = 50;
+        const int n_islands = 2;
+        vector<double> islPars = { 0.1, 0.5, 0.2, 0.2, 0.15 };
+        island1.calculateIslRates(islPars, n_mainlandSpecies,
+                n_islands, sumLog);
+        double sumRates1 = island1.extractSumOfRates();
+        const int n_alive1 = island1.getNSpeciesAlive();
+        const int islandK1 = island1.getCarryingCap();
+        assert(1-static_cast<double>(n_alive1)/islandK1 == island1.returnLogGrowth());
+        const double immiRate1 = max(0.0, islPars[0] * n_mainlandSpecies
+                * island1.returnLogGrowth() / n_islands);
+        assert(sumRates1 == immiRate1);
+    }
+    {
+        Island island1(10);
+        Island island2(20);
+        double sumLog = island1.returnLogGrowth() + island2.returnLogGrowth();
+        const int n_mainlandSpecies = 50;
+        const int n_islands = 2;
+        SpeciesID maxSpeciesID(n_mainlandSpecies);
+        vector<double> islPars = { 0.1, 0.5, 0.2, 0.2, 0.15 };
+        island1.calculateIslRates(islPars, n_mainlandSpecies,
+                n_islands, sumLog);
+        double sumRates1 = island1.extractSumOfRates();
+        const double immiRate1 = max(0.0, islPars[0] * n_mainlandSpecies
+                * island1.returnLogGrowth() / n_islands);
+        assert(sumRates1 == immiRate1);
+        mt19937_64 prng;
+        vector<int> happening = island1.sampleLocalEvent(prng, n_mainlandSpecies);
+        assert(happening.size() == 2);
+        assert(happening[0] == 0); // has to be immigration
+        assert(happening[1] <= n_mainlandSpecies);
     }
 }
 

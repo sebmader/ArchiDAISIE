@@ -155,7 +155,7 @@ int Island::drawMigDestinationIsland(
 {   // migration from THIS island to another; output: island of destination
     // draw island to which species migrates
         // -> initial migration rate as parameter !!
-    const int n_islands = LogGrowthTerms.size();
+    const int n_islands = static_cast<int>(LogGrowthTerms.size());
     const int n_speciesAlive = getNSpeciesAlive();
     vector<double> migrationRates(n_islands);
     for (int k = 0; k < n_islands; ++k) {
