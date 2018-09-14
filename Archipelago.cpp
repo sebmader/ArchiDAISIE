@@ -298,11 +298,7 @@ void Archipelago::doNextEvent(const vector<int>& happening,
                     // output: position of island in mArchipel whereto the species
                         // migrates
                 const Species newSpecies = mArchipel[isl].findSpecies(speciesID);
-                const int pos = mArchipel[destinationIsland].findPos(speciesID);
-                if (pos == -1)  // if first migration: add species to island
-                                // else (if remigration): nothing happens
-                    mArchipel[destinationIsland].addSpecies(newSpecies);   // species migrates
-                            // from the original event island to drawn island of destination
+                mArchipel[destinationIsland].migrate(newSpecies);
                 break;
             }
             case event_type::local_cladogenesis:

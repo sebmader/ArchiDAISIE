@@ -45,6 +45,7 @@ public:
     void immigrate(const int&, double);  // mainland species immigrates to that island
     int drawMigDestinationIsland(int, std::vector<double>&, const double&, std::mt19937_64);
                     // draw island species migrates to
+    void migrate(const Species&);  // migrating onto this island
     void speciateClado(const int&, double, SpeciesID &);
                     // island species cladogenetically speciates
     void speciateAna(const int&, double, SpeciesID &);

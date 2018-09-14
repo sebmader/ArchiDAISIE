@@ -264,6 +264,24 @@ void test_island()
         assert(island1.returnIsland().size() == 1);
         island1.printIsland();
     }
+    {
+        Island island1(10);
+        Island island2(20);
+        double sumLogWO1 = island2.returnLogGrowth();
+        const int n_mainlandSpecies = 50;
+        const int n_islands = 2;
+        SpeciesID maxSpeciesID(n_mainlandSpecies);
+        vector<double> islPars = { 0.1, 0.5, 0.2, 0.2, 0.15 };
+        island1.calculateIslRates(islPars, n_mainlandSpecies,
+                n_islands, sumLogWO1);
+        mt19937_64 prng;
+        vector<int> happening = island1.sampleLocalEvent(prng, n_mainlandSpecies);
+        island1.immigrate(happening[1], 3.8);
+        vector<double> logGrowthTerms = { island1.returnLogGrowth(), island2.returnLogGrowth() };
+        const int destinationIsl = island1.drawMigDestinationIsland(0,
+                                            logGrowthTerms, islPars[1], prng);
+        assert(destinationIsl == 1);
+    }
 }
 
 int main() {

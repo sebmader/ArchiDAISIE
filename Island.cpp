@@ -3,6 +3,7 @@
 //
 
 #include "Island.h"
+#include "Archipelago.h"
 
 using namespace std;
 
@@ -71,17 +72,18 @@ double Island::calculateIslRates(
         if (g <= n_mainlandSpecies)
             ++n_immiSpecies;
 
+    const double logGrowth = returnLogGrowth();
     // immigration to specific island:
     const double immigrationRate = max(0.0, islandParameters[0] * n_mainlandSpecies
-            * (1 - static_cast<double>(n_alive) / mIslandK) / n_islands);
+            * logGrowth / n_islands);
     // migration from this island to all other islands:
     const double migrationRate = max(0.0, (islandParameters[1] * n_alive
-            * sumLogGrowthWOthisIsl) / n_islands*n_islands - n_islands);
+            * sumLogGrowthWOthisIsl) / (n_islands*n_islands - n_islands));
         // ### CAUTION ### : all other islands: '/iNumIsl',
                 // one-way: '/iNumIsl^2 - iNumIsl' ???
     // local cladogenesis:
     const double localCladoRate = max(0.0, islandParameters[2] * n_alive
-            * (1 - (static_cast<double>(n_alive) / mIslandK)));
+            * logGrowth);
     // local anagenesis:
     const double localAnaRate = max(0.0, islandParameters[3] * n_immiSpecies);
     // local extinction:
@@ -156,18 +158,27 @@ int Island::drawMigDestinationIsland(
     const int n_speciesAlive = getNSpeciesAlive();
     vector<double> migrationRates(n_islands);
     for (int k = 0; k < n_islands; ++k) {
-        if (k == originIsland) {     // for the island it migrates from: LogGrowth = 0
-            // -> this event doesn't happen
+        if (k == originIsland) {     // for the island it migrates from:
+                        // migration rate = 0 -> this event doesn't happen
             migrationRates[k] = 0;
             continue;
         }
-        migrationRates[k] = max(0.0, (initialMigrationRate * n_speciesAlive * LogGrowthTerms[k])
-            / n_islands*n_islands - n_islands);
+        migrationRates[k] = (initialMigrationRate * n_speciesAlive * LogGrowthTerms[k])
+            / (n_islands*n_islands - n_islands);
     }
     const int destinationIsland = drawDisEvent(migrationRates, prng);
     assert(destinationIsland != originIsland);
 
     return destinationIsland;
+}
+
+void Island::migrate(const Species& newSpecies)
+{
+    const int speciesID = newSpecies.readSpID();
+    const int pos = findPos(speciesID);
+    if(pos == -1)  // if first migration: add species to island
+        addSpecies(newSpecies);
+            // else (if re-migration): nothing happens
 }
 
 void Island::speciateClado(const int& speciesID, double time,
