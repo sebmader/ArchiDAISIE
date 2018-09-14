@@ -286,6 +286,9 @@ void test_island()
         sumLogWO1 = island2.returnLogGrowth();
         island1.calculateIslRates(islPars, n_mainlandSpecies, n_islands, sumLogWO1);
         happening = island1.sampleLocalEvent(prng, n_mainlandSpecies);
+        island2.immigrate(50, 3.2);
+        double sumLogWO2 = island1.returnLogGrowth();
+        island2.calculateIslRates(islPars, n_mainlandSpecies, n_islands, sumLogWO2);
         island1.printIsland();
         island2.printIsland();
         island1.consolidateIsland(island2);
