@@ -262,7 +262,6 @@ void test_island()
         assert(sp.readSpID() == happening[1]);
         assert(island1.findPos(sp.readSpID() == 0));
         assert(island1.returnIsland().size() == 1);
-        island1.printIsland();
     }
     {
         Island island1(10);
@@ -283,6 +282,14 @@ void test_island()
                                             logGrowthTerms, islPars[1], prng);
         assert(destinationIsl == 1);
         island2.migrate(island1.findSpecies(happening[1]));
+        island1.speciateClado(happening[1],3.5, maxSpeciesID);
+        sumLogWO1 = island2.returnLogGrowth();
+        island1.calculateIslRates(islPars, n_mainlandSpecies, n_islands, sumLogWO1);
+        happening = island1.sampleLocalEvent(prng, n_mainlandSpecies);
+        island1.printIsland();
+        island2.printIsland();
+        island1.consolidateIsland(island2);
+        island1.printIsland();
     }
 }
 
