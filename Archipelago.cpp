@@ -257,12 +257,15 @@ void Archipelago::doNextEvent(const vector<int>& happening,
         assert(is_global(event));
         switch(event) {
             case event_type::global_cladogenesis:
+                assert(static_cast<int>(event) == 5);
                 speciateGlobalClado(speciesID, prng, time, maxSpeciesID);
                 break;
             case event_type::global_anagenesis:
+                assert(static_cast<int>(event) == 6);
                 speciateGlobalAna(speciesID, time, maxSpeciesID);
                 break;
             case event_type::global_extinction:
+                assert(static_cast<int>(event) == 7);
                 goGlobalExtinct(speciesID, time);
                 break;
             default:
@@ -277,13 +280,14 @@ void Archipelago::doNextEvent(const vector<int>& happening,
         {
             case event_type::immigration:
             {
-                assert(!"TODO");
+                assert(static_cast<int>(event) == 0);
                 mArchipel[isl].immigrate(speciesID, time);
                 break;
             }
             case event_type::local_migration:
             {
-                const int n_islands = mArchipel.size();
+                assert(static_cast<int>(event) == 1);
+                const int n_islands = static_cast<int>(mArchipel.size());
                 // save the logarithmic growth terms for all islands per island
                 vector<double> vLogs(n_islands);
                 for (int j = 0; j < n_islands; ++j) {
@@ -302,12 +306,15 @@ void Archipelago::doNextEvent(const vector<int>& happening,
                 break;
             }
             case event_type::local_cladogenesis:
+                assert(static_cast<int>(event) == 2);
                 mArchipel[isl].speciateClado(speciesID, time, maxSpeciesID);
                 break;
             case event_type::local_anagenesis:
+                assert(static_cast<int>(event) == 3);
                 mArchipel[isl].speciateAna(speciesID, time, maxSpeciesID);
                 break;
             case event_type::local_extinction:
+                assert(static_cast<int>(event) == 4);
                 mArchipel[isl].goExtinct(speciesID, time);
                 break;
             default:
@@ -336,7 +343,7 @@ void Archipelago::addArchi(const Archipelago &newArchi)
         assert(i < n_islands);
 
         if (!addArch[i].returnIsland().empty()) { // ### CAUTION ### : does this make sense ??
-            mArchipel[i].addIsland(addArch[i]);
+            mArchipel[i].consolidateIsland(addArch[i]);
         }
     }
 }

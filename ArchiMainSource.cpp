@@ -257,6 +257,12 @@ void test_island()
         assert(happening.size() == 2);
         assert(happening[0] == 0); // has to be immigration
         assert(happening[1] <= n_mainlandSpecies);
+        island1.immigrate(happening[1], 3.8);
+        Species sp = island1.findSpecies(happening[1]);
+        assert(sp.readSpID() == happening[1]);
+        assert(island1.findPos(sp.readSpID() == 0));
+        assert(island1.returnIsland().size() == 1);
+        island1.printIsland();
     }
 }
 

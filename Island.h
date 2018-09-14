@@ -30,7 +30,6 @@ public:
     const Species& findSpecies(int) const;  // find the position
                     // of species (input) in island vector
                     // MUST find species -> otherwise will fail !!!
-    const Species& returnSpecies(int) const;  // returns a species from species vector
 
     double calculateIslRates(const std::vector<double>&, const int&,
                                           const int&, const double&);
@@ -56,7 +55,7 @@ public:
 //    const std::vector<int>& returnIslSpecAlive() const { return mvIslSpecAlive; }
     void printIsland();  // prints island vector of species to the screen
 
-    void addIsland(const Island &);     // add island to THIS island
+    void consolidateIsland(const Island&);     // add island to THIS island
     // ### CAUTION ### : illogical! -> make this a nonmember function
 
 private:

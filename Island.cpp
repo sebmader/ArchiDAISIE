@@ -214,7 +214,7 @@ void Island::goExtinct(const int& speciesID, double time)
 //    mvIslSpecAlive.pop_back();
 }
 
-void Island::addIsland(const Island &islNew)
+void Island::consolidateIsland(const Island& islNew)
 {   // adds another island to THIS (for aggregating archipelagos)
     // extract data frames from island that's to be added
     const vector<Species>& vSpecNew = islNew.returnIsland();
@@ -222,12 +222,8 @@ void Island::addIsland(const Island &islNew)
 
     // add species vector to THIS island
     if (!vSpecNew.empty()) {
-        // intermediate vector of species
-        vector<Species> vTempSpec = mIsland;
-        cerr << mIsland.size() << '\n';
-        cerr << vSpecNew.size() << '\n';
-        vTempSpec.reserve(mIsland.size() + vSpecNew.size());
-        vTempSpec.insert(vTempSpec.end(), vSpecNew.begin(), vSpecNew.end());
+        mIsland.reserve(mIsland.size() + vSpecNew.size());
+        mIsland.insert(mIsland.end(), vSpecNew.begin(), vSpecNew.end());
         // mIsland.reserve(mIsland.size() + vSpecNew.size());   // preallocate memory
         // mIsland.insert(mIsland.end(), vSpecNew.begin(), vSpecNew.end());
     }
@@ -242,13 +238,6 @@ void Island::addIsland(const Island &islNew)
     }
     */
 }
-
-const Species& Island::returnSpecies(const int pos) const
-{
-  assert(pos >= 0);
-  assert(pos < static_cast<int>(mIsland.size()));
-  return mIsland[pos];
-}   // returns specific species from species vector
 
 void Island::addSpecies(const Species& newSpecies)
 {   // adds new species to island -> both species and alive species vector
