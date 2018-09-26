@@ -26,16 +26,6 @@ int Island::findPos(const int &speciesID) const
             return i;
     return -1;
 }
-/*
-int Island::findPosAlive(const int &mSpeciesID) const
-{
-    const int aliveSpecies = getNSpecies();
-    for (int i = 0; i < aliveSpecies; ++i)
-        if (mvIslSpecAlive[i] == mSpeciesID)
-            return i;
-    return -1;
-}
-*/
 
 const Species& Island::findSpecies(const int speciesID) const
 {
@@ -43,18 +33,6 @@ const Species& Island::findSpecies(const int speciesID) const
     assert(index >= 0);
     return mIsland[index];
 }
-
-/*
-int Island::getNSpecies() const
-{
-    int extantSpeciesCounter = 0;
-    for (auto& species : mIsland) {
-        if (species.isExtant())
-            ++extantSpeciesCounter;
-    }
-    return extantSpeciesCounter;
-}
-*/
 
 double Island::calculateIslRates(
         const std::vector<double>& islandParameters,
