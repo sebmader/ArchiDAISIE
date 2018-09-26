@@ -8,25 +8,25 @@ using namespace std;
 
 void test_island()
 {
-    {   // testing basics
+    {   // testing constructor
         const int k{ 12 };
         const Island island(k);
         assert(k==island.getCarryingCap());
     }
-    {
+    {   // testing adding species
         Island island(10);
         assert(island.getNSpecies()==0);
         island.addSpecies(Species(0, 0, 0));
         assert(island.getNSpecies()==1);
     }
-    {
+    {   // testing immigration
         Island island(10);
         assert(island.getNSpecies()==0);
         island.immigrate(42, 3.14);
         assert(island.getNSpecies()==1);
         assert(island.findSpecies(42).readBirth()==3.14);
     }
-    {
+    {   // testing re-immigration
         Island island(10);
         assert(island.getNSpecies()==0);
         island.immigrate(42, 6.28);
@@ -34,7 +34,7 @@ void test_island()
         assert(island.findSpecies(42).readBirth()==3.14);
         assert(island.getNSpecies()==1);
     }
-    {
+    {   // testing extinction
         Island island(10);
         assert(island.getNSpecies()==0);
         island.immigrate(42, 6.28);
@@ -44,7 +44,7 @@ void test_island()
         assert(island.getNSpecies()==1);
         assert(island.findPos(42) == -1);
     }
-    {
+    {   // testing maxSpeciesID + speciation
         Island island(10);
         const int n_mainlandSpecies = 50;
         SpeciesID maxSpeciesID(n_mainlandSpecies);
@@ -60,7 +60,7 @@ void test_island()
                 == n_mainlandSpecies+3);
         assert(island.getNSpecies() == 3);
     }
-    {
+    {   // testing calculating of rates
         Island island1(10);
         Island island2(20);
         double sumLog = island1.returnLogGrowth() + island2.returnLogGrowth();
@@ -77,7 +77,7 @@ void test_island()
                 * island1.returnLogGrowth() / n_islands);
         assert(sumRates1 == immiRate1);
     }
-    {
+    {   // testing sampling of local event
         Island island1(10);
         Island island2(20);
         double sumLog = island1.returnLogGrowth() + island2.returnLogGrowth();
@@ -90,7 +90,7 @@ void test_island()
         const double immiRate1 = max(0.0, islPars[0] * n_mainlandSpecies
                 * island1.returnLogGrowth() / n_islands);
         assert(sumRates1 == immiRate1);
-        mersenne_twister_engine<uint_fast64_t, 64, 312, 156, 31, 0xb5026f5aa96619e9ULL, 29, 0x5555555555555555ULL, 17, 0x71d67fffeda60000ULL, 37, 0xfff7eee000000000ULL, 43, 6364136223846793005ULL> prng;
+        mt19937_64 prng;
         vector<int> happening = island1.sampleLocalEvent(prng, n_mainlandSpecies);
         assert(happening.size() == 2);
         assert(happening[0] == 0); // has to be immigration
@@ -111,13 +111,14 @@ void test_island()
         vector<double> islPars = { 0.1, 0.5, 0.2, 0.2, 0.15 };
         island1.calculateIslRates(islPars, n_mainlandSpecies,
                 n_islands, sumLogWO1);
-        mersenne_twister_engine<uint_fast64_t, 64, 312, 156, 31, 0xb5026f5aa96619e9ULL, 29, 0x5555555555555555ULL, 17, 0x71d67fffeda60000ULL, 37, 0xfff7eee000000000ULL, 43, 6364136223846793005ULL> prng;
+        mt19937_64 prng;
         vector<int> happening = island1.sampleLocalEvent(prng, n_mainlandSpecies);
         island1.immigrate(happening[1], 3.8);
         happening = island1.sampleLocalEvent(prng, n_mainlandSpecies);
         vector<double> logGrowthTerms = { island1.returnLogGrowth(), island2.returnLogGrowth() };
         const int destinationIsl = island1.drawMigDestinationIsland(0,
                                             logGrowthTerms, islPars[1], prng);
+        // some comment for travis
         assert(destinationIsl == 1);
         island2.migrate(island1.findSpecies(happening[1]), 3.6);
         island1.speciateClado(happening[1],3.5, maxSpeciesID);
