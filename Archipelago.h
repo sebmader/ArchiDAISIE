@@ -20,9 +20,9 @@ public:
         // constructor of archipelago based on number of islands and archipelago-wide K
 //    void updateAliveSpec();    // updating the archipelago-wide vector of extant species
 
-    int getNSpeciesAlive();
-    std::vector<int> getIDsSpeciesAlive();
-    std::vector<int> getIDsGlobalSpeciesAlive();
+    int getNSpecies();
+    std::vector<int> getSpeciesIDs();
+    std::vector<int> getGlobalSpeciesIDs();
     std::vector<int> findIsl(const int &) const;    // find the island(s) where
                                     // species (input) is within archipelago
 

@@ -18,4 +18,9 @@ bool Species::isExtant() const noexcept
     return extinctT == -1.0;
 }
 
+void Species::setBirth(const double time)
+{
+    birthT = time;
+}
+
 

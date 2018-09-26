@@ -14,12 +14,10 @@ class Species {
 public:
     explicit Species(double = 0, int = 0, int = 0);
 
-    void goExtinct(const double time) {extinctT = time;}
+    void setBirth(double);
     bool isExtant() const noexcept;
     double readBirth() const noexcept {return birthT;}
-    int readParID() const noexcept {return parentID;}
     int readSpID() const noexcept {return speciesID;}
-    const double& readExtinct() const noexcept {return extinctT;}
 
     void printSpec() {
         std::cout << birthT << '\t' << parentID << '\t'
@@ -32,7 +30,6 @@ private:
     int speciesID;        //Should be const one day
     double extinctT;   //Will be -1 when extant
 };
-
 
 
 #endif //ARCHIDAISIE_SPECIES_H

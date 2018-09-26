@@ -19,14 +19,6 @@
 
 using namespace std;
 
-// ------------ GLOBAL PARAMETERS ------------ //
-
-    // do I even need globals?
-    // should be provided as function parameters, right?
-
-// ------------ FUNCTION DEFINITIONS ------------ //
-
-
 // ------------ CLASS/FUNCTION DEFINITIONS ------------ //
 
 #include "Species.h"

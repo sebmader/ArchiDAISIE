@@ -15,40 +15,34 @@ void test_island()
     }
     {
         Island island(10);
-        assert(island.getNAllSpecies()==0);
+        assert(island.getNSpecies()==0);
         island.addSpecies(Species(0, 0, 0));
-        assert(island.getNAllSpecies()==1);
-        assert(island.getNSpeciesAlive()==1);
+        assert(island.getNSpecies()==1);
     }
     {
         Island island(10);
-        assert(island.getNAllSpecies()==0);
+        assert(island.getNSpecies()==0);
         island.immigrate(42, 3.14);
-        assert(island.getNAllSpecies()==1);
+        assert(island.getNSpecies()==1);
         assert(island.findSpecies(42).readBirth()==3.14);
-        assert(island.getNSpeciesAlive()==1);
     }
     {
         Island island(10);
-        assert(island.getNAllSpecies()==0);
+        assert(island.getNSpecies()==0);
         island.immigrate(42, 6.28);
         island.immigrate(42, 3.14);
         assert(island.findSpecies(42).readBirth()==3.14);
-        assert(island.getNAllSpecies()==1);
-        assert(island.getNSpeciesAlive()==1);
+        assert(island.getNSpecies()==1);
     }
     {
         Island island(10);
-        assert(island.getNAllSpecies()==0);
-        assert(island.getNSpeciesAlive()==0);
+        assert(island.getNSpecies()==0);
         island.immigrate(42, 6.28);
         island.immigrate(1, 3.14);
-        assert(island.getNAllSpecies()==2);
-        assert(island.getNSpeciesAlive()==2);
-        island.goExtinct(42, 7.30);
-        assert(island.getNAllSpecies()==1);
+        assert(island.getNSpecies()==2);
+        island.goExtinct(42);
+        assert(island.getNSpecies()==1);
         assert(island.findPos(42) == -1);
-        assert(island.getNSpeciesAlive()==1);
     }
     {
         Island island(10);
@@ -56,16 +50,15 @@ void test_island()
         SpeciesID maxSpeciesID(n_mainlandSpecies);
         island.immigrate(1, 3.14);
         island.immigrate(42, 3.01);
-        island.goExtinct(42, 2.95);
-        island.speciateAna(1, 2.80, maxSpeciesID);
+        island.goExtinct(42);
+        island.speciateAna(1, maxSpeciesID);
         assert(maxSpeciesID.getMaxSpeciesID()
             == n_mainlandSpecies+1);
         island.immigrate(42, 2.56);
         island.speciateClado(42, 2.50, maxSpeciesID);
         assert(maxSpeciesID.getMaxSpeciesID()
                 == n_mainlandSpecies+3);
-        assert(island.getNAllSpecies() == 3);
-        assert(island.getNSpeciesAlive() == 3);
+        assert(island.getNSpecies() == 3);
     }
     {
         Island island1(10);
@@ -77,7 +70,7 @@ void test_island()
         island1.calculateIslRates(islPars, n_mainlandSpecies,
                 n_islands, sumLog);
         double sumRates1 = island1.extractSumOfRates();
-        const int n_alive1 = island1.getNSpeciesAlive();
+        const int n_alive1 = island1.getNSpecies();
         const int islandK1 = island1.getCarryingCap();
         assert(1-static_cast<double>(n_alive1)/islandK1 == island1.returnLogGrowth());
         const double immiRate1 = max(0.0, islPars[0] * n_mainlandSpecies
@@ -126,7 +119,7 @@ void test_island()
         const int destinationIsl = island1.drawMigDestinationIsland(0,
                                             logGrowthTerms, islPars[1], prng);
         assert(destinationIsl == 1);
-        island2.migrate(island1.findSpecies(happening[1]));
+        island2.migrate(island1.findSpecies(happening[1]), 3.6);
         island1.speciateClado(happening[1],3.5, maxSpeciesID);
         sumLogWO1 = island2.returnLogGrowth();
         island1.calculateIslRates(islPars, n_mainlandSpecies, n_islands, sumLogWO1);

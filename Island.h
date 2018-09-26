@@ -17,9 +17,9 @@ public:
                     // island constructor based on island-wide K
 
     int getCarryingCap() const noexcept { return mIslandK; }
-    int getNSpeciesAlive() const; // returns number of species alive
-    std::vector<int> getIDsSpeciesAlive() const;
-    int getNAllSpecies() const noexcept { return static_cast<int>(mIsland.size()); }
+//    int getNSpecies() const; // returns number of species alive
+    std::vector<int> getSpeciesIDs() const;
+    int getNSpecies() const noexcept { return static_cast<int>(mIsland.size()); }
     double returnLogGrowth();  // returns the logistic growth term (1-n/K)
 
     void addSpecies(const Species &);  // adds new species to species vector
@@ -45,12 +45,12 @@ public:
     void immigrate(const int&, double);  // mainland species immigrates to that island
     int drawMigDestinationIsland(int, std::vector<double>&, const double&, std::mt19937_64);
                     // draw island species migrates to
-    void migrate(const Species&);  // migrating onto this island
+    void migrate(Species, const double& );  // migrating onto this island
     void speciateClado(const int&, double, SpeciesID &);
                     // island species cladogenetically speciates
-    void speciateAna(const int&, double, SpeciesID &);
+    void speciateAna(const int&, SpeciesID&);
                     // island species anagenetically speciates
-    void goExtinct(const int&, double);  // island species goes extinct
+    void goExtinct(const int&);  // island species goes extinct
 
     const std::vector<Species>& returnIsland() const { return mIsland; }
 //    const std::vector<int>& returnIslSpecAlive() const { return mvIslSpecAlive; }
