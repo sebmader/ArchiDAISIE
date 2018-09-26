@@ -41,10 +41,10 @@ public:
                     // cladogenetically speciates over all islands
                     // (one population gets replaced by two new species populations)
                     // with random separation of archipelago into two groups/populations
-    void speciateGlobalAna(const int&, double time, SpeciesID& maxSpeciesID);
+    void speciateGlobalAna(const int&, SpeciesID& maxSpeciesID);
                     // island species collectively (on all islands) diverges
                     // from mainland ancestor
-    void goGlobalExtinct(const int&, double time);  // island species
+    void goGlobalExtinct(const int&);  // island species
                     // goes extinct on all islands it occures on
 
     void doNextEvent(const std::vector<int>&, const double&,

@@ -2,7 +2,7 @@
 // Created by Sebastian Mader on 26.09.2018.
 //
 
-#include "test_island.h"
+#include "tests.h"
 
 using namespace std;
 

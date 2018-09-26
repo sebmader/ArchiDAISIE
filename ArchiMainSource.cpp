@@ -24,7 +24,7 @@ using namespace std;
 #include "Species.h"
 #include "Island.h"
 #include "Archipelago.h"
-#include "test_island.h"
+#include "tests.h"
 
 // ------------ ArchiDAISIE FUNCTIONS ------------ //
 

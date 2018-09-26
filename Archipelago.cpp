@@ -207,9 +207,7 @@ void Archipelago::speciateGlobalClado(const int& speciesID,
     }
 }
 
-void Archipelago::speciateGlobalAna(const int& speciesID,
-        double time,
-        SpeciesID& maxSpeciesID)
+void Archipelago::speciateGlobalAna(const int& speciesID, SpeciesID& maxSpeciesID)
 {   // species (input) globally anagenetically speciates
         // -> whole archipelago population diverges from mainland sp
         // can only happen to immigrant species
@@ -228,7 +226,7 @@ void Archipelago::speciateGlobalAna(const int& speciesID,
     }
 }
 
-void Archipelago::goGlobalExtinct(const int& speciesID, double time)
+void Archipelago::goGlobalExtinct(const int& speciesID)
 {   // one species (input) goes exinct on all islands it inhabits
     vector<int> onWhichIslands = findIsl(speciesID);
     if (onWhichIslands.size() < 2)
@@ -264,11 +262,11 @@ void Archipelago::doNextEvent(const vector<int>& happening,
                 break;
             case event_type::global_anagenesis:
                 assert(static_cast<int>(event) == 6);
-                speciateGlobalAna(speciesID, time, maxSpeciesID);
+            speciateGlobalAna(speciesID, maxSpeciesID);
                 break;
             case event_type::global_extinction:
                 assert(static_cast<int>(event) == 7);
-                goGlobalExtinct(speciesID, time);
+            goGlobalExtinct(speciesID);
                 break;
             default:
                 assert(!"Event is not global, even though .size() == 2.\n");
