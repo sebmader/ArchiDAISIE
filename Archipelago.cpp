@@ -81,25 +81,26 @@ vector<double> Archipelago::calculateAllRates(
     // order of island parameter vector: gam_i, gam_m, lamb_cl, lamb_al, mu_l
         // for giving it to the island rates calculation function
 
-    // count extant species on archipelago, for global rates
-    int n_speciesAlive = getNSpeciesAlive();
+    // count extant GLOBAL species on archipelago, for global rates
+    vector<int> globalSpeciesIDs = getIDsGlobalSpeciesAlive();
+    int n_globalSpeciesAlive = static_cast<int>(globalSpeciesIDs.size());
 
-    // count immigrant species; only ones that can undergo anagenesis
-    int n_immigrantsAlive = 0;
-    for (auto& isl : mArchipel) {
-        vector<Species> tmpIsland = isl.returnIsland();
-        for (auto& species : tmpIsland)
-            if (species.readSpID() <= n_mainlandSpecies)
-                ++n_immigrantsAlive;
-    }
+    // count alive immigrant species; only ones that can undergo anagenesis
+    int n_globalImmigrantsAlive = 0;
+    for (auto& speciesID : globalSpeciesIDs)
+        if (speciesID <= n_mainlandSpecies)
+            ++n_globalImmigrantsAlive;
+
+    // count all alive species -> for carrying capacity
+    const int aliveSpecies = getNSpeciesAlive();
     // calculate global rates
-    // global cladogenesis:
-    const double globalCladoRate = max(0.0, initialGlobalClado * n_speciesAlive *
-            (1 - (static_cast<double>(n_speciesAlive)/mArchiK)));
+    // global cladogenesis: carrying capacity of all species, not only global species
+    const double globalCladoRate = max(0.0, initialGlobalClado * n_globalSpeciesAlive *
+            (1 - (static_cast<double>(aliveSpecies)/mArchiK)));
     // global anagenesis:
-    const double globalAnaRate = max(0.0, initialGlobalAna * n_immigrantsAlive);
+    const double globalAnaRate = max(0.0, initialGlobalAna * n_globalImmigrantsAlive);
     // global extinction:
-    const double globalExtinctRate = max(0.0, initialGlobalExtinct * n_speciesAlive);
+    const double globalExtinctRate = max(0.0, initialGlobalExtinct * n_globalSpeciesAlive);
 
     const double sumGlobal = globalCladoRate + globalAnaRate + globalExtinctRate;
     mGlobalRates = { globalCladoRate, globalAnaRate, globalExtinctRate };
@@ -131,7 +132,7 @@ vector<int> Archipelago::sampleNextEvent(const vector<double> &sumsGloLoc,
         // ('when' is calculated in ArchiDAISIE_core)
     // -> all the stochastics happen here
 
-    vector<int> happening; // vector for return
+    vector<int> happening(2); // vector for return
         // global: {event, species}; local: {event, species, island}
 
     // local or global:
@@ -142,19 +143,19 @@ vector<int> Archipelago::sampleNextEvent(const vector<double> &sumsGloLoc,
             // 0-4 -> local, 5-7 -> global: 5 -> clado, 6 -> ana, 7 -> extinc)
         const int event = drawDisEvent(mGlobalRates, prng) + 5;
 
-        // draw species
-        vector<int> aliveSpecies = getIDsSpeciesAlive();
-        const int maxPosAlive = static_cast<int>(aliveSpecies.size() - 1);
+        // draw species (global events limited to global species)
+        vector<int> globalSpeciesIDs = getIDsGlobalSpeciesAlive();
+        const int maxPosAlive = static_cast<int>(globalSpeciesIDs.size() - 1);
         const int pos = drawUniEvent(0,
                 maxPosAlive, prng);
-        const int speciesID = aliveSpecies[pos];
+        const int speciesID = globalSpeciesIDs[pos];
 
         // initialise vector with event and species
         happening = { event, speciesID };
     }
     else {  // -> scale=1 => if local event
         // draw island
-        const int n_islands = mArchipel.size();
+        const int n_islands = static_cast<int>(mArchipel.size());
 
         vector<double> sumRatesPerIsland(n_islands,0);
         for (int i = 0; i < n_islands; ++i) {
@@ -192,13 +193,14 @@ void Archipelago::speciateGlobalClado(const int& speciesID,
 
     // draw where to split the archipelago:
         // 0 to i-2 -> split after the island number drawn
-    int n_islands = static_cast<int>(mArchipel.size());
-    const int split = drawUniEvent(0, n_islands-2, prng);
+    int n_inhabitedIslands = static_cast<int>(onWhichIslands.size());
+    assert(n_inhabitedIslands >= 2);
+    const int split = drawUniEvent(0, n_inhabitedIslands-2, prng);
 
     // update data frame
     for (auto& isl : onWhichIslands) {
         mArchipel[isl].goExtinct(speciesID, time);
-        if (isl <= split)
+        if (isl <= split)   // split: after island with position equal to 'split'
             mArchipel[isl].addSpecies(spNew1);
         else
             mArchipel[isl].addSpecies(spNew2);
@@ -339,7 +341,7 @@ void Archipelago::addArchi(const Archipelago &newArchi)
         assert(i < n_islands);
 
         if (!addArch[i].returnIsland().empty()) { // ### CAUTION ### : does this make sense ??
-            mArchipel[i].consolidateIsland(addArch[i]);
+            mArchipel[i].consolidateIslands(addArch[i]);
         }
     }
 }
@@ -400,10 +402,8 @@ void Archipelago::printArchi()
 
 int Archipelago::getNSpeciesAlive()
 {
-    int aliveSpeciesCounter = 0;
-    for (auto& isl : mArchipel)
-        aliveSpeciesCounter += isl.getNSpeciesAlive();
-    return aliveSpeciesCounter;
+    const int n_aliveSpecies = static_cast<int>(getIDsSpeciesAlive().size());
+    return n_aliveSpecies;
 }
 
 vector<int> Archipelago::getIDsSpeciesAlive()
@@ -414,5 +414,50 @@ vector<int> Archipelago::getIDsSpeciesAlive()
         aliveSpecies.reserve(aliveSpecies.size() + tmpIDs.size());
         aliveSpecies.insert(aliveSpecies.end(), tmpIDs.begin(), tmpIDs.end());
     }
+    // remove duplicates:
+    const int vecSize = static_cast<int>(aliveSpecies.size());
+    for (int j = 0; j < vecSize; ++j) {
+        for (int k = j + 1; k < vecSize; ++k)
+            if (aliveSpecies[j].readSpID() ==
+                    aliveSpecies[k].readSpID()) {
+                aliveSpecies[k] = aliveSpecies.back();
+                aliveSpecies.pop_back();
+                --k;
+            }
+    }
     return aliveSpecies;
+}
+
+vector<int> Archipelago::getIDsGlobalSpeciesAlive()
+{
+    vector<int> aliveSpecies;
+    for(auto& island : mArchipel) {
+        vector<int> tmpIDs = island.getIDsSpeciesAlive();
+        aliveSpecies.reserve(aliveSpecies.size() + tmpIDs.size());
+        aliveSpecies.insert(aliveSpecies.end(), tmpIDs.begin(), tmpIDs.end());
+    }
+    // save duplicate species (= global species):
+    vector<int> aliveGlobalSpecies;
+    const int vecSize = static_cast<int>(aliveSpecies.size());
+    for (int j = 0; j < vecSize; ++j) {
+        for (int k = j + 1; k < vecSize; ++k)
+            if (aliveSpecies[j].readSpID() ==
+                    aliveSpecies[k].readSpID()) {
+                aliveGlobalSpecies.push_back(aliveSpecies[j]);
+                ++j;
+            }
+    }
+    // if on more than 2 islands -> creates duplicates
+    // remove duplicates:
+    const int vecSize2 = static_cast<int>(aliveGlobalSpecies.size());
+    for (int j = 0; j < vecSize2; ++j) {
+        for (int k = j + 1; k < vecSize2; ++k)
+            if (aliveGlobalSpecies[j] ==
+                    aliveGlobalSpecies[k]) {
+                aliveGlobalSpecies[k] = aliveGlobalSpecies.back();
+                aliveGlobalSpecies.pop_back();
+                --k;
+            }
+    }
+    return aliveGlobalSpecies;
 }

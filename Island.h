@@ -56,7 +56,7 @@ public:
 //    const std::vector<int>& returnIslSpecAlive() const { return mvIslSpecAlive; }
     void printIsland();  // prints island vector of species to the screen
 
-    void consolidateIsland(const Island&);     // add island to THIS island
+    void consolidateIslands(const Island&);     // add island to THIS island
     // ### CAUTION ### : illogical! -> make this a nonmember function
 
 private:

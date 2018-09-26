@@ -22,6 +22,7 @@ public:
 
     int getNSpeciesAlive();
     std::vector<int> getIDsSpeciesAlive();
+    std::vector<int> getIDsGlobalSpeciesAlive();
     std::vector<int> findIsl(const int &) const;    // find the island(s) where
                                     // species (input) is within archipelago
 

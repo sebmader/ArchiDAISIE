@@ -285,7 +285,7 @@ void test_island()
         island1.immigrate(50, 2.8);
         island1.printIsland();
         island2.printIsland();
-        island1.consolidateIsland(island2);
+        island1.consolidateIslands(island2);
         island1.printIsland();
     }
 }
