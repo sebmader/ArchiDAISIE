@@ -197,33 +197,59 @@ void Island::goExtinct(const int& speciesID)
 void Island::consolidateIslands(const Island& islNew)
 {   // adds another island to THIS (for aggregating archipelagos)
 
-    const vector<Species>& vSpecNew = islNew.returnIsland();
+    const vector<Species>& island2 = islNew.returnIsland();
     // const vector<int>& vSpecAliveNew = islNew.returnIslSpecAlive();
 
     // add species vector to THIS island
-    if (!vSpecNew.empty()) {
-        mIsland.reserve(mIsland.size() + vSpecNew.size());
-        mIsland.insert(mIsland.end(), vSpecNew.begin(), vSpecNew.end());
-        // mIsland.reserve(mIsland.size() + vSpecNew.size());   // preallocate memory
-        // mIsland.insert(mIsland.end(), vSpecNew.begin(), vSpecNew.end());
-
+    if (!island2.empty()) {
+        mIsland.reserve(mIsland.size() + island2.size());
+        mIsland.insert(mIsland.end(), island2.begin(), island2.end());
 
         // delete duplicates; ### CAUTION ### : what birth time ?!
-        /*
-        const int islandSize = static_cast<int>(mIsland.size());
-        for (int j = 0; j < islandSize; ++j) {
-            for (int k = j + 1; k < islandSize; ++k)
+        for (int j = 0; j < static_cast<int>(mIsland.size()); ++j) {
+            for (int k = j + 1; k < static_cast<int>(mIsland.size()); ++k) { ;
                 if (mIsland[j].readSpID() ==
                         mIsland[k].readSpID()) { // TODO
-                    // ExtinctTime: take the extant one, or the later extinction
-                    // BirthTime: take the oldest birth time (initial colonisation) or
-                    // the latest re-immigration time.. ### CAUTION ### : How??
-                    mIsland[k] = mIsland.back();
-                    mIsland.pop_back();
-                    --k;
+                    if (mIsland[j].isImmigrant()) {
+                        if (mIsland[k].isImmigrant()) {  // if both immigrants
+                                // take the most recent -> re-immigration
+                            if (mIsland[j].readBirth() <= mIsland[k].readBirth()) {
+                                deleteSpecies(k);
+                                --k;
+                            }
+                            else {
+                                deleteSpecies(j);
+                                --j;
+                            }
+                        }
+                        else {  // if j is immigrant but k is not
+                                    // delete the non-immigrant (= migrant?!)
+                            assert(mIsland[k].isMigrant());
+                            deleteSpecies(k);
+                            --k;
+                        }
+                    }
+                    else {  // if j is not immigrant
+                        if (mIsland[k].isImmigrant()) {  // but k is -> k stays
+                            assert(mIsland[j].isMigrant());
+                            deleteSpecies(j);
+                            --j;
+                        }
+                        else {  // both not immigrants -> older one stays
+                            assert(mIsland[j].isMigrant() || mIsland[k].isMigrant());
+                            if (mIsland[j].readBirth() >= mIsland[k].readBirth()) {
+                                deleteSpecies(k);
+                                --k;
+                            }
+                            else {
+                                deleteSpecies(j);
+                                --j;
+                            }
+                        }
+                    }
                 }
+            }
         }
-        */
     }
 }
 
@@ -244,4 +270,10 @@ double Island::returnLogGrowth()
 {
     double logGrowth = 1.0 - static_cast<double>(getNSpecies()) / mIslandK;
     return logGrowth;
+}
+
+void Island::deleteSpecies(const int& pos)
+{
+    mIsland[pos] = mIsland.back();
+    mIsland.pop_back();
 }

@@ -19,6 +19,8 @@ public:
     char readStat() const noexcept { return mStatus; }
     void setBirth(double);
     void setStatus(char);
+    bool isImmigrant() const noexcept;
+    bool isMigrant() const noexcept;
 
     void printSpec() {
         std::cout << mBirthT << '\t' << mParentID << '\t'

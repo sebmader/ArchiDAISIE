@@ -23,6 +23,8 @@ public:
     double returnLogGrowth();  // returns the logistic growth term (1-n/K)
 
     void addSpecies(const Species &);  // adds new species to species vector
+    void deleteSpecies(const int&);  // deletes species from species vector
+                                     // UNORDERD -> swap with last and pop_back
     int findPos(const int &) const;  // find the position of
                     // species (input) in island vector
 //    int findPosAlive(const int &ID) const;  // find position of species in
@@ -61,7 +63,6 @@ public:
 
 private:
     std::vector<Species> mIsland;  // phylogeny vector of species on island
-//    std::vector<int> mvIslSpecAlive;  // vector of species' IDs of alive species
     std::vector<double> mLocalRates;  // vector of rates
                     // for events PER ISLAND (5 rates: gamI, gamM, lambC, lambA, mu)
     int mIslandK; // Carrying capacity (should be const one day)

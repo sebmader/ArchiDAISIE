@@ -25,4 +25,14 @@ void Species::setStatus(char status)
     mStatus = status;
 }
 
+bool Species::isImmigrant() const noexcept
+{
+    return mStatus == 'I';
+}
+
+bool Species::isMigrant() const noexcept
+{
+    return mStatus == 'M';
+}
+
 

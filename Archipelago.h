@@ -64,9 +64,7 @@ private:
     std::vector<double> mGlobalRates;  // vector of rates for global events
                                        // (3 rates: lambC, lambA, mu)
     std::vector<Island> mArchipel;  // vector of island phylogenies of whole archipelago
-//    std::vector<int> mvArchSpecAlive;  // vector of IDs of extant species
     int mArchiK;    // carrying capacity of archipelago
 };
-
 
 #endif //ARCHIDAISIE_ARCHIPELAGO_H
