@@ -214,7 +214,9 @@ void Island::goExtinct(const int& speciesID, double time)
     // find species
     const int pos = findPos(speciesID);
     assert(pos >= 0);
-    mIsland[pos].goExtinct(time);
+    // remove species
+    mIsland.erase(mIsland.begin() + pos);
+//    mIsland[pos].goExtinct(time);
 //    const int posAlive = findPosAlive(speciesID);
 //    mvIslSpecAlive[posAlive] = mvIslSpecAlive.back();
 //    mvIslSpecAlive.pop_back();
@@ -233,32 +235,35 @@ void Island::consolidateIslands(const Island& islNew)
         mIsland.insert(mIsland.end(), vSpecNew.begin(), vSpecNew.end());
         // mIsland.reserve(mIsland.size() + vSpecNew.size());   // preallocate memory
         // mIsland.insert(mIsland.end(), vSpecNew.begin(), vSpecNew.end());
-    }
 
-    // delete duplicates; ### CAUTION ### : what birth time ?!
-    const int islandSize = static_cast<int>(mIsland.size());
-    for (int j = 0; j < islandSize; ++j) {
-        for (int k = j + 1; k < islandSize; ++k)
-            if (mIsland[j].readSpID() ==
-                    mIsland[k].readSpID()) { // TODO
-                // ExtinctTime: take the extant one, or the later extinction
-                // BirthTime: take the oldest birth time (initial colonisation) or
-                // the latest re-immigration time.. ### CAUTION ### : How??
-                mIsland[k] = mIsland.back();
-                mIsland.pop_back();
-                --k;
-            }
+
+        // delete duplicates; ### CAUTION ### : what birth time ?!
+        /*
+        const int islandSize = static_cast<int>(mIsland.size());
+        for (int j = 0; j < islandSize; ++j) {
+            for (int k = j + 1; k < islandSize; ++k)
+                if (mIsland[j].readSpID() ==
+                        mIsland[k].readSpID()) { // TODO
+                    // ExtinctTime: take the extant one, or the later extinction
+                    // BirthTime: take the oldest birth time (initial colonisation) or
+                    // the latest re-immigration time.. ### CAUTION ### : How??
+                    mIsland[k] = mIsland.back();
+                    mIsland.pop_back();
+                    --k;
+                }
+        }
+        */
+        /*
+        // add alive species to THIS island
+        if (!vSpecAliveNew.empty()) {
+            vector<int> vTempAlive = mvIslSpecAlive;
+            vTempAlive.reserve(mvIslSpecAlive.size() + vSpecAliveNew.size());
+            vTempAlive.insert(vTempAlive.end(), vSpecAliveNew.begin(), vSpecAliveNew.end());
+            // mvIslSpecAlive.reserve(mvIslSpecAlive.size() + vSpecAliveNew.size());
+            // mvIslSpecAlive.insert(mvIslSpecAlive.end(), vSpecAliveNew.begin(), vSpecAliveNew.end());
+        }
+        */
     }
-    /*
-    // add alive species to THIS island
-    if (!vSpecAliveNew.empty()) {
-        vector<int> vTempAlive = mvIslSpecAlive;
-        vTempAlive.reserve(mvIslSpecAlive.size() + vSpecAliveNew.size());
-        vTempAlive.insert(vTempAlive.end(), vSpecAliveNew.begin(), vSpecAliveNew.end());
-        // mvIslSpecAlive.reserve(mvIslSpecAlive.size() + vSpecAliveNew.size());
-        // mvIslSpecAlive.insert(mvIslSpecAlive.end(), vSpecAliveNew.begin(), vSpecAliveNew.end());
-    }
-    */
 }
 
 void Island::addSpecies(const Species& newSpecies)

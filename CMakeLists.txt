@@ -18,4 +18,5 @@ add_executable(ArchiDAISIE
         SpeciesID.cpp
         Species.cpp
         Island.cpp
-        Archipelago.cpp)
+        Archipelago.cpp
+        test_island.cpp)

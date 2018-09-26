@@ -418,8 +418,8 @@ vector<int> Archipelago::getIDsSpeciesAlive()
     const int vecSize = static_cast<int>(aliveSpecies.size());
     for (int j = 0; j < vecSize; ++j) {
         for (int k = j + 1; k < vecSize; ++k)
-            if (aliveSpecies[j].readSpID() ==
-                    aliveSpecies[k].readSpID()) {
+            if (aliveSpecies[j] ==
+                    aliveSpecies[k]) {
                 aliveSpecies[k] = aliveSpecies.back();
                 aliveSpecies.pop_back();
                 --k;
@@ -441,8 +441,8 @@ vector<int> Archipelago::getIDsGlobalSpeciesAlive()
     const int vecSize = static_cast<int>(aliveSpecies.size());
     for (int j = 0; j < vecSize; ++j) {
         for (int k = j + 1; k < vecSize; ++k)
-            if (aliveSpecies[j].readSpID() ==
-                    aliveSpecies[k].readSpID()) {
+            if (aliveSpecies[j] ==
+                    aliveSpecies[k]) {
                 aliveGlobalSpecies.push_back(aliveSpecies[j]);
                 ++j;
             }
