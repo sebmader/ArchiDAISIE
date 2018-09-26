@@ -27,11 +27,11 @@ int Island::findPos(const int &speciesID) const
     return -1;
 }
 /*
-int Island::findPosAlive(const int &speciesID) const
+int Island::findPosAlive(const int &mSpeciesID) const
 {
     const int aliveSpecies = getNSpecies();
     for (int i = 0; i < aliveSpecies; ++i)
-        if (mvIslSpecAlive[i] == speciesID)
+        if (mvIslSpecAlive[i] == mSpeciesID)
             return i;
     return -1;
 }
@@ -125,20 +125,14 @@ void Island::immigrate(const int& speciesID, double time)
 {   // immigration from the mainland to THIS island
     const int pos = findPos(speciesID);  // check if species is
                                           // already present on island
-    Species newSpecies(time, speciesID, speciesID);
-    if (pos >= 0) {  // if present
+    Species newSpecies(time, speciesID, speciesID, 'I');
+    if (pos >= 0) {  // if extant -> re-immigration
+                     // ("re-setting the clock" (= BirthT))
         assert(pos < static_cast<int>(mIsland.size()));
-        if (!mIsland[pos].isExtant()) {   // if extinct
-            mIsland.push_back(newSpecies);
-        //    mvIslSpecAlive.push_back(speciesID);
-        }
-        else  // if extant -> re-immigration
-              // ("re-setting the clock" (= BirthT))
-            mIsland[pos] = newSpecies;
+        mIsland[pos] = newSpecies;
     }
     else {
         mIsland.push_back(newSpecies);
-    //    mvIslSpecAlive.push_back(speciesID);
     }
 }
 
@@ -172,6 +166,7 @@ void Island::migrate(Species newSpecies, const double& time)
 {
     newSpecies.setBirth(time);  // set birth time of migrating species
     // to the time of migration
+    newSpecies.setStatus('M');
     const int speciesID = newSpecies.readSpID();
     const int pos = findPos(speciesID);
     if(pos == -1)  // if first migration: add species to island
@@ -188,9 +183,9 @@ void Island::speciateClado(const int& speciesID, double time,
 
     // 2 new species:
     Species newSpecies1 = Species(oldSpecies.readBirth(), speciesID,
-            maxSpeciesID.createNewSpeciesID());
+            maxSpeciesID.createNewSpeciesID(), 'C');
     Species newSpecies2 = Species(time, speciesID,
-            maxSpeciesID.createNewSpeciesID());
+            maxSpeciesID.createNewSpeciesID(), 'C');
 
     // parent goes extinct and daughters are added
     goExtinct(speciesID);
@@ -206,7 +201,7 @@ void Island::speciateAna(const int& speciesID, SpeciesID& maxSpeciesID)
     // new species
     const double birthT = oldSpecies.readBirth();
     Species newSpecies = Species(birthT, speciesID,
-            maxSpeciesID.createNewSpeciesID());
+            maxSpeciesID.createNewSpeciesID(), 'A');
     // parent goes extinct & daugther gets added to island
     goExtinct(speciesID);
     addSpecies(newSpecies);
@@ -219,15 +214,10 @@ void Island::goExtinct(const int& speciesID)
     assert(pos >= 0);
     // remove species
     mIsland.erase(mIsland.begin() + pos);
-//    mIsland[pos].goExtinct(time);
-//    const int posAlive = findPosAlive(speciesID);
-//    mvIslSpecAlive[posAlive] = mvIslSpecAlive.back();
-//    mvIslSpecAlive.pop_back();
 }
 
 void Island::consolidateIslands(const Island& islNew)
 {   // adds another island to THIS (for aggregating archipelagos)
-    // extract data frames from island that's to be added
 
     const vector<Species>& vSpecNew = islNew.returnIsland();
     // const vector<int>& vSpecAliveNew = islNew.returnIslSpecAlive();
@@ -256,25 +246,12 @@ void Island::consolidateIslands(const Island& islNew)
                 }
         }
         */
-        /*
-        // add alive species to THIS island
-        if (!vSpecAliveNew.empty()) {
-            vector<int> vTempAlive = mvIslSpecAlive;
-            vTempAlive.reserve(mvIslSpecAlive.size() + vSpecAliveNew.size());
-            vTempAlive.insert(vTempAlive.end(), vSpecAliveNew.begin(), vSpecAliveNew.end());
-            // mvIslSpecAlive.reserve(mvIslSpecAlive.size() + vSpecAliveNew.size());
-            // mvIslSpecAlive.insert(mvIslSpecAlive.end(), vSpecAliveNew.begin(), vSpecAliveNew.end());
-        }
-        */
     }
 }
 
 void Island::addSpecies(const Species& newSpecies)
 {   // adds new species to island -> both species and alive species vector
     mIsland.push_back(newSpecies);
-
-//    const int speciesID = newSpecies.readSpID();
-//    mvIslSpecAlive.push_back(speciesID);
 }
 
 vector<int> Island::getSpeciesIDs() const

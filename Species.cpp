@@ -4,23 +4,25 @@
 
 #include "Species.h"
 
-Species::Species(const double birthTime, const int parentId, const int speciesId)
-        : birthT{birthTime}, parentID{parentId}, speciesID{speciesId}, extinctT{-1.0}
+Species::Species(const double birthTime, const int parentId,
+        const int speciesId, const char status)
+        : mBirthT{birthTime}, mParentID{parentId}, mSpeciesID{speciesId},
+        mStatus{status}
 {
     assert(birthTime >= 0.0);
     assert(parentId >= 0);
     assert(speciesId >= 0);
-    assert(isExtant());
-}
-
-bool Species::isExtant() const noexcept
-{
-    return extinctT == -1.0;
+    assert(mStatus == 'I' || mStatus == 'A' || mStatus == 'C' || mStatus == 'M');
 }
 
 void Species::setBirth(const double time)
 {
-    birthT = time;
+    mBirthT = time;
+}
+
+void Species::setStatus(char status)
+{
+    mStatus = status;
 }
 
 

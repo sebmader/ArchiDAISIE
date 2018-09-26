@@ -23,30 +23,6 @@ Archipelago::Archipelago(const int &n_islands, const int &archiCarryingCap)
     mArchiK = archiCarryingCap;
 }
 
-/*
-void Archipelago::updateAliveSpec()
-{   // update archipelago-wide extant species vector
-    vector<int> vArchiTmpVec;
-    for (auto& i : mArchipel) {
-        if(!i.returnIslSpecAlive().empty()) {
-            const vector<int>& vIslTmpVec = i.returnIslSpecAlive();
-            vArchiTmpVec.reserve(vArchiTmpVec.size() + vIslTmpVec.size());
-            vArchiTmpVec.insert(vArchiTmpVec.end(), vIslTmpVec.begin(),
-                vIslTmpVec.end());
-        }
-    }
-    // delete duplicates
-    for (size_t i = 0; i < vArchiTmpVec.size(); ++i) {
-        for (size_t j = i + 1; j < vArchiTmpVec.size(); ++j)
-            if (vArchiTmpVec[i] == vArchiTmpVec[j]) {
-                vArchiTmpVec[j] = vArchiTmpVec.back();
-                vArchiTmpVec.pop_back();
-                --j;
-            }
-    }
-}
-*/
-
 vector<int> Archipelago::findIsl(const int &ID) const
 // find the island(s) where certain species (input) is within archipelago
 // returns vector with island IDs (spots in mArchipel vector)
@@ -93,7 +69,7 @@ vector<double> Archipelago::calculateAllRates(
 
     // count all alive species -> for carrying capacity
     const int aliveSpecies = getNSpecies();
-    // calculate global rates
+    // calculate global rates:
     // global cladogenesis: carrying capacity of all species, not only global species
     const double globalCladoRate = max(0.0, initialGlobalClado * n_globalSpecies *
             (1 - (static_cast<double>(aliveSpecies)/mArchiK)));
@@ -101,17 +77,18 @@ vector<double> Archipelago::calculateAllRates(
     const double globalAnaRate = max(0.0, initialGlobalAna * n_globalImmigrants);
     // global extinction:
     const double globalExtinctRate = max(0.0, initialGlobalExtinct * n_globalSpecies);
-
+    // sum of global rates:
     const double sumGlobal = globalCladoRate + globalAnaRate + globalExtinctRate;
     mGlobalRates = { globalCladoRate, globalAnaRate, globalExtinctRate };
 
-    // calculate local rates
+    // calculate local rates:
     // logistic growth term for migration
     double sumLogGrowth = 0.0;
     for (auto &j : mArchipel) {
         sumLogGrowth += j.returnLogGrowth(); // sums the
             // logistic growth terms of all islands together
     }
+    // sum of local rates:
     double sumLocal = 0;
     for (auto &i : mArchipel) {
         double sumLogGrowthWOthisIsl = sumLogGrowth - i.returnLogGrowth(); // sum
@@ -188,8 +165,8 @@ void Archipelago::speciateGlobalClado(const int& speciesID,
     // two daughter species
     const Species sp = mArchipel[onWhichIslands[0]].findSpecies(speciesID);
     const double birthT = sp.readBirth();
-    Species spNew1(birthT, speciesID, maxSpeciesID.createNewSpeciesID());
-    Species spNew2(time, speciesID, maxSpeciesID.createNewSpeciesID());
+    Species spNew1(birthT, speciesID, maxSpeciesID.createNewSpeciesID(), 'C');
+    Species spNew2(time, speciesID, maxSpeciesID.createNewSpeciesID(), 'C');
 
     // draw where to split the archipelago:
         // 0 to i-2 -> split after the island number drawn
@@ -219,7 +196,7 @@ void Archipelago::speciateGlobalAna(const int& speciesID, SpeciesID& maxSpeciesI
     // daughter species
     const Species sp = mArchipel[onWhichIslands[0]].findSpecies(speciesID);
     const double birthT = sp.readBirth();
-    Species spNew(birthT, speciesID, maxSpeciesID.createNewSpeciesID());
+    Species spNew(birthT, speciesID, maxSpeciesID.createNewSpeciesID(), 'A');
     for (auto& iIsl : onWhichIslands) {
         mArchipel[iIsl].goExtinct(speciesID);
         mArchipel[iIsl].addSpecies(spNew);
@@ -242,8 +219,7 @@ void Archipelago::doNextEvent(const vector<int>& happening,
         mt19937_64 prng,
         double time,
         SpeciesID& maxSpeciesID)
-{   // based on the outcome of sampleNextEvent function
-        // it will update the data frame(s)
+{   // updates data frames; based on output of sampleNextEvent
     // order of input: event [0], species [1], (island [2])
     // order of parameter indexes (Event):
         // immigration (0), migration (1), localClado(2), localAna (3),
@@ -295,8 +271,8 @@ void Archipelago::doNextEvent(const vector<int>& happening,
                 }
                 int destinationIsland = mArchipel[isl].drawMigDestinationIsland(
                         isl, vLogs, initialMigrationRate, prng);
-                    // output: position of island in mArchipel whereto the species
-                        // migrates
+                    // output: position of island in mArchipel where the species
+                        // migrates to
                 Species newSpecies = mArchipel[isl].findSpecies(speciesID);
                 mArchipel[destinationIsland].migrate(newSpecies, time);
                 break;

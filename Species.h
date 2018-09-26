@@ -12,23 +12,24 @@
 class Species {
 
 public:
-    explicit Species(double = 0, int = 0, int = 0);
+    explicit Species(double = 0, int = 0, int = 0, char = 'I');
 
+    double readBirth() const noexcept { return mBirthT; }
+    int readSpID() const noexcept { return mSpeciesID; }
+    char readStat() const noexcept { return mStatus; }
     void setBirth(double);
-    bool isExtant() const noexcept;
-    double readBirth() const noexcept {return birthT;}
-    int readSpID() const noexcept {return speciesID;}
+    void setStatus(char);
 
     void printSpec() {
-        std::cout << birthT << '\t' << parentID << '\t'
-                  << speciesID << '\t' << extinctT << '\n';
+        std::cout << mBirthT << '\t' << mParentID << '\t'
+                  << mSpeciesID << '\t' << mStatus << '\n';
     }
 
 private:
-    double birthT;     //Should be const one day
-    int parentID;      //Should be const one day
-    int speciesID;        //Should be const one day
-    double extinctT;   //Will be -1 when extant
+    double mBirthT;     //Should be const one day
+    int mParentID;      //Should be const one day
+    int mSpeciesID;     //Should be const one day
+    char mStatus;       // immigrant, anagenesis, cladogenesis, migrant ('I','A','C','M')
 };
 
 

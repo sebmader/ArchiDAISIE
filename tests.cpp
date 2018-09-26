@@ -18,6 +18,7 @@ void test_island()
         assert(island.getNSpecies()==0);
         island.addSpecies(Species(0, 0, 0));
         assert(island.getNSpecies()==1);
+        assert(island.returnIsland()[0].readStat() == 'I');
     }
     {   // testing immigration
         Island island(10);
@@ -25,6 +26,7 @@ void test_island()
         island.immigrate(42, 3.14);
         assert(island.getNSpecies()==1);
         assert(island.findSpecies(42).readBirth()==3.14);
+        assert(island.findSpecies(42).readStat() == 'I');
     }
     {   // testing re-immigration
         Island island(10);
@@ -52,10 +54,13 @@ void test_island()
         island.immigrate(42, 3.01);
         island.goExtinct(42);
         island.speciateAna(1, maxSpeciesID);
+        assert(island.findSpecies(n_mainlandSpecies+1).readStat() == 'A');
         assert(maxSpeciesID.getMaxSpeciesID()
             == n_mainlandSpecies+1);
         island.immigrate(42, 2.56);
         island.speciateClado(42, 2.50, maxSpeciesID);
+        assert(island.findSpecies(n_mainlandSpecies+2).readStat() == 'C');
+        assert(island.findSpecies(n_mainlandSpecies+3).readStat() == 'C');
         assert(maxSpeciesID.getMaxSpeciesID()
                 == n_mainlandSpecies+3);
         assert(island.getNSpecies() == 3);
