@@ -123,7 +123,6 @@ void test_island()
         vector<double> logGrowthTerms = { island1.returnLogGrowth(), island2.returnLogGrowth() };
         const int destinationIsl = island1.drawMigDestinationIsland(0,
                                             logGrowthTerms, islPars[1], prng);
-        // some comment for travis
         assert(destinationIsl == 1);
         island2.migrate(island1.findSpecies(happening[1]), 3.6);
         island1.speciateClado(happening[1],3.5, maxSpeciesID);
@@ -134,6 +133,10 @@ void test_island()
         double sumLogWO2 = island1.returnLogGrowth();
         island2.calculateIslRates(islPars, n_mainlandSpecies, n_islands, sumLogWO2);
         island1.immigrate(50, 2.8);
+        island2.migrate(island1.findSpecies(50), 2.5);
+        island2.immigrate(23, 2.2);
+        island2.speciateClado(23, 2.0, maxSpeciesID);
+        island1.migrate(island2.findSpecies(maxSpeciesID.getMaxSpeciesID()),1.74);
         island1.printIsland();
         island2.printIsland();
         island1.consolidateIslands(island2);
