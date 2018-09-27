@@ -149,7 +149,10 @@ void Island::migrate(Species newSpecies, const double& time)
     const int pos = findPos(speciesID);
     if(pos == -1)  // if first migration: add species to island
         addSpecies(newSpecies);
-            // else (if re-migration): nothing happens
+    else {  // else (if re-migration): re-set clock // TODO: correct?
+        assert(pos >= 0 && pos < static_cast<int>(mIsland.size()));
+        mIsland[pos] = newSpecies;
+    }
 }
 
 void Island::speciateClado(const int& speciesID, double time,

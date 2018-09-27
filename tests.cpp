@@ -132,11 +132,24 @@ void test_island()
         island2.immigrate(50, 3.2);
         double sumLogWO2 = island1.returnLogGrowth();
         island2.calculateIslRates(islPars, n_mainlandSpecies, n_islands, sumLogWO2);
+    }
+    {  // test consolidation
+        Island island1(10);
+        Island island2(20);
+        const int n_mainlandSpecies = 50;
+        SpeciesID maxSpeciesID(n_mainlandSpecies);
         island1.immigrate(50, 2.8);
+        island2.immigrate(50, 2.7);
+        island2.speciateAna(50, maxSpeciesID);
         island2.migrate(island1.findSpecies(50), 2.5);
+        island1.migrate(island2.findSpecies(maxSpeciesID.getMaxSpeciesID()), 2.4);
         island2.immigrate(23, 2.2);
         island2.speciateClado(23, 2.0, maxSpeciesID);
         island1.migrate(island2.findSpecies(maxSpeciesID.getMaxSpeciesID()),1.74);
+        island1.immigrate(10, 1.9);
+        island2.migrate(island1.findSpecies(10), 1.8);
+        island1.goExtinct(10);
+        island1.migrate(island2.findSpecies(10), 1.5);
         island1.printIsland();
         island2.printIsland();
         island1.consolidateIslands(island2);
