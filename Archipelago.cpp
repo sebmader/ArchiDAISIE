@@ -368,8 +368,8 @@ void Archipelago::printArchi()
     for (auto& z : mArchipel) {
         ++i;
         cout << "Island " << i << '\n';
-        cout << "BirthT" << '\t' << "ParentID" << '\t'
-             << "SpeciesID" << '\t' << "ExtinctT" << '\n';
+        cout << "BirT" << '\t' << "ParID" << '\t'
+             << "SpID" << '\t' << "Stac" << '\n';
         z.printIsland();
         cout << '\n';
     }

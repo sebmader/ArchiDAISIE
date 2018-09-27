@@ -162,7 +162,6 @@ void test_island()
         island1.speciateAna(6, maxSpeciesID);
         island2.migrate(island1.findSpecies(maxSpeciesID.getMaxSpeciesID()),0.2);
         island1.consolidateIslands(island2);
-        island1.printIsland();
     }
 }
 
@@ -183,8 +182,8 @@ void test_archi()
         const int n_mainland = 100;
         Archipelago archi(n_islands, archi_carryingCap);
         assert(archi.getGlobalRates().empty());
-        vector<double> vPars { 0.1, 0.1, 0.2, 0.12, 0.3, 0.2, 0.1, 0.12 } ;
-        vector<double> sumLocGlo = archi.calculateAllRates(vPars, n_mainland, n_islands);
+        vector<double> pars { 0.1, 0.1, 0.2, 0.12, 0.3, 0.2, 0.1, 0.12 } ;
+        vector<double> sumLocGlo = archi.calculateAllRates(pars, n_mainland, n_islands);
         assert(archi.getGlobalRates().size() == 3);
         assert(sumLocGlo.size() == 2);
         assert(sumLocGlo[0] == 0);  // global rates == 0 -> no species on archi
@@ -202,8 +201,8 @@ void test_archi()
         mt19937_64 prng;
         Archipelago archi(n_islands, archi_carryingCap);
         assert(archi.getGlobalRates().empty());
-        vector<double> vPars{ 0.1, 0.1, 0.2, 0.12, 0.3, 0.2, 0.1, 0.12 };
-        vector<double> sumLocGlo = archi.calculateAllRates(vPars, n_mainland, n_islands);
+        vector<double> pars{ 0.1, 0.1, 0.2, 0.12, 0.3, 0.2, 0.1, 0.12 };
+        vector<double> sumLocGlo = archi.calculateAllRates(pars, n_mainland, n_islands);
         vector<int> happening = archi.sampleNextEvent(sumLocGlo, prng, n_mainland);
         assert(happening.size() == 3); // -> has to be immigration (= local)
         assert(happening[0] == 0 && happening[1] > 0 && happening[2] >= 0);
@@ -215,10 +214,10 @@ void test_archi()
         SpeciesID maxSpeciesID(n_mainland);
         mt19937_64 prng;
         Archipelago archi(n_islands, archi_carryingCap);
-        vector<double> vPars{ 0.1, 0.1, 0.2, 0.12, 0.3, 0.2, 0.1, 0.12 };
-        vector<double> sumLocGlo = archi.calculateAllRates(vPars, n_mainland, n_islands);
+        vector<double> pars{ 0.1, 0.1, 0.2, 0.12, 0.3, 0.2, 0.1, 0.12 };
+        vector<double> sumLocGlo = archi.calculateAllRates(pars, n_mainland, n_islands);
         vector<int> happening = archi.sampleNextEvent(sumLocGlo, prng, n_mainland);
-        const double iniMigRate = vPars[1];
+        const double iniMigRate = pars[1];
         archi.doNextEvent(happening, iniMigRate, prng, 3.9, maxSpeciesID);
         vector<int> onWhichIsls = archi.findIsl(happening[1]);
         assert(onWhichIsls.size() == 1); // -> one immigration
@@ -226,5 +225,47 @@ void test_archi()
         vector<Island> archiCopy = archi.returnArchi();
         const int pos = archiCopy[inhabitedIslPos].findPos(happening[1]);
         assert(pos == 0);
+    }
+    {
+        const int n_islands = 2;
+        const int archi_carryingCap = 50;
+        const int n_mainland = 100;
+        SpeciesID maxSpeciesID(n_mainland);
+        mt19937_64 prng;
+        Archipelago archi(n_islands, archi_carryingCap);
+        const double iniMigRate = 0.1;
+        vector<int> happening { 0, 29, 0 };
+        archi.doNextEvent(happening, iniMigRate, prng, 4.0, maxSpeciesID);
+        vector<int> happening2 { 0, 65, 1 };
+        archi.doNextEvent(happening2, iniMigRate, prng, 4.0, maxSpeciesID);
+        vector<int> happening3 { 1, 65, 1 };
+        archi.doNextEvent(happening3, iniMigRate, prng, 4.0, maxSpeciesID);
+        vector<int> onWhichIsls = archi.findIsl(65);
+        assert(onWhichIsls.size() == 2);
+        vector<Island> archiCopy = archi.returnArchi();
+        int pos = archiCopy[onWhichIsls[0]].findPos(65);
+        assert(pos == 1);
+        pos = archiCopy[onWhichIsls[1]].findPos(65);
+        assert(pos == 0);
+        archi.printArchi();
+    }
+    {
+        const int n_islands = 2;
+        const int archi_carryingCap = 50;
+        const int n_mainland = 100;
+        SpeciesID maxSpeciesID(n_mainland);
+        mt19937_64 prng;
+        Archipelago archi(n_islands, archi_carryingCap);
+        vector<double> pars{ 0.1, 0.1, 0.2, 0.12, 0.3, 0.2, 0.1, 0.12 };
+        const double iniMigRate = pars[1];
+        vector<int> happening { 0, 29, 0 };
+        archi.doNextEvent(happening, iniMigRate, prng, 4.0, maxSpeciesID);
+        vector<int> happening2 { 0, 65, 1 };
+        archi.doNextEvent(happening2, iniMigRate, prng, 3.9, maxSpeciesID);
+        vector<int> happening3 { 1, 65, 1 };
+        archi.doNextEvent(happening3, iniMigRate, prng, 3.8, maxSpeciesID);
+        vector<double> sumGloLoc = archi.calculateAllRates(pars, n_mainland, n_islands);
+        vector<int> happening4 = archi.sampleNextEvent(sumGloLoc, prng, n_mainland);
+        archi.doNextEvent(happening4, iniMigRate, prng, 3.7, maxSpeciesID);
     }
 }
