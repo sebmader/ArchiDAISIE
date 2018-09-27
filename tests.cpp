@@ -208,4 +208,23 @@ void test_archi()
         assert(happening.size() == 3); // -> has to be immigration (= local)
         assert(happening[0] == 0 && happening[1] > 0 && happening[2] >= 0);
     }
+    {
+        const int n_islands = 2;
+        const int archi_carryingCap = 50;
+        const int n_mainland = 100;
+        SpeciesID maxSpeciesID(n_mainland);
+        mt19937_64 prng;
+        Archipelago archi(n_islands, archi_carryingCap);
+        vector<double> vPars{ 0.1, 0.1, 0.2, 0.12, 0.3, 0.2, 0.1, 0.12 };
+        vector<double> sumLocGlo = archi.calculateAllRates(vPars, n_mainland, n_islands);
+        vector<int> happening = archi.sampleNextEvent(sumLocGlo, prng, n_mainland);
+        const double iniMigRate = vPars[1];
+        archi.doNextEvent(happening, iniMigRate, prng, 3.9, maxSpeciesID);
+        vector<int> onWhichIsls = archi.findIsl(happening[1]);
+        assert(onWhichIsls.size() == 1); // -> one immigration
+        const int inhabitedIslPos = onWhichIsls[0];
+        vector<Island> archiCopy = archi.returnArchi();
+        const int pos = archiCopy[inhabitedIslPos].findPos(happening[1]);
+        assert(pos == 0);
+    }
 }

@@ -22,18 +22,18 @@ Archipelago::Archipelago(const int &n_islands, const int &archiCarryingCap)
     mArchiK = archiCarryingCap;
 }
 
-vector<int> Archipelago::findIsl(const int &ID) const
+vector<int> Archipelago::findIsl(const int &speciesID) const
 // find the island(s) where certain species (input) is within archipelago
 // returns vector with island IDs (spots in mArchipel vector)
 // ### CAUTION ### : maybe vector<pairs<int, int> > with island ID and position?
 {
-    vector<int> vLocations;
+    vector<int> locations;
     const int n_islands = static_cast<int>(mArchipel.size());
     for (int i = 0; i < n_islands; ++i) {
-        if (mArchipel[i].findPos(ID) >= 0)
-            vLocations.push_back(i);
+        if (mArchipel[i].findPos(speciesID) >= 0)
+            locations.push_back(i);
     }
-    return vLocations;
+    return locations;
 }
 
 vector<double> Archipelago::calculateAllRates(
