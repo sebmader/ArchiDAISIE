@@ -60,6 +60,9 @@ public:
     const std::vector<Island> & returnArchi() const {return mArchipel;}
     void printArchi();  // print archipelago islands to screen
 
+    int getCarryingCap() const noexcept { return mArchiK; }
+    std::vector<double> getGlobalRates() const noexcept { return mGlobalRates; }
+
 private:
     std::vector<double> mGlobalRates;  // vector of rates for global events
                                        // (3 rates: lambC, lambA, mu)

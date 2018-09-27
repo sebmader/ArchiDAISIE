@@ -173,13 +173,18 @@ void test_archi()
         const int archi_carryingCap = 50;
         Archipelago archi(n_islands, archi_carryingCap);
         assert(archi.getNSpecies() == 0);
+        assert(archi.getCarryingCap() == archi_carryingCap);
         assert(archi.returnArchi()[0].getCarryingCap() == archi_carryingCap/n_islands);
         assert(archi.returnArchi()[1].getNSpecies() == 0);
     }
     {
         const int n_islands = 2;
         const int archi_carryingCap = 50;
+        const int n_mainland = 100;
         Archipelago archi(n_islands, archi_carryingCap);
-
+        assert(archi.getGlobalRates().size() == 0);
+        vector<double> vPars { 0.1, 0.1, 0.2, 0.12, 0.3, 0.2, 0.1, 0.12 } ;
+        archi.calculateAllRates(vPars, n_mainland, n_islands);
+        assert(archi.getGlobalRates().size() == 3);
     }
 }

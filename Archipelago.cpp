@@ -14,7 +14,6 @@ Archipelago::Archipelago(const int &n_islands, const int &archiCarryingCap)
     if(archiCarryingCap % n_islands != 0)
         throw logic_error("The carrying capacity needs to be dividable"
                           " by the number of islands without remainder.\n");
-    // ### CAUTION ### : let the archipelago-wide K be a floating point ??
     if (n_islands == 0 || archiCarryingCap == 0)
         throw string("You are creating an archipelago without islands"
                      " and/or with a carrying capacity of zero.\n");
