@@ -208,6 +208,8 @@ void Island::consolidateIslands(const Island& islNew)
         mIsland.reserve(mIsland.size() + island2.size());
         mIsland.insert(mIsland.end(), island2.begin(), island2.end());
 
+        printIsland();
+
         // delete duplicates; ### CAUTION ### : what birth time ?!
         for (int j = 0; j < static_cast<int>(mIsland.size()); ++j) {
             for (int k = j + 1; k < static_cast<int>(mIsland.size()); ++k) { ;
