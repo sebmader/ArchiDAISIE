@@ -150,6 +150,12 @@ void test_island()
         island2.migrate(island1.findSpecies(10), 1.8);
         island1.goExtinct(10);
         island1.migrate(island2.findSpecies(10), 1.5);
+        island1.immigrate(1, 1.4);
+        island2.immigrate(1, 1.3);
+        island2.immigrate(2, 1.2);
+        island1.immigrate(2, 1.1);
+        island2.immigrate(3, 1.0);
+        island1.migrate(island2.findSpecies(3),0.9);
         island1.printIsland();
         island2.printIsland();
         island1.consolidateIslands(island2);
