@@ -153,8 +153,8 @@ void test_island()
         island1.migrate(island2.findSpecies(10), 1.5);
         island1.immigrate(1, 1.4);
         island2.immigrate(1, 1.3);
-        island2.immigrate(2, 1.2);
         island1.immigrate(2, 1.1);
+        island2.immigrate(2, 1.2);
         island2.immigrate(3, 1.0);
         island1.migrate(island2.findSpecies(3),0.9);
         island1.migrate(island2.findSpecies(3),0.5);
