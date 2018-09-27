@@ -208,8 +208,6 @@ void Island::consolidateIslands(const Island& islNew)
         mIsland.reserve(mIsland.size() + island2.size());
         mIsland.insert(mIsland.end(), island2.begin(), island2.end());
 
-        printIsland();
-
         // delete duplicates; ### CAUTION ### : what birth time ?!
         for (int j = 0; j < static_cast<int>(mIsland.size()); ++j) {
             for (int k = j + 1; k < static_cast<int>(mIsland.size()); ++k) { ;
@@ -252,6 +250,17 @@ void Island::consolidateIslands(const Island& islNew)
                             }
                         }
                     }
+                }
+            }
+        }
+        // sort birth time
+        const int newVecSize = static_cast<int>(mIsland.size());
+        for (int l = 0; l < newVecSize-1; ++l) {
+            for (int m = l + 1; m < newVecSize; ++m) {
+                if(mIsland[l].readBirth() < mIsland[m].readBirth()) {
+                    const Species tmpSp = mIsland[m];
+                    mIsland[m] = mIsland[l];
+                    mIsland[l] = tmpSp;
                 }
             }
         }

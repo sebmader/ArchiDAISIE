@@ -149,6 +149,7 @@ vector<vector<Species> > ArchiDAISIE(const double &islandAge,
 int main() {
 
     test_island();
+    test_archi();
     /*
     vector<double> vPars( {0.1, 0.1, 0.2, 0.12, 0.3, 0.2, 0.1, 0.12, 50} );
     ArchiDAISIE(5, 50, vPars, 2, 100);

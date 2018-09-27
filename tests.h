@@ -10,7 +10,10 @@
 #include <random>
 #include "Species.h"
 #include "Island.h"
+#include "Archipelago.h"
 
 void test_island();
+
+void test_archi();
 
 #endif //ARCHIDAISIE_TEST_ISLAND_H

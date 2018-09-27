@@ -161,9 +161,25 @@ void test_island()
         island1.immigrate(6, 0.4);
         island1.speciateAna(6, maxSpeciesID);
         island2.migrate(island1.findSpecies(maxSpeciesID.getMaxSpeciesID()),0.2);
-        island1.printIsland();
-        island2.printIsland();
         island1.consolidateIslands(island2);
         island1.printIsland();
+    }
+}
+
+void test_archi()
+{
+    {  // test basics
+        const int n_islands = 2;
+        const int archi_carryingCap = 50;
+        Archipelago archi(n_islands, archi_carryingCap);
+        assert(archi.getNSpecies() == 0);
+        assert(archi.returnArchi()[0].getCarryingCap() == archi_carryingCap/n_islands);
+        assert(archi.returnArchi()[1].getNSpecies() == 0);
+    }
+    {
+        const int n_islands = 2;
+        const int archi_carryingCap = 50;
+        Archipelago archi(n_islands, archi_carryingCap);
+
     }
 }
