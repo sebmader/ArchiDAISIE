@@ -139,6 +139,7 @@ void test_island()
         const int n_mainlandSpecies = 50;
         SpeciesID maxSpeciesID(n_mainlandSpecies);
         island1.immigrate(50, 2.8);
+        island1.consolidateIslands(island2);
         island2.immigrate(50, 2.7);
         island2.speciateAna(50, maxSpeciesID);
         island2.migrate(island1.findSpecies(50), 2.5);
@@ -156,6 +157,10 @@ void test_island()
         island1.immigrate(2, 1.1);
         island2.immigrate(3, 1.0);
         island1.migrate(island2.findSpecies(3),0.9);
+        island1.migrate(island2.findSpecies(3),0.5);
+        island1.immigrate(6, 0.4);
+        island1.speciateAna(6, maxSpeciesID);
+        island2.migrate(island1.findSpecies(maxSpeciesID.getMaxSpeciesID()),0.2);
         island1.printIsland();
         island2.printIsland();
         island1.consolidateIslands(island2);
