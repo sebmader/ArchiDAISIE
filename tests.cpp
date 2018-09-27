@@ -182,9 +182,30 @@ void test_archi()
         const int archi_carryingCap = 50;
         const int n_mainland = 100;
         Archipelago archi(n_islands, archi_carryingCap);
-        assert(archi.getGlobalRates().size() == 0);
+        assert(archi.getGlobalRates().empty());
         vector<double> vPars { 0.1, 0.1, 0.2, 0.12, 0.3, 0.2, 0.1, 0.12 } ;
-        archi.calculateAllRates(vPars, n_mainland, n_islands);
+        vector<double> sumLocGlo = archi.calculateAllRates(vPars, n_mainland, n_islands);
         assert(archi.getGlobalRates().size() == 3);
+        assert(sumLocGlo.size() == 2);
+        assert(sumLocGlo[0] == 0);  // global rates == 0 -> no species on archi
+        assert(sumLocGlo[1] > 0);  // local rates > 0 -> only immigration can happen
+        vector<Island> archiCopy = archi.returnArchi();
+        assert(archiCopy[0].extractSumOfRates() > 0);
+        assert(archiCopy[1].extractSumOfRates() > 0);
+        assert(archiCopy[0].getLocalRates().size() == 5);
+        assert(archiCopy[1].getLocalRates().size() == 5);
+    }
+    {
+        const int n_islands = 2;
+        const int archi_carryingCap = 50;
+        const int n_mainland = 100;
+        mt19937_64 prng;
+        Archipelago archi(n_islands, archi_carryingCap);
+        assert(archi.getGlobalRates().empty());
+        vector<double> vPars{ 0.1, 0.1, 0.2, 0.12, 0.3, 0.2, 0.1, 0.12 };
+        vector<double> sumLocGlo = archi.calculateAllRates(vPars, n_mainland, n_islands);
+        vector<int> happening = archi.sampleNextEvent(sumLocGlo, prng, n_mainland);
+        assert(happening.size() == 3); // -> has to be immigration (= local)
+        assert(happening[0] == 0 && happening[1] > 0 && happening[2] >= 0);
     }
 }

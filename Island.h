@@ -21,6 +21,7 @@ public:
     std::vector<int> getSpeciesIDs() const;
     int getNSpecies() const noexcept { return static_cast<int>(mIsland.size()); }
     double returnLogGrowth();  // returns the logistic growth term (1-n/K)
+    std::vector<double> getLocalRates() { return mLocalRates; }
 
     void addSpecies(const Species &);  // adds new species to species vector
     void deleteSpecies(const int&);  // deletes species from species vector
