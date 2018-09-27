@@ -288,4 +288,52 @@ void test_archi()
         assert(happening4.size() == 2);  // -> global
         archi.doNextEvent(happening4, iniMigRate, prng, 3.7, maxSpeciesID);
     }
+    {  // global clado
+        const int n_islands = 2;
+        const int archi_carryingCap = 50;
+        const int n_mainland = 100;
+        SpeciesID maxSpeciesID(n_mainland);
+        mt19937_64 prng;
+        Archipelago archi(n_islands, archi_carryingCap);
+        vector<double> pars{ 0.1, 0.1, 0.2, 0.12, 0.3, 0.2, 0.1, 0.12 };
+        const double iniMigRate = pars[1];
+        vector<int> happening2 { 0, 65, 1 };
+        archi.doNextEvent(happening2, iniMigRate, prng, 3.9, maxSpeciesID);
+        vector<int> happening3 { 1, 65, 1 };
+        archi.doNextEvent(happening3, iniMigRate, prng, 3.8, maxSpeciesID);
+        vector<int> happening4 { 5, 65 };
+        archi.doNextEvent(happening4, iniMigRate, prng, 3.5, maxSpeciesID);
+    }
+    {  // global ana
+        const int n_islands = 2;
+        const int archi_carryingCap = 50;
+        const int n_mainland = 100;
+        SpeciesID maxSpeciesID(n_mainland);
+        mt19937_64 prng;
+        Archipelago archi(n_islands, archi_carryingCap);
+        vector<double> pars{ 0.1, 0.1, 0.2, 0.12, 0.3, 0.2, 0.1, 0.12 };
+        const double iniMigRate = pars[1];
+        vector<int> happening2 { 0, 65, 1 };
+        archi.doNextEvent(happening2, iniMigRate, prng, 3.9, maxSpeciesID);
+        vector<int> happening3 { 1, 65, 1 };
+        archi.doNextEvent(happening3, iniMigRate, prng, 3.8, maxSpeciesID);
+        vector<int> happening4 { 6, 65 };
+        archi.doNextEvent(happening4, iniMigRate, prng, 3.5, maxSpeciesID);
+    }
+    {  // global extinct
+        const int n_islands = 2;
+        const int archi_carryingCap = 50;
+        const int n_mainland = 100;
+        SpeciesID maxSpeciesID(n_mainland);
+        mt19937_64 prng;
+        Archipelago archi(n_islands, archi_carryingCap);
+        vector<double> pars{ 0.1, 0.1, 0.2, 0.12, 0.3, 0.2, 0.1, 0.12 };
+        const double iniMigRate = pars[1];
+        vector<int> happening2 { 0, 65, 1 };
+        archi.doNextEvent(happening2, iniMigRate, prng, 3.9, maxSpeciesID);
+        vector<int> happening3 { 1, 65, 1 };
+        archi.doNextEvent(happening3, iniMigRate, prng, 3.8, maxSpeciesID);
+        vector<int> happening4 { 7, 65 };
+        archi.doNextEvent(happening4, iniMigRate, prng, 3.5, maxSpeciesID);
+    }
 }
