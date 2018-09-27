@@ -336,7 +336,7 @@ void test_archi()
         vector<int> happening4 { 7, 65 };
         archi.doNextEvent(happening4, iniMigRate, prng, 3.5, maxSpeciesID);
     }
-    {
+    {  // local events
         const int n_islands = 2;
         const int archi_carryingCap = 50;
         const int n_mainland = 100;
@@ -355,5 +355,21 @@ void test_archi()
         archi.doNextEvent(happening5, iniMigRate, prng, 3.4, maxSpeciesID);
         vector<int> happening6 { 4, maxSpeciesID.getMaxSpeciesID(), 1 };
         archi.doNextEvent(happening6, iniMigRate, prng, 3.3, maxSpeciesID);
+    }
+    {  // more than 2 islands
+        const int n_islands = 5;
+        const int archi_carryingCap = 50;
+        const int n_mainland = 100;
+        SpeciesID maxSpeciesID(n_mainland);
+        mt19937_64 prng;
+        Archipelago archi(n_islands, archi_carryingCap);
+        vector<double> pars{ 0.1, 0.1, 0.2, 0.12, 0.3, 0.2, 0.1, 0.12 };
+        const double iniMigRate = pars[1];
+        vector<int> happening2 { 0, 65, 1 };
+        archi.doNextEvent(happening2, iniMigRate, prng, 3.9, maxSpeciesID);
+        vector<int> happening3 { 1, 65, 1 };
+        archi.doNextEvent(happening3, iniMigRate, prng, 3.8, maxSpeciesID);
+        vector<int> happening4 { 0, 65, 2 };
+        archi.doNextEvent(happening4, iniMigRate, prng, 3.5, maxSpeciesID);
     }
 }
