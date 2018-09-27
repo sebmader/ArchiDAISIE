@@ -9,8 +9,8 @@ enum class event_type
     local_cladogenesis = 2,
     local_anagenesis = 3,
     local_extinction = 4,
-    global_anagenesis = 5,
-    global_cladogenesis = 6,
+    global_cladogenesis = 5,
+    global_anagenesis = 6,
     global_extinction =7,
 };
 
