@@ -54,7 +54,7 @@ public:
     void immigrate(const int&, double);  // mainland species immigrates to that island //RJCB: why int? 'const Species&' is most natural, else 'const SpeciesID&' would be most natural
     int drawMigDestinationIsland(
         const int originIsland, //RJCB: doesn't Island have a const int ID?
-        vector<double>& LogGrowthTerms, //RJCB: AFAICS, can be calculated when needed
+        std::vector<double>& LogGrowthTerms, //RJCB: AFAICS, can be calculated when needed
         const double& initialMigrationRate,
       std::mt19937_64
     );
