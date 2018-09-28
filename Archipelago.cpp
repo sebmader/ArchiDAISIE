@@ -312,9 +312,6 @@ void Archipelago::addArchi(const Archipelago &newArchi)
     // consolidate single islands together
     const int n_islands = static_cast<int>(mArchipel.size());
     for (int i = 0; i < n_islands; ++i) {
-        assert(i >= 0);
-        assert(i < n_islands);
-
         if (!addArch[i].returnIsland().empty()) { // ### CAUTION ### : does this make sense ??
             mArchipel[i].consolidateIslands(addArch[i]);
         }
@@ -371,7 +368,6 @@ void Archipelago::printArchi()
         cout << "BirT" << '\t' << "ParID" << '\t'
              << "SpID" << '\t' << "Stac" << '\n';
         z.printIsland();
-        cout << '\n';
     }
 }
 
@@ -403,18 +399,20 @@ vector<int> Archipelago::getSpeciesIDs()
     return aliveSpecies;
 }
 
-vector<int> Archipelago::getGlobalSpeciesIDs()
+vector<int> Archipelago::getGlobalSpeciesIDs() const
 {
     vector<int> aliveSpecies;
     for(auto& island : mArchipel) {
         vector<int> tmpIDs = island.getSpeciesIDs();
+        if (tmpIDs.empty())
+            continue;
         aliveSpecies.reserve(aliveSpecies.size() + tmpIDs.size());
         aliveSpecies.insert(aliveSpecies.end(), tmpIDs.begin(), tmpIDs.end());
     }
     // save duplicate species (= global species):
     vector<int> aliveGlobalSpecies;
     const int vecSize = static_cast<int>(aliveSpecies.size());
-    for (int j = 0; j < vecSize; ++j) {
+    for (int j = 0; j < vecSize - 1; ++j) {
         for (int k = j + 1; k < vecSize; ++k)
             if (aliveSpecies[j] ==
                     aliveSpecies[k]) {
@@ -424,15 +422,16 @@ vector<int> Archipelago::getGlobalSpeciesIDs()
     }
     // if on more than 2 islands -> creates duplicates
     // remove duplicates:
-    const int vecSize2 = static_cast<int>(aliveGlobalSpecies.size());
-    for (int j = 0; j < vecSize2; ++j) {
-        for (int k = j + 1; k < vecSize2; ++k)
-            if (aliveGlobalSpecies[j] ==
-                    aliveGlobalSpecies[k]) {
+    for (int j = 0; j < static_cast<int>(aliveGlobalSpecies.size()) - 1; ++j) {
+        for (int k = j + 1; k < static_cast<int>(aliveGlobalSpecies.size()); ++k) {
+            cout << aliveGlobalSpecies.size() << '\n';
+            assert(k > j);
+            if (aliveGlobalSpecies[j] == aliveGlobalSpecies[k]) {
                 aliveGlobalSpecies[k] = aliveGlobalSpecies.back();
                 aliveGlobalSpecies.pop_back();
                 --k;
             }
+        }
     }
     return aliveGlobalSpecies;
 }

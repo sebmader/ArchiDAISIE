@@ -8,6 +8,7 @@
 #include <vector>
 #include <cassert>
 #include <random>
+#include <iostream>
 #include "Species.h"
 #include "Island.h"
 #include "Archipelago.h"

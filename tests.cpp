@@ -375,5 +375,12 @@ void test_archi()
         archi.doNextEvent(happening5, iniMigRate, prng, 3.4, maxSpeciesID);
         vector<int> happening6 { 0, 65, 4 };
         archi.doNextEvent(happening6, iniMigRate, prng, 3.3, maxSpeciesID);
+        vector<int> happening7 { 0, 30, 1 };
+        archi.doNextEvent(happening7, iniMigRate, prng, 3.3, maxSpeciesID);
+        vector<int> happening8 { 0, 30, 4 };
+        archi.doNextEvent(happening8, iniMigRate, prng, 3.3, maxSpeciesID);
+        vector<int> happening9 { 0, 27, 0 };
+        archi.doNextEvent(happening9, iniMigRate, prng, 3.3, maxSpeciesID);
+        archi.printArchi();
     }
 }
