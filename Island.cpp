@@ -10,6 +10,22 @@ using namespace std;
 
 // ------ Island member functions ------
 
+Island::Island(const int k) : mIslandK{k}
+{
+    assert(k >= 0);
+}
+
+int Island::getCarryingCap() const noexcept
+{
+    return mIslandK;
+}
+
+int Island::getNSpecies() const noexcept
+{
+    return static_cast<int>(mIsland.size());
+}
+
+
 void Island::printIsland()
 {
     for (auto &i : mIsland)
@@ -17,7 +33,7 @@ void Island::printIsland()
     cout << '\n';
 }
 
-int Island::findPos(const int &speciesID) const
+int Island::findPos(const SpeciesID& speciesID) const
 {   // find the position of certain species (input) in species vector
         // if not present: output = -1
     const int n_species = static_cast<int>(mIsland.size());
@@ -27,7 +43,7 @@ int Island::findPos(const int &speciesID) const
     return -1;
 }
 
-const Species& Island::findSpecies(const int speciesID) const
+const Species& Island::findSpecies(const SpeciesID speciesID) const
 {
     const int index = findPos(speciesID);
     assert(index >= 0);
@@ -39,7 +55,7 @@ double Island::calculateIslRates(
         const int& n_mainlandSpecies,
         const int& n_islands,
         const double& sumLogGrowthWOthisIsl)
-{   // calculates the per-island rates of events, outputs them (for immidiate use)
+{   // calculates the per-island rates of events, outputs them (for immediate use)
     // and saves them within the island-class; input -> initial parameters
     // order of island parameter vector: gam_i, gam_m, lamb_cl, lamb_al, mu_l
 
@@ -79,27 +95,25 @@ double Island::extractSumOfRates() const noexcept
     return sumRates;
 }
 
-vector<int> Island::sampleLocalEvent(mt19937_64 prng,
-        const int &n_mainlandSpecies)
+event_type Island::sampleLocalEvent(mt19937_64 prng,
+        const int& n_mainlandSpecies)
 {   // samples local event and species it happens to on THIS island
     // draw event
-    const int event = drawDisEvent(mLocalRates, prng);
-    // draw species
-    int speciesID = drawUniEvent(1, n_mainlandSpecies, prng); // in case of immigration
+    const auto event = static_cast<event_type>(drawDisEvent(mLocalRates, prng));
+/*    // draw species
+    SpeciesID speciesID = static_cast<SpeciesID>(drawUniEvent(1, n_mainlandSpecies, prng)); // in case of immigration
     if (event) {   // if not immigration (1-4) -> SpecID from extant island species
-        vector<int> aliveSpecies = getSpeciesIDs();
+        vector<SpeciesID> aliveSpecies = getSpeciesIDs();
         const int pos = drawUniEvent(0,
                 static_cast<int>(aliveSpecies.size() - 1) , prng);
         speciesID = aliveSpecies[pos];
-    }
-    // return event and specID
-    vector<int> happening = { event, speciesID };
+    }*/ // TODO: move to doNextEvent
 
-    return happening;
+    return event;
 }
 
 // local updates:
-void Island::immigrate(const int& speciesID, double time)
+void Island::immigrate(const SpeciesID& speciesID, double time)
 {   // immigration from the mainland to THIS island
     const int pos = findPos(speciesID);  // check if species is
                                           // already present on island
@@ -145,7 +159,7 @@ void Island::migrate(Species newSpecies, const double& time)
     newSpecies.setBirth(time);  // set birth time of migrating species
     // to the time of migration
     newSpecies.setStatus('M');
-    const int speciesID = newSpecies.readSpID();
+    const SpeciesID speciesID = newSpecies.readSpID();
     const int pos = findPos(speciesID);
     if(pos == -1)  // if first migration: add species to island
         addSpecies(newSpecies);
@@ -155,7 +169,7 @@ void Island::migrate(Species newSpecies, const double& time)
     }
 }
 
-void Island::speciateClado(const int& speciesID, double time,
+void Island::speciateClado(const SpeciesID& speciesID, double time,
         SpeciesID& maxSpeciesID)
 {   // island species cladogenetically diverges
 
@@ -174,7 +188,7 @@ void Island::speciateClado(const int& speciesID, double time,
     addSpecies(newSpecies2);
 }
 
-void Island::speciateAna(const int& speciesID, SpeciesID& maxSpeciesID)
+void Island::speciateAna(const SpeciesID& speciesID, SpeciesID& maxSpeciesID)
 {   // local anagenetic speciation: DAISIE interprets this as cladogenesis (?!),
     // so all species can undergo it not only migrants -> equivalent to global (=DAISIE) anagenesis
     // find species
@@ -188,7 +202,7 @@ void Island::speciateAna(const int& speciesID, SpeciesID& maxSpeciesID)
     addSpecies(newSpecies);
 }
 
-void Island::goExtinct(const int& speciesID)
+void Island::goExtinct(const SpeciesID& speciesID)
 {   // species goes extinct
     // find species
     const int pos = findPos(speciesID);
@@ -217,35 +231,35 @@ void Island::consolidateIslands(const Island& islNew)
                         if (mIsland[k].isImmigrant()) {  // if both immigrants
                                 // take the most recent -> re-immigration
                             if (mIsland[j].readBirth() <= mIsland[k].readBirth()) {
-                                deleteSpecies(k);
+                                deleteSpecies(mIsland[k].readSpID());
                                 --k;
                             }
                             else {
-                                deleteSpecies(j);
+                                deleteSpecies(mIsland[j].readSpID());
                                 --j;
                             }
                         }
                         else {  // if j is immigrant but k is not
                                     // delete the non-immigrant (= migrant?!)
                             assert(mIsland[k].isMigrant());
-                            deleteSpecies(k);
+                            deleteSpecies(mIsland[k].readSpID());
                             --k;
                         }
                     }
                     else {  // if j is not immigrant
                         if (mIsland[k].isImmigrant()) {  // but k is -> k stays
                             assert(mIsland[j].isMigrant());
-                            deleteSpecies(j);
+                            deleteSpecies(mIsland[j].readSpID());
                             --j;
                         }
                         else {  // both not immigrants -> older one stays
                             assert(mIsland[j].isMigrant() || mIsland[k].isMigrant());
                             if (mIsland[j].readBirth() >= mIsland[k].readBirth()) {
-                                deleteSpecies(k);
+                                deleteSpecies(mIsland[k].readSpID());
                                 --k;
                             }
                             else {
-                                deleteSpecies(j);
+                                deleteSpecies(mIsland[j].readSpID());
                                 --j;
                             }
                         }
@@ -272,9 +286,9 @@ void Island::addSpecies(const Species& newSpecies)
     mIsland.push_back(newSpecies);
 }
 
-vector<int> Island::getSpeciesIDs() const
+vector<SpeciesID> Island::getSpeciesIDs() const noexcept
 {
-    vector<int> aliveSpecies;
+    vector<SpeciesID> aliveSpecies;
     for (auto& species : mIsland)
         aliveSpecies.push_back(species.readSpID());
     return aliveSpecies;
@@ -286,8 +300,9 @@ double Island::returnLogGrowth()
     return logGrowth;
 }
 
-void Island::deleteSpecies(const int& pos)
+void Island::deleteSpecies(const SpeciesID& speciesID)
 {
+    const int pos = findPos(speciesID);
     mIsland[pos] = mIsland.back();
     mIsland.pop_back();
 }

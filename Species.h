@@ -7,15 +7,16 @@
 
 #include <iostream>
 #include <cassert>
+#include "SpeciesID.h"
 
 
 class Species {
 
 public:
-    explicit Species(double = 0, int = 0, int = 0, char = 'I');
+    explicit Species(double = 0, SpeciesID = SpeciesID(), SpeciesID = SpeciesID(), char = 'I');
 
     double readBirth() const noexcept { return mBirthT; }
-    int readSpID() const noexcept { return mSpeciesID; }
+    SpeciesID readSpID() const noexcept { return mSpeciesID; }
     char readStat() const noexcept { return mStatus; }
     void setBirth(double);
     void setStatus(char);
@@ -23,14 +24,14 @@ public:
     bool isMigrant() const noexcept;
 
     void printSpec() {
-        std::cout << mBirthT << '\t' << mParentID << '\t'
-                  << mSpeciesID << '\t' << mStatus << '\n';
+        std::cout << mBirthT << '\t' << mParentID.getMaxSpeciesID() << '\t'
+                  << mSpeciesID.getMaxSpeciesID() << '\t' << mStatus << '\n';
     }
 
 private:
     double mBirthT;     //Should be const one day
-    int mParentID;      //Should be const one day
-    int mSpeciesID;     //Should be const one day
+    SpeciesID mParentID;      //Should be const one day
+    SpeciesID mSpeciesID;     //Should be const one day
     char mStatus;       // immigrant, anagenesis, cladogenesis, migrant ('I','A','C','M')
 };
 

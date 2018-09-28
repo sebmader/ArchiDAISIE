@@ -18,3 +18,12 @@ int drawUniEvent(const int &botBoundary, const int &topBoundary, std::mt19937_64
     std::uniform_int_distribution<int> drawEvent(botBoundary, topBoundary);
     return drawEvent(prng);
 }
+
+SpeciesID drawUniEvent(const std::vector<SpeciesID> &speciesVec, std::mt19937_64 &prng)
+{
+    const int vecSize = static_cast<int>(speciesVec.size());
+    std::uniform_int_distribution<int> drawSpecies(0, vecSize);
+    SpeciesID specID = speciesVec[drawSpecies(prng)];
+
+    return specID;
+}

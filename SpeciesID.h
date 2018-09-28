@@ -9,13 +9,21 @@ class SpeciesID {
 public:
     explicit SpeciesID(int = 0);
 
-    void incrementMaxSpeciesID() noexcept { ++maxSpeciesID; }
-    int getMaxSpeciesID() const noexcept { return maxSpeciesID; }
+    bool operator==(const SpeciesID& ID1) const;
+    bool operator!=(const SpeciesID& ID1) const;
+    bool operator<(const SpeciesID& rhs) const;
+    bool operator>(const SpeciesID& rhs) const;
+    bool operator<=(const SpeciesID& rhs) const;
+    bool operator>=(const SpeciesID& rhs) const;
 
-    int createNewSpeciesID();
+
+    void incrementMaxSpeciesID() noexcept { ++speciesID; }
+    int getMaxSpeciesID() const noexcept;
+
+    SpeciesID createNewSpeciesID();
 
 private:
-    int maxSpeciesID;
+    int speciesID;
 };
 
 #endif //ARCHIDAISIE_SPECIESID_H

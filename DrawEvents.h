@@ -8,9 +8,12 @@
 #include <vector>
 #include <iostream>
 #include <random>
+#include "SpeciesID.h"
 
 int drawDisEvent(const std::vector<double> &, std::mt19937_64&);
 
 int drawUniEvent(const int &, const int &, std::mt19937_64&);
+
+SpeciesID drawUniEvent(const std::vector<SpeciesID> &, std::mt19937_64&);
 
 #endif //ARCHIDAISIE_DRAWEVENTS_H

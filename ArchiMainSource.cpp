@@ -64,11 +64,11 @@ Archipelago ArchiDAISIE_core(const double islandAge,
                 break;
 
             // sample which event happens
-            vector<int> vHappening = aArchi.sampleNextEvent(localGlobalRates,
+            event_type nextEvent = aArchi.sampleNextEvent(localGlobalRates,
                     prng, n_mainlandSpecies);
 
             // update the phylogeny
-            aArchi.doNextEvent(vHappening, initialParameters[1], prng, timeNow,
+            aArchi.doNextEvent(nextEvent, initialParameters[1], prng, timeNow,
                     maxSpeciesID);
         }
         return aArchi;
@@ -156,9 +156,9 @@ int main() {
     mt19937_64 prng;
     vector<double> vIni = vPars;
     vIni.pop_back();
-    SpeciesID maxSpeciesID(0);
+    SpeciesID speciesID(0);
     Archipelago arch = ArchiDAISIE_core(2, 50, vIni, static_cast<int>(vPars[8]),
-            3, prng, maxSpeciesID);
+            3, prng, speciesID);
     */
     return 0;
 }
