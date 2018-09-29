@@ -13,7 +13,7 @@
 class Species {
 
 public:
-    explicit Species(double = 0, SpeciesID = SpeciesID(), SpeciesID = SpeciesID(), char = 'I');
+    explicit Species(double = 0, SpeciesID = SpeciesID(), SpeciesID = SpeciesID(), char = '0');
 
     double getBirth() const noexcept { return mBirthT; }
     SpeciesID getSpecID() const noexcept { return mSpeciesID; }
@@ -32,7 +32,8 @@ private:
     double mBirthT;     //Should be const one day
     SpeciesID mParentID;      //Should be const one day
     SpeciesID mSpeciesID;     //Should be const one day
-    char mStatus;       // immigrant, anagenesis, cladogenesis, migrant ('I','A','C','M')
+    char mStatus;       // immigrant, anagenesis, cladogenesis, migrant, default
+                            // ('I','A','C','M','0')
 };
 
 

@@ -10,7 +10,8 @@ Species::Species(const double birthTime, const SpeciesID parentId,
         mStatus{status}
 {
     assert(birthTime >= 0.0);
-    assert(mStatus == 'I' || mStatus == 'A' || mStatus == 'C' || mStatus == 'M');
+    assert(mStatus == 'I' || mStatus == 'A' || mStatus == 'C' || mStatus == 'M'
+            || mStatus == '0');
 }
 
 void Species::setBirth(const double time)

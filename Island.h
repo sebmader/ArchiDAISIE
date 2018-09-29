@@ -17,7 +17,7 @@
 
 class Island {
 public:
-    explicit Island(int k);
+    explicit Island(int k = 0);
 
     const std::vector<Species>& getSpecies() const { return mSpecies; }
     int getCarryingCap() const noexcept;
