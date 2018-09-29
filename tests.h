@@ -13,6 +13,7 @@
 #include "Species.h"
 #include "Island.h"
 #include "Archipelago.h"
+#include "free_functions.h"
 
 void test_island();
 

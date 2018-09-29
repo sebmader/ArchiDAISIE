@@ -19,4 +19,5 @@ add_executable(ArchiDAISIE
         Island.cpp
         Archipelago.cpp
         ArchiMainSource.cpp
-        tests.cpp)
+        tests.cpp
+        free_functions.cpp)

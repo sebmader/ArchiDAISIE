@@ -83,12 +83,12 @@ void Archipelago::calculateAllRates(
     // logistic growth term for migration
     double sumLogGrowth = 0.0;
     for (auto &j : mIslands) {
-        sumLogGrowth += j.returnLogGrowth(); // sums the
+        sumLogGrowth += getLogGrowth(j); // sums the
             // logistic growth terms of all islands together
     }
     // sum of local rates:
     for (auto &i : mIslands) {
-        double sumLogGrowthWOthisIsl = sumLogGrowth - i.returnLogGrowth(); // sum
+        double sumLogGrowthWOthisIsl = sumLogGrowth - getLogGrowth(i); // sum
                     // of log-growth of all except THIS island (i)
         i.calculateIslRates(initialIslandPars,
                 n_mainlandSpecies, n_islands, sumLogGrowthWOthisIsl);
@@ -241,7 +241,7 @@ void Archipelago::doNextEvent(const event_type nextEvent,
                 // save the logarithmic growth terms for all islands per island
                 vector<double> vLogs(n_islands, 0);
                 for (int j = 0; j < n_islands; ++j) {
-                    vLogs[j] = mIslands[j].returnLogGrowth();
+                    vLogs[j] = getLogGrowth(mIslands[j]);
                 }
                 int destinationIsland = mIslands[isl].drawMigDestinationIsland(
                         isl, vLogs, initialMigrationRate, prng);

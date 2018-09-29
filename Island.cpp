@@ -62,7 +62,7 @@ void Island::calculateIslRates(
     // calculate the per-island rates:
     const int n_alive = getNSpecies();
 
-    const double logGrowth = returnLogGrowth();
+    const double logGrowth = getLogGrowth(*this);
     // immigration to specific island:
     const double immigrationRate = max(0.0, islandParameters[0] * n_mainlandSpecies
             * logGrowth / n_islands);
@@ -82,14 +82,6 @@ void Island::calculateIslRates(
     // save in rate vector
     mLocalRates = { immigrationRate, migrationRate, localCladoRate,
                                    localAnaRate, localExtinctRate };
-}
-
-double Island::extractSumOfRates() const noexcept
-{
-    double sumRates = 0;
-    for (double rate : mLocalRates)
-        sumRates += rate;
-    return sumRates;
 }
 
 event_type Island::sampleLocalEvent(mt19937_64 prng)
@@ -282,15 +274,14 @@ vector<SpeciesID> Island::getSpeciesIDs() const noexcept
     return aliveSpecies;
 }
 
-double Island::returnLogGrowth()
-{
-    double logGrowth = 1.0 - static_cast<double>(getNSpecies()) / mK;
-    return logGrowth;
-}
-
 void Island::deleteSpecies(const SpeciesID& speciesID)
 {
     const int pos = findPos(speciesID);
     mSpecies[pos] = mSpecies.back();
     mSpecies.pop_back();
+}
+
+std::vector<double> Island::getLocalRates() const noexcept
+{
+    return mLocalRates;
 }

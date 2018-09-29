@@ -26,6 +26,7 @@ using namespace std;
 #include "Island.h"
 #include "Archipelago.h"
 #include "tests.h"
+#include "free_functions.h"
 
 // ------------ ArchiDAISIE FUNCTIONS ------------ //
 
@@ -54,7 +55,7 @@ Archipelago ArchiDAISIE_core(const double islandAge,
             assert(globalRates.size() == 3);
             double sumOfRates = globalRates[0] + globalRates[1] + globalRates[2];
             for (auto& island : aArchi.getIslands()) {
-                sumOfRates += island.extractSumOfRates();
+                sumOfRates += extractSumOfRates(island);
             }
             if (sumOfRates <= 0)
                 throw runtime_error("Event rate is zero or below. "

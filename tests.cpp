@@ -159,32 +159,32 @@ void test_island()
     {   // testing calculating of rates
         Island island1(10);
         Island island2(20);
-        double sumLog = island1.returnLogGrowth() + island2.returnLogGrowth();
+        double sumLog = getLogGrowth(island1) + getLogGrowth(island2);
         const int n_mainlandSpecies = 50;
         const int n_islands = 2;
         vector<double> islPars = { 0.1, 0.5, 0.2, 0.2, 0.15 };
         island1.calculateIslRates(islPars, n_mainlandSpecies,
                 n_islands, sumLog);
-        double sumRates1 = island1.extractSumOfRates();
+        double sumRates1 = extractSumOfRates(island1);
         const int n_alive1 = island1.getNSpecies();
         const int islandK1 = island1.getCarryingCap();
-        assert(1-static_cast<double>(n_alive1)/islandK1 == island1.returnLogGrowth());
+        assert(1-static_cast<double>(n_alive1)/islandK1 == getLogGrowth(island1));
         const double immiRate1 = max(0.0, islPars[0] * n_mainlandSpecies
-                * island1.returnLogGrowth() / n_islands);
+                * getLogGrowth(island1) / n_islands);
         assert(sumRates1 == immiRate1);
     }
     {   // testing sampling of local event
         Island island1(10);
         Island island2(20);
-        double sumLog = island1.returnLogGrowth() + island2.returnLogGrowth();
+        double sumLog = getLogGrowth(island1) +getLogGrowth(island2);
         const int n_mainlandSpecies = 50;
         const int n_islands = 2;
         vector<double> islPars = { 0.1, 0.5, 0.2, 0.2, 0.15 };
         island1.calculateIslRates(islPars, n_mainlandSpecies,
                 n_islands, sumLog);
-        double sumRates1 = island1.extractSumOfRates();
+        double sumRates1 = extractSumOfRates(island1);
         const double immiRate1 = max(0.0, islPars[0] * n_mainlandSpecies
-                * island1.returnLogGrowth() / n_islands);
+                * getLogGrowth(island1) / n_islands);
         assert(sumRates1 == immiRate1);
         mt19937_64 prng;
         // event_type event = island1.sampleLocalEvent(prng);
@@ -208,11 +208,12 @@ void test_archi()
         const int n_mainland = 100;
         Archipelago archi(n_islands, archi_carryingCap);
         assert(archi.getGlobalRates().empty());
-        vector<double> pars{ 0.1, 0.1, 0.2, 0.12, 0.3, 0.2, 0.1, 0.12 };archi.calculateAllRates(pars, n_mainland, n_islands);
+        vector<double> pars{ 0.1, 0.1, 0.2, 0.12, 0.3, 0.2, 0.1, 0.12 };
+        archi.calculateAllRates(pars, n_mainland, n_islands);
         assert(archi.getGlobalRates().size()==3);
         vector<Island> archiCopy = archi.getIslands();
-        assert(archiCopy[0].extractSumOfRates()>0);
-        assert(archiCopy[1].extractSumOfRates()>0);
+        assert(extractSumOfRates(archiCopy[0])>0);
+        assert(extractSumOfRates(archiCopy[1])>0);
         assert(archiCopy[0].getLocalRates().size()==5);
         assert(archiCopy[1].getLocalRates().size()==5);
     }

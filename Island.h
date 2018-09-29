@@ -22,20 +22,17 @@ public:
     int getCarryingCap() const noexcept;
     std::vector<SpeciesID> getSpeciesIDs() const noexcept;
     int getNSpecies() const noexcept;
-    double returnLogGrowth();        // returns the logistic growth term (1-n/K)
-        // RJCB: should be free function
-        // (public interface can already supply all info for this calculation)
-    std::vector<double> getLocalRates() { return mLocalRates; }
+    std::vector<double> getLocalRates() const noexcept;
         // RJCB: AFAICS, this should not be cached, it is too early for an unproven
         // speed optimization yet. Calculate this when needed
 
     void addSpecies(const Species &);  // adds new species to species vector
     void deleteSpecies(const SpeciesID&);  // deletes species from species vector
-    // TODO RJCB: why int? 'const Species&' is most natural, else 'const SpeciesID&' would be most natural
                                      // UNORDERD -> swap with last and pop_back
-    int findPos(const SpeciesID&) const;  // find the position of //RJCB: implementation detail, make private
-                    // species (input) in island vector
-    const Species& findSpecies(SpeciesID) const;  // find the position //RJCB: why int? 'const Species&' is most natural, else 'const SpeciesID&' would be most natural
+    int findPos(const SpeciesID&) const;  // find the position of species (input) in island vector
+            // RJCB: implementation detail, make private
+                    //
+    const Species& findSpecies(SpeciesID) const;  // find the position
                     // of species (input) in island vector
                     // MUST find species -> otherwise will fail !!!
 
@@ -47,8 +44,6 @@ public:
     );              // initialise/calculate rates and store them in EventRates vector
                     // gam_i, gam_m, lamb_cl, lamb_al, mu_l
                     // per island -> doesn't include global rates !!!
-    double extractSumOfRates() const noexcept;  // return the per-island rates vector
-            // RJCB: should be a free function
 
     event_type sampleLocalEvent(std::mt19937_64);
                     // in case a local event is drawn, sample island, event and species
