@@ -130,7 +130,7 @@ void Archipelago::speciateGlobalClado(const SpeciesID& speciesID,
         // (position in mIslands) where species is present
     if (onWhichIslands.size() < 2)
         assert(!"Drawn species is present on less than 2 islands. "
-                          "Something's wrong.. (global cladogenesis)\n");
+                          "Something's wrong.. (global cladogenesis)\n");  //!OCLINT
 
     // two daughter species
     const Species sp = mIslands[onWhichIslands[0]].findSpecies(speciesID);
@@ -162,7 +162,7 @@ void Archipelago::speciateGlobalAna(const SpeciesID& speciesID, SpeciesID& maxSp
                         // (position in mIslands) where species is present
     if (onWhichIslands.size() < 2)
         assert(!"Drawn species is present on less than 2 islands. "
-                          " Something's wrong.. (global anagenesis)\n");
+                          " Something's wrong.. (global anagenesis)\n"); //!OCLINT
     // daughter species
     const Species sp = mIslands[onWhichIslands[0]].findSpecies(speciesID);
     const double birthT = sp.readBirth();
@@ -178,7 +178,7 @@ void Archipelago::goGlobalExtinct(const SpeciesID& speciesID)
     vector<int> onWhichIslands = findIsl(speciesID);
     if (onWhichIslands.size() < 2)
         assert(!"Drawn species is present on less than 2 islands. "
-                "Something's wrong.. (global extinction)\n");
+                "Something's wrong.. (global extinction)\n");  //!OCLINT
     for (auto& Isl : onWhichIslands) {
         mIslands[Isl].goExtinct(speciesID);
     }

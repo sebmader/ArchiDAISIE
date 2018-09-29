@@ -54,7 +54,7 @@ void Island::calculateIslRates(
         const std::vector<double>& islandParameters,
         const int& n_mainlandSpecies,
         const int& n_islands,
-        const double& sumLogGrowthWOthisIsl)
+        const double& sumLogGrowthWOThis)
 {   // calculates the per-island rates of events, outputs them (for immediate use)
     // and saves them within the island-class; input -> initial parameters
     // order of island parameter vector: gam_i, gam_m, lamb_cl, lamb_al, mu_l
@@ -68,7 +68,7 @@ void Island::calculateIslRates(
             * logGrowth / n_islands);
     // migration from this island to all other islands:
     const double migrationRate = max(0.0, (islandParameters[1] * n_alive
-            * sumLogGrowthWOthisIsl) / (n_islands*n_islands - n_islands));
+            * sumLogGrowthWOThis) / (n_islands*n_islands - n_islands));
         // ### CAUTION ### : all other islands: '/iNumIsl',
                 // one-way: '/iNumIsl^2 - iNumIsl' ???
     // local cladogenesis:
@@ -87,9 +87,7 @@ void Island::calculateIslRates(
 event_type Island::sampleLocalEvent(mt19937_64 prng)
 {   // samples local event and species it happens to on THIS island
     // draw event
-    const auto event = static_cast<event_type>(drawDisEvent(mLocalRates, prng));
-
-    return event;
+    return static_cast<event_type>(drawDisEvent(mLocalRates, prng));
 }
 
 // local updates:
@@ -206,7 +204,7 @@ void Island::addIsland(const Island& islNew)
         for (int j = 0; j < static_cast<int>(mSpecies.size()); ++j) {
             for (int k = j + 1; k < static_cast<int>(mSpecies.size()); ++k) { ;
                 if (mSpecies[j].readSpID() ==
-                        mSpecies[k].readSpID()) { // TODO
+                        mSpecies[k].readSpID()) {
                     if (mSpecies[j].isImmigrant()) {
                         if (mSpecies[k].isImmigrant()) {  // if both immigrants
                                 // take the most recent -> re-immigration

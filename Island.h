@@ -40,7 +40,7 @@ public:
             const std::vector<double>& islandParameters,
             const int& n_mainlandSpecies, // RJCB: Use 'const int' instead of 'const int&'.
             const int& n_islands,
-            const double& sumLogGrowthWOthisIsl
+            const double& sumLogGrowthWOThis
     );              // initialise/calculate rates and store them in EventRates vector
                     // gam_i, gam_m, lamb_cl, lamb_al, mu_l
                     // per island -> doesn't include global rates !!!

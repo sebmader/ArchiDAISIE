@@ -79,7 +79,7 @@ Archipelago ArchiDAISIE_core(const double islandAge,
     }
     catch (string &str) {
         std::cerr << "Warning: " << str;
-        assert(!"should never get here!");
+        assert(!"should never get here!");  //!OCLINT
         return Archipelago();
     }
 }
@@ -121,7 +121,7 @@ vector<vector<Species> > ArchiDAISIE(const double &islandAge,
         initialParameters.pop_back();
 
         // initialise main data frame
-        vector< vector<Species> > vFinalIslandReplicates(replicates);
+        vector< vector<Species> > islandReplicates(replicates);
         // ### CAUTION ### : need to implement the exact same output as DAISIE_sim
         // how to combine the multiple data types? and which types btw?
 
@@ -140,9 +140,9 @@ vector<vector<Species> > ArchiDAISIE(const double &islandAge,
                 aAggregArchi.addArchi(ArchiDAISIE_core(islandAge, 1, initialParameters,
                         archiCarryingCap, n_islands, prng, maxSpeciesID));
             }
-            vFinalIslandReplicates[i] = aAggregArchi.makeArchiTo1Island();
+            islandReplicates[i] = aAggregArchi.makeArchiTo1Island();
         }
-        return vFinalIslandReplicates;
+        return islandReplicates;
     }
     catch (exception &error) {
         std::cerr << "Error: " << error.what();
