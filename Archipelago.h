@@ -27,12 +27,12 @@ public:
     std::vector<int> findIsl(const SpeciesID&) const;    // find the island(s) where
                                     // species (input) is within archipelago
 
-    std::vector<double> calculateAllRates(const std::vector<double> &,
-                    const int &n_mainlandSpecies, const int &n_islands);
+    void calculateAllRates(const std::vector<double>&,
+            const int& n_mainlandSpecies, const int& n_islands);
                     // calculate per-island rates and global rates
                     // and save them in LocalRates and GlobalRates vector, resp.
                     // Also, output of sum of both global (.first) and local (.second) rates
-                    event_type sampleNextEvent(std::mt19937_64);   // draw next event;
+    event_type sampleNextEvent(std::mt19937_64);   // draw next event;
                                     // output -> {event(0-7), species(ID)(,island(0-i))}
                                     // if global event -> vector.size() = 2, if local -> size = 3
 
@@ -47,7 +47,7 @@ public:
     void goGlobalExtinct(const SpeciesID&);  // island species
                     // goes extinct on all islands it occures on
 
-    void doNextEvent(const event_type, const double&,
+    void doNextEvent(event_type, const double&,
             std::mt19937_64, double, SpeciesID& maxSpeciesID); // switch-statement
                     // that calls event functions updates the ArchiPhylo vector
                     // LOCAL events indicated by 3 elements: { event, species, island }
@@ -57,17 +57,17 @@ public:
 
     std::vector<Species> makeArchiTo1Island() const;   // aggregate all islands in
                     // archipelago as it would be one and return it
-    const std::vector<Island> & returnArchi() const {return mArchipel;}
+    const std::vector<Island> & getIslands() const {return mIslands;}
     void printArchi();  // print archipelago islands to screen
 
-    int getCarryingCap() const noexcept { return mArchiK; }
+    int getCarryingCap() const noexcept { return mK; }
     std::vector<double> getGlobalRates() const noexcept { return mGlobalRates; }
 
 private:
     std::vector<double> mGlobalRates;  // vector of rates for global events
                                        // (3 rates: lambC, lambA, mu)
-    std::vector<Island> mArchipel;  // vector of island phylogenies of whole archipelago
-    int mArchiK;    // carrying capacity of archipelago
+    std::vector<Island> mIslands;  // vector of island phylogenies of whole archipelago
+    int mK;    // carrying capacity of archipelago
 };
 
 #endif //ARCHIDAISIE_ARCHIPELAGO_H

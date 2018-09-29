@@ -199,8 +199,8 @@ void test_archi()
         Archipelago archi(n_islands, archi_carryingCap);
         assert(archi.getNSpecies()==0);
         assert(archi.getCarryingCap()==archi_carryingCap);
-        assert(archi.returnArchi()[0].getCarryingCap()==archi_carryingCap/n_islands);
-        assert(archi.returnArchi()[1].getNSpecies()==0);
+        assert(archi.getIslands()[0].getCarryingCap()==archi_carryingCap/n_islands);
+        assert(archi.getIslands()[1].getNSpecies()==0);
     }
     {  // testing the calculation of event rates and initialisation of rate vectors
         const int n_islands = 2;
@@ -208,13 +208,9 @@ void test_archi()
         const int n_mainland = 100;
         Archipelago archi(n_islands, archi_carryingCap);
         assert(archi.getGlobalRates().empty());
-        vector<double> pars{ 0.1, 0.1, 0.2, 0.12, 0.3, 0.2, 0.1, 0.12 };
-        vector<double> sumLocGlo = archi.calculateAllRates(pars, n_mainland, n_islands);
+        vector<double> pars{ 0.1, 0.1, 0.2, 0.12, 0.3, 0.2, 0.1, 0.12 };archi.calculateAllRates(pars, n_mainland, n_islands);
         assert(archi.getGlobalRates().size()==3);
-        assert(sumLocGlo.size()==2);
-        assert(sumLocGlo[0]==0);  // global rates == 0 -> no species on archi
-        assert(sumLocGlo[1]>0);  // local rates > 0 -> only immigration can happen
-        vector<Island> archiCopy = archi.returnArchi();
+        vector<Island> archiCopy = archi.getIslands();
         assert(archiCopy[0].extractSumOfRates()>0);
         assert(archiCopy[1].extractSumOfRates()>0);
         assert(archiCopy[0].getLocalRates().size()==5);
@@ -228,7 +224,8 @@ void test_archi()
         Archipelago archi(n_islands, archi_carryingCap);
         assert(archi.getGlobalRates().empty());
         vector<double> pars{ 0.1, 0.1, 0.2, 0.12, 0.3, 0.2, 0.1, 0.12 };
-        vector<double> sumLocGlo = archi.calculateAllRates(pars, n_mainland, n_islands);
-        // event_type event = archi.sampleNextEvent(prng);
+        archi.calculateAllRates(pars, n_mainland, n_islands);
+        event_type event = archi.sampleNextEvent(prng);
+        assert(getEventNum(event) >= 0);
     }
 }

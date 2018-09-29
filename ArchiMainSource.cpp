@@ -21,6 +21,7 @@ using namespace std;
 
 // ------------ CLASS/FUNCTION DEFINITIONS ------------ //
 
+#include "event_type.h"
 #include "Species.h"
 #include "Island.h"
 #include "Archipelago.h"
@@ -46,12 +47,15 @@ Archipelago ArchiDAISIE_core(const double islandAge,
         for (;;) {
 
             // calculate the rates of events
-            vector<double> localGlobalRates = aArchi.calculateAllRates(
-                    initialParameters, n_mainlandSpecies, n_islands);
-            assert(localGlobalRates.size() == 2);
+            aArchi.calculateAllRates(initialParameters, n_mainlandSpecies, n_islands);
 
             // draw time interval to next event
-            const double sumOfRates = localGlobalRates[0] + localGlobalRates[1];
+            vector<double> globalRates = aArchi.getGlobalRates();
+            assert(globalRates.size() == 3);
+            double sumOfRates = globalRates[0] + globalRates[1] + globalRates[2];
+            for (auto& island : aArchi.getIslands()) {
+                sumOfRates += island.extractSumOfRates();
+            }
             if (sumOfRates <= 0)
                 throw runtime_error("Event rate is zero or below. "
                                     "No event can be drawn.\n");
@@ -64,8 +68,7 @@ Archipelago ArchiDAISIE_core(const double islandAge,
                 break;
 
             // sample which event happens
-            event_type nextEvent = aArchi.sampleNextEvent(
-                    prng);
+            event_type nextEvent = aArchi.sampleNextEvent(prng);
 
             // update the phylogeny
             aArchi.doNextEvent(nextEvent, initialParameters[1], prng, timeNow,

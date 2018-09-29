@@ -10,25 +10,25 @@ using namespace std;
 
 // ------ Island member functions ------
 
-Island::Island(const int k) : mIslandK{k}
+Island::Island(const int k) : mK{k}
 {
     assert(k >= 0);
 }
 
 int Island::getCarryingCap() const noexcept
 {
-    return mIslandK;
+    return mK;
 }
 
 int Island::getNSpecies() const noexcept
 {
-    return static_cast<int>(mIsland.size());
+    return static_cast<int>(mSpecies.size());
 }
 
 
 void Island::printIsland()
 {
-    for (auto &i : mIsland)
+    for (auto &i : mSpecies)
         i.printSpec();
     cout << '\n';
 }
@@ -36,9 +36,9 @@ void Island::printIsland()
 int Island::findPos(const SpeciesID& speciesID) const
 {   // find the position of certain species (input) in species vector
         // if not present: output = -1
-    const int n_species = static_cast<int>(mIsland.size());
+    const int n_species = static_cast<int>(mSpecies.size());
     for (int i = n_species-1; i >= 0; --i)
-        if (mIsland[i].readSpID() == speciesID)
+        if (mSpecies[i].readSpID() == speciesID)
             return i;
     return -1;
 }
@@ -47,10 +47,10 @@ const Species& Island::findSpecies(const SpeciesID speciesID) const
 {
     const int index = findPos(speciesID);
     assert(index >= 0);
-    return mIsland[index];
+    return mSpecies[index];
 }
 
-double Island::calculateIslRates(
+void Island::calculateIslRates(
         const std::vector<double>& islandParameters,
         const int& n_mainlandSpecies,
         const int& n_islands,
@@ -59,7 +59,7 @@ double Island::calculateIslRates(
     // and saves them within the island-class; input -> initial parameters
     // order of island parameter vector: gam_i, gam_m, lamb_cl, lamb_al, mu_l
 
-    // calculate the per-island rates
+    // calculate the per-island rates:
     const int n_alive = getNSpecies();
 
     const double logGrowth = returnLogGrowth();
@@ -82,9 +82,6 @@ double Island::calculateIslRates(
     // save in rate vector
     mLocalRates = { immigrationRate, migrationRate, localCladoRate,
                                    localAnaRate, localExtinctRate };
-    double sumPerIslRates = immigrationRate + migrationRate + localCladoRate
-                                         + localAnaRate + localExtinctRate;
-    return sumPerIslRates;
 }
 
 double Island::extractSumOfRates() const noexcept
@@ -111,11 +108,11 @@ void Island::immigrate(const SpeciesID& speciesID, double time)
     Species newSpecies(time, speciesID, speciesID, 'I');
     if (pos >= 0) {  // if extant -> re-immigration
                      // ("re-setting the clock" (= BirthT))
-        assert(pos < static_cast<int>(mIsland.size()));
-        mIsland[pos] = newSpecies;
+        assert(pos < static_cast<int>(mSpecies.size()));
+        mSpecies[pos] = newSpecies;
     }
     else {
-        mIsland.push_back(newSpecies);
+        mSpecies.push_back(newSpecies);
     }
 }
 
@@ -155,8 +152,8 @@ void Island::migrate(Species newSpecies, const double& time)
     if(pos == -1)  // if first migration: add species to island
         addSpecies(newSpecies);
     else {  // else (if re-migration): re-set clock // TODO: correct?
-        assert(pos >= 0 && pos < static_cast<int>(mIsland.size()));
-        mIsland[pos] = newSpecies;
+        assert(pos >= 0 && pos < static_cast<int>(mSpecies.size()));
+        mSpecies[pos] = newSpecies;
     }
 }
 
@@ -199,7 +196,7 @@ void Island::goExtinct(const SpeciesID& speciesID)
     const int pos = findPos(speciesID);
     assert(pos >= 0);
     // remove species
-    mIsland.erase(mIsland.begin() + pos);
+    mSpecies.erase(mSpecies.begin() + pos);
 }
 
 void Island::addIsland(const Island& islNew)
@@ -210,47 +207,47 @@ void Island::addIsland(const Island& islNew)
 
     // add species vector to THIS island
     if (!island2.empty()) {
-        mIsland.reserve(mIsland.size() + island2.size());
-        mIsland.insert(mIsland.end(), island2.begin(), island2.end());
+        mSpecies.reserve(mSpecies.size() + island2.size());
+        mSpecies.insert(mSpecies.end(), island2.begin(), island2.end());
 
         // delete duplicates; ### CAUTION ### : what birth time ?!
-        for (int j = 0; j < static_cast<int>(mIsland.size()); ++j) {
-            for (int k = j + 1; k < static_cast<int>(mIsland.size()); ++k) { ;
-                if (mIsland[j].readSpID() ==
-                        mIsland[k].readSpID()) { // TODO
-                    if (mIsland[j].isImmigrant()) {
-                        if (mIsland[k].isImmigrant()) {  // if both immigrants
+        for (int j = 0; j < static_cast<int>(mSpecies.size()); ++j) {
+            for (int k = j + 1; k < static_cast<int>(mSpecies.size()); ++k) { ;
+                if (mSpecies[j].readSpID() ==
+                        mSpecies[k].readSpID()) { // TODO
+                    if (mSpecies[j].isImmigrant()) {
+                        if (mSpecies[k].isImmigrant()) {  // if both immigrants
                                 // take the most recent -> re-immigration
-                            if (mIsland[j].readBirth() <= mIsland[k].readBirth()) {
-                                deleteSpecies(mIsland[k].readSpID());
+                            if (mSpecies[j].readBirth() <= mSpecies[k].readBirth()) {
+                                deleteSpecies(mSpecies[k].readSpID());
                                 --k;
                             }
                             else {
-                                deleteSpecies(mIsland[j].readSpID());
+                                deleteSpecies(mSpecies[j].readSpID());
                                 --j;
                             }
                         }
                         else {  // if j is immigrant but k is not
                                     // delete the non-immigrant (= migrant?!)
-                            assert(mIsland[k].isMigrant());
-                            deleteSpecies(mIsland[k].readSpID());
+                            assert(mSpecies[k].isMigrant());
+                            deleteSpecies(mSpecies[k].readSpID());
                             --k;
                         }
                     }
                     else {  // if j is not immigrant
-                        if (mIsland[k].isImmigrant()) {  // but k is -> k stays
-                            assert(mIsland[j].isMigrant());
-                            deleteSpecies(mIsland[j].readSpID());
+                        if (mSpecies[k].isImmigrant()) {  // but k is -> k stays
+                            assert(mSpecies[j].isMigrant());
+                            deleteSpecies(mSpecies[j].readSpID());
                             --j;
                         }
                         else {  // both not immigrants -> older one stays
-                            assert(mIsland[j].isMigrant() || mIsland[k].isMigrant());
-                            if (mIsland[j].readBirth() >= mIsland[k].readBirth()) {
-                                deleteSpecies(mIsland[k].readSpID());
+                            assert(mSpecies[j].isMigrant() || mSpecies[k].isMigrant());
+                            if (mSpecies[j].readBirth() >= mSpecies[k].readBirth()) {
+                                deleteSpecies(mSpecies[k].readSpID());
                                 --k;
                             }
                             else {
-                                deleteSpecies(mIsland[j].readSpID());
+                                deleteSpecies(mSpecies[j].readSpID());
                                 --j;
                             }
                         }
@@ -259,13 +256,13 @@ void Island::addIsland(const Island& islNew)
             }
         }
         // sort birth time
-        const int newVecSize = static_cast<int>(mIsland.size());
+        const int newVecSize = static_cast<int>(mSpecies.size());
         for (int l = 0; l < newVecSize-1; ++l) {
             for (int m = l + 1; m < newVecSize; ++m) {
-                if(mIsland[l].readBirth() < mIsland[m].readBirth()) {
-                    const Species tmpSp = mIsland[m];
-                    mIsland[m] = mIsland[l];
-                    mIsland[l] = tmpSp;
+                if(mSpecies[l].readBirth() < mSpecies[m].readBirth()) {
+                    const Species tmpSp = mSpecies[m];
+                    mSpecies[m] = mSpecies[l];
+                    mSpecies[l] = tmpSp;
                 }
             }
         }
@@ -274,26 +271,26 @@ void Island::addIsland(const Island& islNew)
 
 void Island::addSpecies(const Species& newSpecies)
 {   // adds new species to island -> both species and alive species vector
-    mIsland.push_back(newSpecies);
+    mSpecies.push_back(newSpecies);
 }
 
 vector<SpeciesID> Island::getSpeciesIDs() const noexcept
 {
     vector<SpeciesID> aliveSpecies;
-    for (auto& species : mIsland)
+    for (auto& species : mSpecies)
         aliveSpecies.push_back(species.readSpID());
     return aliveSpecies;
 }
 
 double Island::returnLogGrowth()
 {
-    double logGrowth = 1.0 - static_cast<double>(getNSpecies()) / mIslandK;
+    double logGrowth = 1.0 - static_cast<double>(getNSpecies()) / mK;
     return logGrowth;
 }
 
 void Island::deleteSpecies(const SpeciesID& speciesID)
 {
     const int pos = findPos(speciesID);
-    mIsland[pos] = mIsland.back();
-    mIsland.pop_back();
+    mSpecies[pos] = mSpecies.back();
+    mSpecies.pop_back();
 }
