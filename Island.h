@@ -49,7 +49,7 @@ public:
     double extractSumOfRates() const noexcept;  // return the per-island rates vector
             // RJCB: should be a free function
 
-    event_type sampleLocalEvent(std::mt19937_64, const int& n_mainlandSpecies);
+    event_type sampleLocalEvent(std::mt19937_64);
             // RJCB: should return an 'event_type', namely the event that will happen. Or should be private, as this is an implementation detail
                     // in case a local event is drawn, sample island, event and species
                     // it happens to
@@ -69,12 +69,14 @@ public:
                     // island species anagenetically speciates
     void goExtinct(const SpeciesID&);  // island species goes extinct
 
-    const std::vector<Species>& returnIsland() const { return mIsland; } //RJCB: ???rename to 'GetSpecies', this naming makes no sense
-//    const std::vector<int>& returnIslSpecAlive() const { return mvIslSpecAlive; } //RJCB: remove unused code
-    void printIsland();  // prints island vector of species to the screen //RJCB: use operator<< instead
+    const std::vector<Species>& getSpecies() const { return mIsland; }
+    void printIsland();  // prints island vector of species to the screen
+            // RJCB: use operator<< instead
 
-    void consolidateIslands(const Island&);     // add island to THIS island //RJCB: cannot add islands to islands in reality
+    void addIsland(const Island&);     // add island to THIS island
+            // RJCB: cannot add islands to islands in reality
     // ### CAUTION ### : illogical! -> make this a nonmember function
+
 
 private:
     std::vector<Species> mIsland;  // phylogeny vector of species on island //RJCB: rename to 'mSpecies' as species are not islands

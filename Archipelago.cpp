@@ -101,9 +101,7 @@ vector<double> Archipelago::calculateAllRates(
     return sumsGloLoc;
 }
 
-event_type Archipelago::sampleNextEvent(const vector<double>& sumsGloLoc,
-        mt19937_64 prng,
-        const int& n_mainlandSpecies)
+event_type Archipelago::sampleNextEvent(mt19937_64 prng)
 {   // which event will happen next
 
     // draw local event summed up over all islands
@@ -120,6 +118,7 @@ event_type Archipelago::sampleNextEvent(const vector<double>& sumsGloLoc,
 
     sumRatesPerEvent.reserve(sumRatesPerEvent.size() + mGlobalRates.size());
     sumRatesPerEvent.insert(sumRatesPerEvent.end(), mGlobalRates.begin(), mGlobalRates.end());
+    assert(sumRatesPerEvent.size() == mGlobalRates.size() + n_localEvents);
     auto nextEvent = static_cast<event_type>(drawDisEvent(sumRatesPerEvent, prng));
 
     return nextEvent;
@@ -293,8 +292,8 @@ void Archipelago::addArchi(const Archipelago &newArchi)
     // consolidate single islands together
     const int n_islands = getNIslands();
     for (int i = 0; i < n_islands; ++i) {
-        if (!addArch[i].returnIsland().empty()) { // ### CAUTION ### : does this make sense ??
-            mArchipel[i].consolidateIslands(addArch[i]);
+        if (!addArch[i].getSpecies().empty()) { // ### CAUTION ### : does this make sense ??
+            mArchipel[i].addIsland(addArch[i]);
         }
     }
 }
@@ -306,8 +305,8 @@ vector<Species> Archipelago::makeArchiTo1Island() const
     vector<Species> archiToIsland;
     // add all island species vectors together
     for(auto& island : mArchipel) {
-        if (!island.returnIsland().empty()) {
-            const vector<Species>& vTmp = island.returnIsland();
+        if (!island.getSpecies().empty()) {
+            const vector<Species>& vTmp = island.getSpecies();
             archiToIsland.reserve(archiToIsland.size() + vTmp.size());
             archiToIsland.insert(archiToIsland.begin(),
                     vTmp.begin(), vTmp.end());

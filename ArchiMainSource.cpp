@@ -64,8 +64,8 @@ Archipelago ArchiDAISIE_core(const double islandAge,
                 break;
 
             // sample which event happens
-            event_type nextEvent = aArchi.sampleNextEvent(localGlobalRates,
-                    prng, n_mainlandSpecies);
+            event_type nextEvent = aArchi.sampleNextEvent(
+                    prng);
 
             // update the phylogeny
             aArchi.doNextEvent(nextEvent, initialParameters[1], prng, timeNow,

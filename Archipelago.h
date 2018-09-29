@@ -32,8 +32,7 @@ public:
                     // calculate per-island rates and global rates
                     // and save them in LocalRates and GlobalRates vector, resp.
                     // Also, output of sum of both global (.first) and local (.second) rates
-                    event_type sampleNextEvent(const std::vector<double>&,
-                            std::mt19937_64, const int&);   // draw next event;
+                    event_type sampleNextEvent(std::mt19937_64);   // draw next event;
                                     // output -> {event(0-7), species(ID)(,island(0-i))}
                                     // if global event -> vector.size() = 2, if local -> size = 3
 

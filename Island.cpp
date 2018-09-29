@@ -95,19 +95,10 @@ double Island::extractSumOfRates() const noexcept
     return sumRates;
 }
 
-event_type Island::sampleLocalEvent(mt19937_64 prng,
-        const int& n_mainlandSpecies)
+event_type Island::sampleLocalEvent(mt19937_64 prng)
 {   // samples local event and species it happens to on THIS island
     // draw event
     const auto event = static_cast<event_type>(drawDisEvent(mLocalRates, prng));
-/*    // draw species
-    SpeciesID speciesID = static_cast<SpeciesID>(drawUniEvent(1, n_mainlandSpecies, prng)); // in case of immigration
-    if (event) {   // if not immigration (1-4) -> SpecID from extant island species
-        vector<SpeciesID> aliveSpecies = getSpeciesIDs();
-        const int pos = drawUniEvent(0,
-                static_cast<int>(aliveSpecies.size() - 1) , prng);
-        speciesID = aliveSpecies[pos];
-    }*/ // TODO: move to doNextEvent
 
     return event;
 }
@@ -211,10 +202,10 @@ void Island::goExtinct(const SpeciesID& speciesID)
     mIsland.erase(mIsland.begin() + pos);
 }
 
-void Island::consolidateIslands(const Island& islNew)
+void Island::addIsland(const Island& islNew)
 {   // adds another island to THIS (for aggregating archipelagos)
 
-    const vector<Species>& island2 = islNew.returnIsland();
+    const vector<Species>& island2 = islNew.getSpecies();
     // const vector<int>& vSpecAliveNew = islNew.returnIslSpecAlive();
 
     // add species vector to THIS island

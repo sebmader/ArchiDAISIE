@@ -33,7 +33,7 @@ void test_island()
         // so I do not see the use of 'addSpecies'.
         Island island(10);
         island.addSpecies(Species());
-        assert(island.returnIsland()[0].readStat() == 'I');
+        assert(island.getSpecies()[0].readStat() == 'I');
     }
     {   // The immigration of an absent species increases the number of species
         Island island(10);
@@ -187,7 +187,7 @@ void test_island()
                 * island1.returnLogGrowth() / n_islands);
         assert(sumRates1 == immiRate1);
         mt19937_64 prng;
-        event_type event = island1.sampleLocalEvent(prng, n_mainlandSpecies);
+        // event_type event = island1.sampleLocalEvent(prng);
     }
 }
 
@@ -229,6 +229,6 @@ void test_archi()
         assert(archi.getGlobalRates().empty());
         vector<double> pars{ 0.1, 0.1, 0.2, 0.12, 0.3, 0.2, 0.1, 0.12 };
         vector<double> sumLocGlo = archi.calculateAllRates(pars, n_mainland, n_islands);
-        event_type event = archi.sampleNextEvent(sumLocGlo, prng, n_mainland);
+        // event_type event = archi.sampleNextEvent(prng);
     }
 }
