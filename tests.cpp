@@ -33,27 +33,27 @@ void test_island()
         // so I do not see the use of 'addSpecies'.
         Island island(10);
         island.addSpecies(Species());
-        assert(island.getSpecies()[0].readStat() == 'I');
+        assert(island.getSpecies()[0].getStatus() == 'I');
     }
     {   // The immigration of an absent species increases the number of species
         Island island(10);
         assert(island.getNSpecies()==0);
         island.immigrate(SpeciesID(42), 3.14); //RJCB: insteaf of the int 42, I would prefer a 'Species' or 'SpeciesID' instead
         assert(island.getNSpecies()==1);
-        //assert(island.findSpecies(42).readBirth()==3.14);
-        //assert(island.findSpecies(42).readStat() == 'I');
+        //assert(island.findSpecies(42).getBirth()==3.14);
+        //assert(island.findSpecies(42).getStatus() == 'I');
     }
     {   // The immigration of an absent species is recognized as an immigrant
         Island island(10);
         assert(island.getNSpecies()==0);
         island.immigrate(SpeciesID(42), 3.14);
-        assert(island.findSpecies(SpeciesID(42)).readStat() == 'I');
+        assert(island.findSpecies(SpeciesID(42)).getStatus() == 'I');
     }
     {   // An immigrant gets its immigration time stored
         Island island(10);
         assert(island.getNSpecies()==0);
         island.immigrate(SpeciesID(42), 3.14); //RJCB: insteaf of the int 42, I would prefer a 'Species' or 'SpeciesID' instead
-        assert(island.findSpecies(SpeciesID(42)).readBirth()==3.14);
+        assert(island.findSpecies(SpeciesID(42)).getBirth()==3.14);
     }
     {   // When a same species immigrates twice, the last imigration time is stored
         // RJCB: I would enjoy a class called 'Time' (with only a simple double),
@@ -64,7 +64,7 @@ void test_island()
         assert(island.getNSpecies()==0);
         island.immigrate(SpeciesID(42), 6.28);
         island.immigrate(SpeciesID(42), 3.14);
-        assert(island.findSpecies(SpeciesID(42)).readBirth()==3.14); //RJCB: Unsure, see above
+        assert(island.findSpecies(SpeciesID(42)).getBirth()==3.14); //RJCB: Unsure, see above
         assert(island.getNSpecies()==1);
     }
     {   // Extinction decreases the number of species
@@ -146,12 +146,12 @@ void test_island()
         island.immigrate(SpeciesID(42), 3.01);
         island.goExtinct(SpeciesID(42));
         island.speciateAna(SpeciesID(1), maxSpeciesID);
-        assert(island.findSpecies(maxSpeciesID).readStat() == 'A');
+        assert(island.findSpecies(maxSpeciesID).getStatus() == 'A');
         assert(maxSpeciesID.getMaxSpeciesID()
             == n_mainlandSpecies+1);
         island.immigrate(SpeciesID(42), 2.56);
         island.speciateClado(SpeciesID(42), 2.50, maxSpeciesID);
-        assert(island.findSpecies(maxSpeciesID).readStat() == 'C');
+        assert(island.findSpecies(maxSpeciesID).getStatus() == 'C');
         assert(maxSpeciesID.getMaxSpeciesID()
                 == n_mainlandSpecies+3);
         assert(island.getNSpecies() == 3);

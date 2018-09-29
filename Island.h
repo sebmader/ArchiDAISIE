@@ -19,9 +19,12 @@ class Island {
 public:
     explicit Island(int k);
 
+    const std::vector<Species>& getSpecies() const { return mSpecies; }
     int getCarryingCap() const noexcept;
     std::vector<SpeciesID> getSpeciesIDs() const noexcept;
     int getNSpecies() const noexcept;
+    bool hasSpecies(const Species &species) const;
+    bool hasSpecies(const SpeciesID& speciesID) const;
     std::vector<double> getLocalRates() const noexcept;
         // RJCB: AFAICS, this should not be cached, it is too early for an unproven
         // speed optimization yet. Calculate this when needed
@@ -65,7 +68,6 @@ public:
                     // island species anagenetically speciates
     void goExtinct(const SpeciesID&);  // island species goes extinct
 
-    const std::vector<Species>& getSpecies() const { return mSpecies; }
     void printIsland();  // prints island vector of species to the screen
             // RJCB: use operator<< instead
 

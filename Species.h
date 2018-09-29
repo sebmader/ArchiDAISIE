@@ -15,9 +15,9 @@ class Species {
 public:
     explicit Species(double = 0, SpeciesID = SpeciesID(), SpeciesID = SpeciesID(), char = 'I');
 
-    double readBirth() const noexcept { return mBirthT; }
-    SpeciesID readSpID() const noexcept { return mSpeciesID; }
-    char readStat() const noexcept { return mStatus; }
+    double getBirth() const noexcept { return mBirthT; }
+    SpeciesID getSpecID() const noexcept { return mSpeciesID; }
+    char getStatus() const noexcept { return mStatus; }
     void setBirth(double);
     void setStatus(char);
     bool isImmigrant() const noexcept;
