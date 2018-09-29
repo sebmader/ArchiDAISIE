@@ -113,9 +113,8 @@ event_type Archipelago::sampleNextEvent(mt19937_64 prng)
     sumRatesPerEvent.reserve(sumRatesPerEvent.size() + mGlobalRates.size());
     sumRatesPerEvent.insert(sumRatesPerEvent.end(), mGlobalRates.begin(), mGlobalRates.end());
     assert(sumRatesPerEvent.size() == mGlobalRates.size() + n_localEvents);
-    auto nextEvent = static_cast<event_type>(drawDisEvent(sumRatesPerEvent, prng));
 
-    return nextEvent;
+    return static_cast<event_type>(drawDisEvent(sumRatesPerEvent, prng));
 }
 
 // global events:
@@ -129,7 +128,7 @@ void Archipelago::speciateGlobalClado(const SpeciesID& speciesID,
     vector<int> onWhichIslands = findIsl(speciesID);  // vector with islandIDs
         // (position in mIslands) where species is present
     if (onWhichIslands.size() < 2)
-        assert(!"Drawn species is present on less than 2 islands. "
+        assert(!"Drawn species is present on less than 2 islands. "  //!OCLINT
                           "Something's wrong.. (global cladogenesis)\n");  //!OCLINT
 
     // two daughter species
@@ -161,7 +160,7 @@ void Archipelago::speciateGlobalAna(const SpeciesID& speciesID, SpeciesID& maxSp
     vector<int> onWhichIslands = findIsl(speciesID);  // vector with islandIDs
                         // (position in mIslands) where species is present
     if (onWhichIslands.size() < 2)
-        assert(!"Drawn species is present on less than 2 islands. "
+        assert(!"Drawn species is present on less than 2 islands. "  //!OCLINT
                           " Something's wrong.. (global anagenesis)\n"); //!OCLINT
     // daughter species
     const Species sp = mIslands[onWhichIslands[0]].findSpecies(speciesID);
@@ -177,7 +176,7 @@ void Archipelago::goGlobalExtinct(const SpeciesID& speciesID)
 {   // one species (input) goes exinct on all islands it inhabits
     vector<int> onWhichIslands = findIsl(speciesID);
     if (onWhichIslands.size() < 2)
-        assert(!"Drawn species is present on less than 2 islands. "
+        assert(!"Drawn species is present on less than 2 islands. "  //!OCLINT
                 "Something's wrong.. (global extinction)\n");  //!OCLINT
     for (auto& Isl : onWhichIslands) {
         mIslands[Isl].goExtinct(speciesID);
@@ -347,8 +346,7 @@ void Archipelago::printArchi()
 
 int Archipelago::getNSpecies()
 {
-    const int n_aliveSpecies = static_cast<int>(getSpeciesIDs().size());
-    return n_aliveSpecies;
+    return static_cast<int>(getSpeciesIDs().size());
 }
 
 vector<SpeciesID> Archipelago::getSpeciesIDs()
