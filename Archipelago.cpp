@@ -7,27 +7,19 @@
 
 using namespace std;
 
-Archipelago::Archipelago(const int &n_islands, const int &archiCarryingCap)
+Archipelago::Archipelago(const int &n_islands, const int &islCarryingCap)
     // constructor of archipelago based on number
-{   // of islands and archipelago-wide K
-    try
-    {
+{   // of islands and island-wide K
         assert(n_islands >= 0);
-        assert(archiCarryingCap >= 0);
-        if(archiCarryingCap % n_islands != 0)
-            throw logic_error("The carrying capacity needs to be dividable"
-                              " by the number of islands without remainder.\n");
-        if (n_islands == 0 || archiCarryingCap == 0)
-            throw string("You are creating an archipelago without islands"
-                         " and/or with a carrying capacity of zero.\n");
+        assert(islCarryingCap >= 0);
         mIslands = vector<Island>((unsigned) n_islands,
-                Island(archiCarryingCap / n_islands));
-        mK = archiCarryingCap;
-    }
-    catch(exception &except) {
-        cerr << "Error: " << except.what() << '\n';
-        exit(EXIT_FAILURE);
-    }
+                Island(islCarryingCap));
+        mK = islCarryingCap * n_islands;
+    try {
+            if (n_islands == 0 || islCarryingCap == 0)
+                throw string("You are creating an archipelago without islands"
+                             " and/or with a carrying capacity of zero.\n");
+        }
     catch(string &message) {
         clog << "Warning: " << message << '\n';
     }

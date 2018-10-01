@@ -455,40 +455,13 @@ void test_island()
 
 void test_archi()
 {
-    {  // test constructor and the correct implementation of carrying capacity
-        const int n_islands = 2;
-        const int archi_carryingCap = 50;
-        Archipelago archi(n_islands, archi_carryingCap);
-        assert(archi.getNSpecies()==0);
-        assert(archi.getCarryingCap()==archi_carryingCap);
-        assert(archi.getIslands()[0].getCarryingCap()==archi_carryingCap/n_islands);
-        assert(archi.getIslands()[1].getNSpecies()==0);
+    {  // default constructor creates empty archipelago with 0 islands
+        // and 0 carrying cap
+        Archipelago archi = Archipelago();
+        assert(archi.getNIslands() == 0);
+        assert(archi.getCarryingCap() == 0);
     }
-    {  // testing the calculation of event rates and initialisation of rate vectors
-        const int n_islands = 2;
-        const int archi_carryingCap = 50;
-        const int n_mainland = 100;
-        Archipelago archi(n_islands, archi_carryingCap);
-        assert(archi.getGlobalRates().empty());
-        vector<double> pars{ 0.1, 0.1, 0.2, 0.12, 0.3, 0.2, 0.1, 0.12 };
-        archi.calculateAllRates(pars, n_mainland, n_islands);
-        assert(archi.getGlobalRates().size()==3);
-        vector<Island> archiCopy = archi.getIslands();
-        assert(extractSumOfRates(archiCopy[0])>0);
-        assert(extractSumOfRates(archiCopy[1])>0);
-        assert(archiCopy[0].getLocalRates().size()==5);
-        assert(archiCopy[1].getLocalRates().size()==5);
-    }
-    {  // testing the sampling of next event
-        const int n_islands = 2;
-        const int archi_carryingCap = 50;
-        const int n_mainland = 100;
-        mt19937_64 prng;
-        Archipelago archi(n_islands, archi_carryingCap);
-        assert(archi.getGlobalRates().empty());
-        vector<double> pars{ 0.1, 0.1, 0.2, 0.12, 0.3, 0.2, 0.1, 0.12 };
-        archi.calculateAllRates(pars, n_mainland, n_islands);
-        event_type event = archi.sampleNextEvent(prng);
-        assert(getEventInt(event) >= 0);
+    {  //
+
     }
 }
