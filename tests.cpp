@@ -393,7 +393,60 @@ void test_island()
         assert(island1.getNSpecies() == 1);
         assert(island1.findSpecies(SpeciesID()).getBirth() == 4.0);
     }
+    {   // add island to another: cladogenetic sp. migrated to other island
+        // -> cladogenesis == birth time
+        Island island1(10);
+        Island island2(10);
+        int n_mainlandSp = 10;
+        SpeciesID maxSpeciesID(n_mainlandSp);
+        island1.immigrate(SpeciesID(), 4.0);
+        island1.speciateClado(SpeciesID(), 3.9, maxSpeciesID);
+        island2.migrate(island1.findSpecies(maxSpeciesID), 2.0);
+        island1.addIsland(island2);
+        assert(island1.getNSpecies() == 2);
+        assert(island1.findSpecies(maxSpeciesID).getBirth() == 3.9);
+    }
+    {   // add island to another: cladogenetic sp. migrated to other island (other way around)
+        // -> cladogenesis == birth time
+        Island island1(10);
+        Island island2(10);
+        int n_mainlandSp = 10;
+        SpeciesID maxSpeciesID(n_mainlandSp);
+        island2.immigrate(SpeciesID(), 4.0);
+        island2.speciateClado(SpeciesID(), 3.9, maxSpeciesID);
+        island1.migrate(island2.findSpecies(maxSpeciesID), 2.0);
+        island1.addIsland(island2);
+        assert(island1.getNSpecies() == 2);
+        assert(island1.findSpecies(maxSpeciesID).getBirth() == 3.9);
+    }
+    {   // add island to another: anagenetic sp. migrated to other island
+        // -> birth time of parent == birth time
+        Island island1(10);
+        Island island2(10);
+        int n_mainlandSp = 10;
+        SpeciesID maxSpeciesID(n_mainlandSp);
+        island1.immigrate(SpeciesID(), 4.0);
+        island1.speciateAna(SpeciesID(), maxSpeciesID);
+        island2.migrate(island1.findSpecies(maxSpeciesID), 2.0);
+        island1.addIsland(island2);
+        assert(island1.getNSpecies() == 1);
+        assert(island1.findSpecies(maxSpeciesID).getBirth() == 4.0);
+    }
+    {   // add island to another: cladogenetic sp. migrated to other island (other way around)
+        // -> cladogenesis == birth time
+        Island island1(10);
+        Island island2(10);
+        int n_mainlandSp = 10;
+        SpeciesID maxSpeciesID(n_mainlandSp);
+        island2.immigrate(SpeciesID(), 4.0);
+        island2.speciateAna(SpeciesID(), maxSpeciesID);
+        island1.migrate(island2.findSpecies(maxSpeciesID), 2.0);
+        island1.addIsland(island2);
+        assert(island1.getNSpecies() == 1);
+        assert(island1.findSpecies(maxSpeciesID).getBirth() == 4.0);
+    }
 }
+
 
 void test_archi()
 {
