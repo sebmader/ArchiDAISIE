@@ -93,7 +93,7 @@ event_type Island::sampleLocalEvent(mt19937_64 prng)
 // local updates:
 void Island::immigrate(const SpeciesID& speciesID, double time)
 {   // immigration from the mainland to THIS island
-    
+
     Species newSpecies(time, speciesID, speciesID, 'I');
     if (hasSpecies(speciesID)) {  // if extant -> re-immigration
         // ("re-setting the clock" (= BirthT))
@@ -137,100 +137,70 @@ int Island::drawMigDestinationIsland(
 
 void Island::migrate(Species newSpecies, const double& time)
 {
-    try {
-        newSpecies.setBirth(time);  // set birth time of migrating species
-        // to the time of migration
-        newSpecies.setStatus('M');
-        const SpeciesID speciesID = newSpecies.getSpecID();
-        if(hasSpecies(speciesID))  // if first migration: add species to island
-            addSpecies(newSpecies);
-        else {  // else (if re-migration): re-set clock // TODO: correct?
-            const int pos = findPos(speciesID);
-            assert(pos >= 0 && pos < static_cast<int>(mSpecies.size()));
-            mSpecies[pos] = newSpecies;
-        }
-        if (getNSpecies() > mK)
-            throw logic_error("Number of species exceeds carrying capacity.\n");
+    newSpecies.setBirth(time);  // set birth time of migrating species
+    // to the time of migration
+    newSpecies.setStatus('M');
+    const SpeciesID speciesID = newSpecies.getSpecID();
+    if(hasSpecies(speciesID))  // if first migration: add species to island
+        addSpecies(newSpecies);
+    else {  // else (if re-migration): re-set clock // TODO: correct?
+        const int pos = findPos(speciesID);
+        assert(pos >= 0 && pos < static_cast<int>(mSpecies.size()));
+        mSpecies[pos] = newSpecies;
     }
-    catch (const exception &error)
-    {
-        cerr << "Error: " << error.what();
-        exit(EXIT_FAILURE);
-    }
+    if (getNSpecies() > mK)
+        throw logic_error("Number of species exceeds carrying capacity.\n");
 }
 
 void Island::speciateClado(const SpeciesID& speciesID, double time,
         SpeciesID& maxSpeciesID)
 {   // island species cladogenetically diverges
+    if(!hasSpecies(speciesID))
+        throw logic_error("Species does not exist on island.\n");
 
-    try {
-        if(!hasSpecies(speciesID))
-            throw logic_error("Species does not exist on island.\n");
+    // find species
+    const Species oldSpecies = findSpecies(speciesID);
 
-        // find species
-        const Species oldSpecies = findSpecies(speciesID);
+    // 2 new species:
+    Species newSpecies1 = Species(oldSpecies.getBirth(), speciesID,
+            maxSpeciesID.createNewSpeciesID(), 'C');
+    Species newSpecies2 = Species(time, speciesID,
+            maxSpeciesID.createNewSpeciesID(), 'C');
 
-        // 2 new species:
-        Species newSpecies1 = Species(oldSpecies.getBirth(), speciesID,
-                maxSpeciesID.createNewSpeciesID(), 'C');
-        Species newSpecies2 = Species(time, speciesID,
-                maxSpeciesID.createNewSpeciesID(), 'C');
-
-        // parent goes extinct and daughters are added
-        goExtinct(speciesID);
-        addSpecies(newSpecies1);
-        addSpecies(newSpecies2);
-    }
-    catch (const exception &error)
-    {
-        std::cerr << "Error: " << error.what();
-        exit(EXIT_FAILURE);
-    }
+    // parent goes extinct and daughters are added
+    goExtinct(speciesID);
+    addSpecies(newSpecies1);
+    addSpecies(newSpecies2);
 }
 
 void Island::speciateAna(const SpeciesID& speciesID, SpeciesID& maxSpeciesID)
 {   // local anagenetic speciation: DAISIE interprets this as cladogenesis (?!),
     // so all species can undergo it not only migrants
     // -> equivalent to global (=DAISIE) anagenesis
+    if(!hasSpecies(speciesID))
+        throw logic_error("Species does not exist on island.\n");
 
-    try {
-        if(!hasSpecies(speciesID))
-            throw logic_error("Species does not exist on island.\n");
-
-        // find species
-        const Species oldSpecies = findSpecies(speciesID);
-        // new species
-        const double birthT = oldSpecies.getBirth();
-        Species newSpecies = Species(birthT, speciesID,
-                maxSpeciesID.createNewSpeciesID(), 'A');
-        // parent goes extinct & daugther gets added to island
-        goExtinct(speciesID);
-        addSpecies(newSpecies);
-    }
-    catch (const exception &error)
-    {
-        std::cerr << "Error: " << error.what();
-        exit(EXIT_FAILURE);
-    }
+    // find species
+    const Species oldSpecies = findSpecies(speciesID);
+    // new species
+    const double birthT = oldSpecies.getBirth();
+    Species newSpecies = Species(birthT, speciesID,
+            maxSpeciesID.createNewSpeciesID(), 'A');
+    // parent goes extinct & daugther gets added to island
+    goExtinct(speciesID);
+    addSpecies(newSpecies);
 }
 
 void Island::goExtinct(const SpeciesID& speciesID)
 {   // species goes extinct
-    try {
-        if(!hasSpecies(speciesID))
-            throw logic_error("Species does not exist on island.\n");
+    if(!hasSpecies(speciesID))
+        throw logic_error("Species does not exist on island.\n");
 
-        // find species
-        const int pos = findPos(speciesID);
-        assert(pos >= 0);
-        // remove species
-        mSpecies.erase(mSpecies.begin() + pos);
-    }
-    catch (const exception &error)
-    {
-        std::cerr << "Error: " << error.what();
-        exit(EXIT_FAILURE);
-    }
+    // find species
+    const int pos = findPos(speciesID);
+    assert(pos >= 0);
+    // remove species
+    mSpecies.erase(mSpecies.begin() + pos);
 }
 
 void Island::addIsland(const Island& islNew)

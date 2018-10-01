@@ -171,7 +171,6 @@ void test_island()
         }
     }
     {  // Species cannot immigrate if island which has as much species as its carrying capacity
-
         Island island(0);
         try
         {
@@ -184,7 +183,6 @@ void test_island()
         }
     }
     {  // Species cannot migrate if island which has as much species as its carrying capacity
-
         Island island(0);
         try
         {
