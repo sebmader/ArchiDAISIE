@@ -9,14 +9,14 @@ SpeciesID::SpeciesID(const int id) : speciesID{id} {
     assert(id >= 0);
 }
 
-int SpeciesID::getMaxSpeciesID() const noexcept
+int SpeciesID::getSpeciesID() const noexcept
 {
     return speciesID;
 }
 
 SpeciesID SpeciesID::createNewSpeciesID()
 {
-    incrementMaxSpeciesID();
+    incrementSpeciesID();
     return static_cast<SpeciesID>(speciesID);
 }
 

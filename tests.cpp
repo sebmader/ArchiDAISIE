@@ -6,6 +6,71 @@
 
 using namespace std;
 
+void test_speciesID()
+{
+    { // default constructor creates speciesID of 0
+        SpeciesID spID = SpeciesID();
+        assert(spID.getSpeciesID()==0);
+    }
+    { // incrementing functions is adding 1 to the speciesID
+        SpeciesID spID = SpeciesID();
+        assert(spID.getSpeciesID()==0);
+        spID.incrementSpeciesID();
+        assert(spID.getSpeciesID()==1);
+    }
+    { // creating new speciesID adds 1 to the speciesID and returns copy
+        SpeciesID spID = SpeciesID();
+        SpeciesID ID = spID.createNewSpeciesID();
+        assert(spID.getSpeciesID() == 1);
+        assert(ID.getSpeciesID() == 1);
+    }
+    { // equality operator ==
+        SpeciesID spId1 = SpeciesID();
+        SpeciesID spId2 = SpeciesID();
+        assert(spId1==spId2);
+    }
+    { // equality operators !=
+        SpeciesID spId1 = SpeciesID(1);
+        SpeciesID spId2 = SpeciesID(2);
+        assert(spId1 != spId2);
+    }
+    { // equality operators <
+        SpeciesID spId1 = SpeciesID(1);
+        SpeciesID spId2 = SpeciesID(2);
+        assert(spId1<spId2);
+    }
+    { // equality operators >
+        SpeciesID spId1 = SpeciesID(1);
+        SpeciesID spId2 = SpeciesID(2);
+        assert(spId2>spId1);
+    }
+    { // equality operators <=
+        SpeciesID spId1 = SpeciesID(1);
+        SpeciesID spId2 = SpeciesID(2);
+        assert(spId1<=spId2);
+        spId1.incrementSpeciesID();
+        assert(spId1<=spId2);
+    }
+    { // equality operators >=
+        SpeciesID spId1 = SpeciesID(1);
+        SpeciesID spId2 = SpeciesID(2);
+        assert(spId2>=spId1);
+        spId1.incrementSpeciesID();
+        assert(spId2>=spId1);
+    }
+}
+
+void test_species()
+{
+    { // defauft constructor creates empty species
+        Species sp1 = Species();
+        assert(sp1.getBirth() == 0.0);
+        assert(sp1.getSpecID() == SpeciesID());
+        assert(sp1.getParID() == SpeciesID());
+        assert(sp1.getStatus() == '0');
+    }
+}
+
 void test_island()
 {
     #ifdef ISLAND_HAS_DEFAULT_CONSTRUCTOR
@@ -130,12 +195,12 @@ void test_island()
         island.goExtinct(SpeciesID(42));
         island.speciateAna(SpeciesID(1), maxSpeciesID);
         assert(island.findSpecies(maxSpeciesID).getStatus() == 'A');
-        assert(maxSpeciesID.getMaxSpeciesID()
+        assert(maxSpeciesID.getSpeciesID()
             == n_mainlandSpecies+1);
         island.immigrate(SpeciesID(42), 2.56);
         island.speciateClado(SpeciesID(42), 2.50, maxSpeciesID);
         assert(island.findSpecies(maxSpeciesID).getStatus() == 'C');
-        assert(maxSpeciesID.getMaxSpeciesID()
+        assert(maxSpeciesID.getSpeciesID()
                 == n_mainlandSpecies+3);
         assert(island.getNSpecies() == 3);
     }

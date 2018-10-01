@@ -17,8 +17,8 @@ public:
     bool operator>=(const SpeciesID& rhs) const;
 
 
-    void incrementMaxSpeciesID() noexcept { ++speciesID; }
-    int getMaxSpeciesID() const noexcept;
+    void incrementSpeciesID() noexcept { ++speciesID; }
+    int getSpeciesID() const noexcept;
 
     SpeciesID createNewSpeciesID();
 

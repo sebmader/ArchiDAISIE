@@ -152,6 +152,8 @@ vector<vector<Species> > ArchiDAISIE(const double &islandAge,
 
 int main() {
 
+    test_speciesID();
+    test_species();
     test_island();
     test_archi();
     /*

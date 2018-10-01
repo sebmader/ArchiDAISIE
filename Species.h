@@ -17,6 +17,7 @@ public:
 
     double getBirth() const noexcept { return mBirthT; }
     SpeciesID getSpecID() const noexcept { return mSpeciesID; }
+    SpeciesID getParID() const noexcept { return mParentID; }
     char getStatus() const noexcept { return mStatus; }
     void setBirth(double);
     void setStatus(char);
@@ -24,8 +25,8 @@ public:
     bool isMigrant() const noexcept;
 
     void printSpec() {
-        std::cout << mBirthT << '\t' << mParentID.getMaxSpeciesID() << '\t'
-                  << mSpeciesID.getMaxSpeciesID() << '\t' << mStatus << '\n';
+        std::cout << mBirthT << '\t' << mParentID.getSpeciesID() << '\t'
+                  << mSpeciesID.getSpeciesID() << '\t' << mStatus << '\n';
     }
 
 private:
