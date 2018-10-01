@@ -103,10 +103,11 @@ void Island::immigrate(const SpeciesID& speciesID, double time)
         mSpecies[pos] = newSpecies;
     }
     else {
+        if (getNSpecies() + 1 > mK)
+            throw logic_error("Immigration would make number of species"
+                              " exceed carrying capacity.\n");
         mSpecies.push_back(newSpecies);
     }
-    if (getNSpecies() > mK)
-        throw logic_error("Number of species exceeds carrying capacity.\n");
 }
 
 int Island::drawMigDestinationIsland(
@@ -141,15 +142,17 @@ void Island::migrate(Species newSpecies, const double& time)
     // to the time of migration
     newSpecies.setStatus('M');
     const SpeciesID speciesID = newSpecies.getSpecID();
-    if(!hasSpecies(speciesID))  // if first migration: add species to island
+    if(!hasSpecies(speciesID)) {  // if first migration: add species to island
+        if (getNSpecies() + 1 > mK)
+            throw logic_error("Migration would make number of species"
+                              " exceed carrying capacity.\n");
         addSpecies(newSpecies);
+    }
     else {  // else (if re-migration): re-set clock // TODO: correct?
         const int pos = findPos(speciesID);
         assert(pos >= 0 && pos < static_cast<int>(mSpecies.size()));
         mSpecies[pos] = newSpecies;
     }
-    if (getNSpecies() > mK)
-        throw logic_error("Number of species exceeds carrying capacity.\n");
 }
 
 void Island::speciateClado(const SpeciesID& speciesID, double time,
@@ -157,7 +160,9 @@ void Island::speciateClado(const SpeciesID& speciesID, double time,
 {   // island species cladogenetically diverges
     if(!hasSpecies(speciesID))
         throw logic_error("Species does not exist on island.\n");
-
+    if (getNSpecies() + 1 > mK)
+        throw logic_error("Cladogenesis would make number of species"
+                          " exceed carrying capacity.\n");
     // find species
     const Species oldSpecies = findSpecies(speciesID);
 

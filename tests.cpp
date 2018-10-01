@@ -145,6 +145,19 @@ void test_island()
         assert(island.getNSpecies()==1);
         assert(island.findSpecies(SpeciesID(42)).getBirth()==3.14);
     }
+    {  // Species cannot immigrate if island which has as much species as its carrying capacity
+        Island island(0);
+        try
+        {
+            island.immigrate(SpeciesID(42), 3.14);
+            assert(!"Should not get here"); //!OCLINT accepted idiom
+        }
+        catch (const std::exception& e)
+        {
+            assert(std::string(e.what()) == "Immigration would make number of species"
+                                            " exceed carrying capacity.\n");
+        }
+    }
     {   // Species cannot be found on island before immigration
         Island island(10);
         assert(!island.hasSpecies(SpeciesID(42)));
@@ -157,6 +170,18 @@ void test_island()
         assert(island.getNSpecies()==1);
         island.goExtinct(SpeciesID(42));
         assert(island.getNSpecies()==0);
+    }
+    { // Extinction of absent species throws an exception
+        Island island(1);
+        try
+        {
+            island.goExtinct(SpeciesID(42));
+            assert(!"Should not get here"); //!OCLINT accepted idiom
+        }
+        catch (const std::exception& e)
+        {
+            assert(std::string(e.what()) == "Species does not exist on island.\n");
+        }
     }
     {   // cladogenesis adds species to island
         Island island(10);
@@ -187,6 +212,34 @@ void test_island()
         island.speciateClado(SpeciesID(42), 4.0,maxSpeciesID);
         assert(island.getSpecies()[0].getStatus() == 'C');
         assert(island.getSpecies()[1].getStatus() == 'C');
+    }
+    {  // cladogenesis throws exception if species doesn't exists
+        Island island(1);
+        SpeciesID maxSpeciesID(50);
+        try
+        {
+            island.speciateClado(SpeciesID(42), 4.0,maxSpeciesID);;
+            assert(!"Should not get here"); //!OCLINT accepted idiom
+        }
+        catch (const std::exception& e)
+        {
+            assert(std::string(e.what()) == "Species does not exist on island.\n");
+        }
+    }
+    {  // cladogenesis throws exception if it exceeds the carrying cap
+        Island island(1);
+        SpeciesID maxSpeciesID(50);
+        island.immigrate(SpeciesID(42), 4.0);
+        try
+        {
+            island.speciateClado(SpeciesID(42), 4.0,maxSpeciesID);;
+            assert(!"Should not get here"); //!OCLINT accepted idiom
+        }
+        catch (const std::exception& e)
+        {
+            assert(std::string(e.what()) == "Cladogenesis would make number of species"
+                                            " exceed carrying capacity.\n");
+        }
     }
     {   // anagenesis does not add species to island
         Island island(10);
@@ -224,11 +277,12 @@ void test_island()
         island.speciateAna(SpeciesID(42),maxSpeciesID);
         assert(island.getSpecies()[0].getStatus() == 'A');
     }
-    { // Extinction of absent species throws an exception
+    {  // anagenesis throws exception if species doesn't exists
         Island island(1);
+        SpeciesID maxSpeciesID(50);
         try
         {
-            island.goExtinct(SpeciesID(42));
+            island.speciateAna(SpeciesID(42), maxSpeciesID);;
             assert(!"Should not get here"); //!OCLINT accepted idiom
         }
         catch (const std::exception& e)
@@ -236,17 +290,21 @@ void test_island()
             assert(std::string(e.what()) == "Species does not exist on island.\n");
         }
     }
-    {  // Species cannot immigrate if island which has as much species as its carrying capacity
-        Island island(0);
-        try
-        {
-            island.immigrate(SpeciesID(42), 3.14);
-            assert(!"Should not get here"); //!OCLINT accepted idiom
-        }
-        catch (const std::exception& e)
-        {
-            assert(std::string(e.what()) == "Number of species exceeds carrying capacity.\n");
-        }
+    {   // migration increases number of species
+        Island island(1);
+        assert(island.getNSpecies() == 0);
+        island.migrate(Species(), 4.0);
+        assert(island.getNSpecies() == 1);
+    }
+    {   // migration makes migration time birth time of migrant
+        Island island(1);
+        island.migrate(Species(), 4.0);
+        assert(island.findSpecies(SpeciesID()).getBirth() == 4.0);
+    }
+    {   // migration changes status to 'M'
+        Island island(1);
+        island.migrate(Species(), 4.0);
+        assert(island.findSpecies(SpeciesID()).getStatus() == 'M');
     }
     {  // Species cannot migrate if island which has as much species as its carrying capacity
         Island island(0);
@@ -257,7 +315,8 @@ void test_island()
         }
         catch (const std::exception& e)
         {
-            assert(std::string(e.what()) == "Number of species exceeds carrying capacity.\n");
+            assert(std::string(e.what()) == "Migration would make number of species"
+                                            " exceed carrying capacity.\n");
         }
     }
 }
