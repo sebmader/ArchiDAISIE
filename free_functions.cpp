@@ -6,13 +6,13 @@
 
 using namespace std;
 
-double getLogGrowth(const Island& island)
+double getLogGrowth(const Island& island) noexcept
 {
     return 1.0 - static_cast<double>(island.getNSpecies())
             / island.getCarryingCap();
 }
 
-double extractSumOfRates(const Island& island) noexcept
+double extractSumOfRates(const Island& island)
 {
     vector<double> localRates = island.getLocalRates();
     double sumRates = 0;

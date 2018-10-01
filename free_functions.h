@@ -13,9 +13,9 @@
 #include "Island.h"
 #include "Archipelago.h"
 
-double getLogGrowth(const Island& island);
+double getLogGrowth(const Island& island) noexcept;
 
-double extractSumOfRates(const Island& island) noexcept;
+double extractSumOfRates(const Island& island);
 
 
 #endif //ARCHIDAISIE_FREE_FUNCTIONS_H

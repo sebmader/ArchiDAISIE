@@ -301,6 +301,13 @@ void test_island()
         island.migrate(Species(), 4.0);
         assert(island.findSpecies(SpeciesID()).getBirth() == 4.0);
     }
+    {   // re-migration of already present species overwrites birth time
+        Island island(1);
+        island.migrate(Species(), 4.0);
+        assert(island.findSpecies(SpeciesID()).getBirth() == 4.0);
+        island.migrate(Species(), 2.0);
+        assert(island.findSpecies(SpeciesID()).getBirth() == 2.0);
+    }
     {   // migration changes status to 'M'
         Island island(1);
         island.migrate(Species(), 4.0);
@@ -318,6 +325,14 @@ void test_island()
             assert(std::string(e.what()) == "Migration would make number of species"
                                             " exceed carrying capacity.\n");
         }
+    }
+    {   // drawn island of migration mus be other island than origin
+        Island island1(10);
+        Island island2(10);
+        island1.addSpecies(Species());
+        vector<double> logGrowthTerms { getLogGrowth(island1), getLogGrowth(island2)};
+        int destination = island1.drawMigDestinationIsland(0,logGrowthTerms, 0.1, mt19937_64());
+        assert(destination == 1);
     }
 }
 
