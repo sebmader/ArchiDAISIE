@@ -93,27 +93,20 @@ event_type Island::sampleLocalEvent(mt19937_64 prng)
 // local updates:
 void Island::immigrate(const SpeciesID& speciesID, double time)
 {   // immigration from the mainland to THIS island
-
-    try {
-        Species newSpecies(time, speciesID, speciesID, 'I');
-        if (hasSpecies(speciesID)) {  // if extant -> re-immigration
-            // ("re-setting the clock" (= BirthT))
-            const int pos = findPos(speciesID);
-            assert(pos < static_cast<int>(mSpecies.size()));
-            assert(pos >= 0);
-            mSpecies[pos] = newSpecies;
-        }
-        else {
-            mSpecies.push_back(newSpecies);
-        }
-        if (getNSpecies() > mK)
-            throw logic_error("Number of species exceeds carrying capacity.\n");
+    
+    Species newSpecies(time, speciesID, speciesID, 'I');
+    if (hasSpecies(speciesID)) {  // if extant -> re-immigration
+        // ("re-setting the clock" (= BirthT))
+        const int pos = findPos(speciesID);
+        assert(pos < static_cast<int>(mSpecies.size()));
+        assert(pos >= 0);
+        mSpecies[pos] = newSpecies;
     }
-    catch (const exception &error)
-    {
-        cerr << "Error: " << error.what();
-        exit(EXIT_FAILURE);
+    else {
+        mSpecies.push_back(newSpecies);
     }
+    if (getNSpecies() > mK)
+        throw logic_error("Number of species exceeds carrying capacity.\n");
 }
 
 int Island::drawMigDestinationIsland(
