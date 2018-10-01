@@ -141,7 +141,7 @@ void Island::migrate(Species newSpecies, const double& time)
     // to the time of migration
     newSpecies.setStatus('M');
     const SpeciesID speciesID = newSpecies.getSpecID();
-    if(hasSpecies(speciesID))  // if first migration: add species to island
+    if(!hasSpecies(speciesID))  // if first migration: add species to island
         addSpecies(newSpecies);
     else {  // else (if re-migration): re-set clock // TODO: correct?
         const int pos = findPos(speciesID);
