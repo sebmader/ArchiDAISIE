@@ -69,6 +69,28 @@ void test_species()
         assert(sp1.getParID() == SpeciesID());
         assert(sp1.getStatus() == '0');
     }
+    { // setBirth function does set the birth time
+        Species sp1 = Species();
+        sp1.setBirth(4.0);
+        assert(sp1.getBirth() == 4.0);
+    }
+    { // setStatus function does set the status of species
+        Species sp1 = Species();
+        sp1.setStatus('I');
+        assert(sp1.getStatus() == 'I');
+    }
+    { // identifies immigrant correctly
+        Species sp1 = Species(0.0, SpeciesID(), SpeciesID(),'I');
+        assert(sp1.isImmigrant());
+    }
+    { // identifies migrant correctly
+        Species sp1 = Species(0.0, SpeciesID(), SpeciesID(),'M');
+        assert(sp1.isMigrant());
+    }
+    { // printing species works
+        Species sp1 = Species(0.0, SpeciesID(), SpeciesID(),'M');
+        sp1.printSpec();
+    }
 }
 
 void test_island()
