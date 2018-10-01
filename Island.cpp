@@ -303,12 +303,6 @@ std::vector<double> Island::getLocalRates() const noexcept
     return mLocalRates;
 }
 
-bool Island::hasSpecies(const Species& species) const
-{
-    const int pos = findPos(species.getSpecID());
-    return pos >= 0;
-}
-
 bool Island::hasSpecies(const SpeciesID& speciesID) const
 {
     const int pos = findPos(speciesID);

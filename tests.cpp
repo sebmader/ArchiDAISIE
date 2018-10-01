@@ -334,6 +334,23 @@ void test_island()
         int destination = island1.drawMigDestinationIsland(0,logGrowthTerms, 0.1, mt19937_64());
         assert(destination == 1);
     }
+    {   // caculating rates of empty island initialises localRates vector
+        Island island1(10);
+        int n_mainlandSp = 10;
+        assert(island1.getLocalRates().size() != 5);
+        vector<double> islPars = { 0.1, 0.5, 0.1, 0.05, 0.1 };
+        island1.calculateIslRates(islPars, n_mainlandSp, 1, 0);
+        assert(island1.getLocalRates().size() == 5);
+    }
+    {   // caculating rates of empty island leads to immigration
+        Island island1(10);
+        int n_mainlandSp = 10;
+        mt19937_64 prng;
+        vector<double> islPars = { 0.1, 0.5, 0.1, 0.05, 0.1 };
+        island1.calculateIslRates(islPars, n_mainlandSp, 1, 0);
+        event_type event = island1.sampleLocalEvent(prng);
+        assert(getEventInt(event) == 0);
+    }
 }
 
 void test_archi()

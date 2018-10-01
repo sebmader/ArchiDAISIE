@@ -23,7 +23,6 @@ public:
     int getCarryingCap() const noexcept;
     std::vector<SpeciesID> getSpeciesIDs() const;
     int getNSpecies() const noexcept;
-    bool hasSpecies(const Species &species) const;
     bool hasSpecies(const SpeciesID& speciesID) const;
     std::vector<double> getLocalRates() const noexcept;
         // RJCB: AFAICS, this should not be cached, it is too early for an unproven
