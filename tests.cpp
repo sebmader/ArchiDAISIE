@@ -158,8 +158,7 @@ void test_island()
         island.immigrate(SpeciesID(42), 6.28);
         assert(island.hasSpecies(SpeciesID(42)));
     }
-    // Extinction of absent species throws an exception
-    {
+    { // Extinction of absent species throws an exception
         Island island(1);
         try
         {
@@ -171,8 +170,8 @@ void test_island()
             assert(std::string(e.what()) == "Species does not exist on island.\n");
         }
     }
-    // Species cannot immigrate if island which has as much species as its carrying capacity
-    {
+    {  // Species cannot immigrate if island which has as much species as its carrying capacity
+
         Island island(0);
         try
         {
@@ -184,6 +183,20 @@ void test_island()
             assert(std::string(e.what()) == "Number of species exceeds carrying capacity.\n");
         }
     }
+    {  // Species cannot migrate if island which has as much species as its carrying capacity
+
+        Island island(0);
+        try
+        {
+            island.migrate(Species(), 3.14);
+            assert(!"Should not get here"); //!OCLINT accepted idiom
+        }
+        catch (const std::exception& e)
+        {
+            assert(std::string(e.what()) == "Number of species exceeds carrying capacity.\n");
+        }
+    }
+
     {   // testing speciesID + speciation
         //RJCB: test one thing at a time, seperately. The test discription
         //is already vague, start by writing a concrete description of
