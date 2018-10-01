@@ -21,7 +21,7 @@ public:
 
     const std::vector<Species>& getSpecies() const { return mSpecies; }
     int getCarryingCap() const noexcept;
-    std::vector<SpeciesID> getSpeciesIDs() const noexcept;
+    std::vector<SpeciesID> getSpeciesIDs() const;
     int getNSpecies() const noexcept;
     bool hasSpecies(const Species &species) const;
     bool hasSpecies(const SpeciesID& speciesID) const;

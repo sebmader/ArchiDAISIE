@@ -16,7 +16,7 @@ enum class event_type
 
 bool is_global(event_type t) noexcept;
 bool is_local(event_type t) noexcept;
-int getEventNum(event_type t) noexcept;
+int getEventInt(event_type t) noexcept;
 
 
 #endif // EVENT_TYPE_H

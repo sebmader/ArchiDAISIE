@@ -95,12 +95,10 @@ void test_species()
 
 void test_island()
 {
-    #ifdef ISLAND_HAS_DEFAULT_CONSTRUCTOR
     {   // A default constructed island has a carrying capacity of zero
         const Island island;
         assert(island.getCarryingCap() == 0);
     }
-    #endif
     {   // Setting and getting carrying capacity matches
         const int k{ 12 };
         const Island island(k);
@@ -111,11 +109,6 @@ void test_island()
         assert(island.getNSpecies()==0);
         island.addSpecies(Species());
         assert(island.getNSpecies()==1);
-    }
-    {   // Added species has default ('0') status
-        Island island(10);
-        island.addSpecies(Species());
-        assert(island.getSpecies()[0].getStatus() == '0');
     }
     {   // The immigration of an absent species increases the number of species
         Island island(10);
@@ -149,21 +142,12 @@ void test_island()
         assert(island.findSpecies(SpeciesID(42)).getBirth()==3.14);
         }
     {   // Extinction decreases the number of species
-        // RJCB: this is the simplest test possible to test extinction
         Island island(10);
         island.immigrate(SpeciesID(42), 6.28);
         assert(island.getNSpecies()==1);
         island.goExtinct(SpeciesID(42));
         assert(island.getNSpecies()==0);
     }
-    {   // Extinction deletes species from species vector
-        Island island(10);
-        island.immigrate(SpeciesID(42), 6.28);
-        assert(island.hasSpecies(SpeciesID(42)));
-        island.goExtinct(SpeciesID(42));
-        assert(!island.hasSpecies(SpeciesID(42)));
-    }
-    #ifdef SPECIES_CANNOT_BE_FOUND_ON_EMPTY_ISLAND
     {   // Species cannot be found on empty island
         Island island(10);
         assert(!island.hasSpecies(SpeciesID(42)));
@@ -174,8 +158,6 @@ void test_island()
         island.immigrate(SpeciesID(42), 6.28);
         assert(island.hasSpecies(SpeciesID(42)));
     }
-    #endif //SPECIES_CANNOT_BE_FOUND_ON_EMPTY_ISLAND
-    #ifdef EXTINCTION_OF_ABSENT_SPECIES_THROWS_AN_EXCEPTION
     // Extinction of absent species throws an exception
     {
         Island island(1);
@@ -186,11 +168,9 @@ void test_island()
         }
         catch (const std::exception& e)
         {
-            assert(std::string(e.what()) == "absent species cannot go extinct");
+            assert(std::string(e.what()) == "Species does not exist on island.\n");
         }
     }
-    #endif // EXTINCTION_OF_ABSENT_SPECIES_THROWS_AN_EXCEPTION
-    #ifdef IMMIGRATION_OVERFLOODING_CARRYING_CAPACITY_MUST_THROW
     // Species cannot immigrate if island which has as much species as its carrying capacity
     {
         Island island(0);
@@ -201,10 +181,9 @@ void test_island()
         }
         catch (const std::exception& e)
         {
-            assert(std::string(e.what()) == "cannot immigrate to island with a saturated number of species");
+            assert(std::string(e.what()) == "Number of species exceeds carrying capacity.\n");
         }
     }
-    #endif // IMMIGRATION_OVERFLOODING_CARRYING_CAPACITY_MUST_THROW
     {   // testing speciesID + speciation
         //RJCB: test one thing at a time, seperately. The test discription
         //is already vague, start by writing a concrete description of
@@ -297,6 +276,6 @@ void test_archi()
         vector<double> pars{ 0.1, 0.1, 0.2, 0.12, 0.3, 0.2, 0.1, 0.12 };
         archi.calculateAllRates(pars, n_mainland, n_islands);
         event_type event = archi.sampleNextEvent(prng);
-        assert(getEventNum(event) >= 0);
+        assert(getEventInt(event) >= 0);
     }
 }

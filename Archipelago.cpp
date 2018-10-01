@@ -208,15 +208,15 @@ void Archipelago::doNextEvent(const event_type nextEvent,
         SpeciesID speciesID = drawUniEvent(getGlobalSpeciesIDs(),prng);
         switch(nextEvent) {
             case event_type::global_cladogenesis:
-                assert(getEventNum(nextEvent) == 5);
+                assert(getEventInt(nextEvent) == 5);
                 speciateGlobalClado(speciesID, prng, time, maxSpeciesID);
                 break;
             case event_type::global_anagenesis:
-                assert(getEventNum(nextEvent) == 6);
+                assert(getEventInt(nextEvent) == 6);
                 speciateGlobalAna(speciesID, maxSpeciesID);
                 break;
             case event_type::global_extinction:
-                assert(getEventNum(nextEvent) == 7);
+                assert(getEventInt(nextEvent) == 7);
                 goGlobalExtinct(speciesID);
                 break;
             default:
@@ -230,7 +230,7 @@ void Archipelago::doNextEvent(const event_type nextEvent,
         vector<double> eventRatePerIsland(n_islands, 0);
         for (int i = 0; i < n_islands; ++i) {
             vector<double> localRates = mIslands[i].getLocalRates();
-            eventRatePerIsland[i] = localRates[getEventNum(nextEvent)];
+            eventRatePerIsland[i] = localRates[getEventInt(nextEvent)];
         }
         const int isl = drawDisEvent(eventRatePerIsland, prng);
         // sample species:
@@ -240,13 +240,13 @@ void Archipelago::doNextEvent(const event_type nextEvent,
         {
             case event_type::local_immigration:
             {
-                assert(getEventNum(nextEvent) == 0);
+                assert(getEventInt(nextEvent) == 0);
                 mIslands[isl].immigrate(speciesID, time);
                 break;
             }
             case event_type::local_migration:
             {
-                assert(getEventNum(nextEvent) == 1);
+                assert(getEventInt(nextEvent) == 1);
                 // save the logarithmic growth terms for all islands per island
                 vector<double> vLogs(n_islands, 0);
                 for (int j = 0; j < n_islands; ++j) {
@@ -261,15 +261,15 @@ void Archipelago::doNextEvent(const event_type nextEvent,
                 break;
             }
             case event_type::local_cladogenesis:
-                assert(getEventNum(nextEvent) == 2);
+                assert(getEventInt(nextEvent) == 2);
                 mIslands[isl].speciateClado(speciesID, time, maxSpeciesID);
                 break;
             case event_type::local_anagenesis:
-                assert(getEventNum(nextEvent) == 3);
+                assert(getEventInt(nextEvent) == 3);
             mIslands[isl].speciateAna(speciesID, maxSpeciesID);
                 break;
             case event_type::local_extinction:
-                assert(getEventNum(nextEvent) == 4);
+                assert(getEventInt(nextEvent) == 4);
             mIslands[isl].goExtinct(speciesID);
                 break;
             default:

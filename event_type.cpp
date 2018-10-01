@@ -13,7 +13,7 @@ bool is_local(const event_type t) noexcept
     return !is_global(t);
 }
 
-int getEventNum(event_type t) noexcept
+int getEventInt(event_type t) noexcept
 {
     return static_cast<int>(t);
 }
