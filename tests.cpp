@@ -445,6 +445,11 @@ void test_island()
         assert(island1.getNSpecies() == 1);
         assert(island1.findSpecies(maxSpeciesID).getBirth() == 4.0);
     }
+    {
+        Island island(1);
+        island.addSpecies(Species());
+        island.printIsland();
+    }
 }
 
 
