@@ -114,6 +114,11 @@ void test_island()
         island.addSpecies(Species());
         assert(island.getNSpecies()==1);
     }
+    {   // Added species will be found by findSpeciesID
+        Island island(10);
+        island.addSpecies(Species());
+        assert(island.getSpeciesIDs()[0] == SpeciesID());
+    }
     {   // The immigration of an absent species increases the number of species
         Island island(10);
         assert(island.getNSpecies()==0);
@@ -349,7 +354,11 @@ void test_island()
         vector<double> islPars = { 0.1, 0.5, 0.1, 0.05, 0.1 };
         island1.calculateIslRates(islPars, n_mainlandSp, 1, 0);
         event_type event = island1.sampleLocalEvent(prng);
+        assert(is_local(event));
         assert(getEventInt(event) == 0);
+    }
+    {
+
     }
 }
 
