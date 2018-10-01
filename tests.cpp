@@ -104,6 +104,10 @@ void test_island()
         const Island island(k);
         assert(k==island.getCarryingCap());
     }
+    {   // Species cannot be found on empty island
+        Island island(10);
+        assert(!island.hasSpecies(SpeciesID(42)));
+    }
     {   // Adding a species increased the number of species
         Island island(10);
         assert(island.getNSpecies()==0);
@@ -140,7 +144,13 @@ void test_island()
         island.immigrate(SpeciesID(42), 3.14);
         assert(island.getNSpecies()==1);
         assert(island.findSpecies(SpeciesID(42)).getBirth()==3.14);
-        }
+    }
+    {   // Species cannot be found on island before immigration
+        Island island(10);
+        assert(!island.hasSpecies(SpeciesID(42)));
+        island.immigrate(SpeciesID(42), 6.28);
+        assert(island.hasSpecies(SpeciesID(42)));
+    }
     {   // Extinction decreases the number of species
         Island island(10);
         island.immigrate(SpeciesID(42), 6.28);
@@ -148,15 +158,71 @@ void test_island()
         island.goExtinct(SpeciesID(42));
         assert(island.getNSpecies()==0);
     }
-    {   // Species cannot be found on empty island
+    {   // cladogenesis adds species to island
         Island island(10);
+        SpeciesID maxSpeciesID(50);
+        island.immigrate(SpeciesID(42), 6.28);
+        assert(island.getNSpecies() == 1);
+        island.speciateClado(SpeciesID(42), 4.0,maxSpeciesID);
+        assert(island.getNSpecies() == 2);
+    }
+    {   // cladogenesis increases maxSpeciesID by 2
+        Island island(10);
+        SpeciesID maxSpeciesID(50);
+        island.immigrate(SpeciesID(42), 6.28);
+        island.speciateClado(SpeciesID(42), 4.0,maxSpeciesID);
+        assert(maxSpeciesID.getSpeciesID() == 50 + 2);
+    }
+    {   // cladogenesis deletes ancestor
+        Island island(10);
+        SpeciesID maxSpeciesID(50);
+        island.immigrate(SpeciesID(42), 6.28);
+        island.speciateClado(SpeciesID(42), 4.0,maxSpeciesID);
         assert(!island.hasSpecies(SpeciesID(42)));
     }
-    {   // Species cannot be found on island after immigration
+    {   // cladogenetic species are of status 'C'
         Island island(10);
-        assert(!island.hasSpecies(SpeciesID(42)));
+        SpeciesID maxSpeciesID(50);
         island.immigrate(SpeciesID(42), 6.28);
-        assert(island.hasSpecies(SpeciesID(42)));
+        island.speciateClado(SpeciesID(42), 4.0,maxSpeciesID);
+        assert(island.getSpecies()[0].getStatus() == 'C');
+        assert(island.getSpecies()[1].getStatus() == 'C');
+    }
+    {   // anagenesis does not add species to island
+        Island island(10);
+        SpeciesID maxSpeciesID(50);
+        island.immigrate(SpeciesID(42), 6.28);
+        assert(island.getNSpecies() == 1);
+        island.speciateAna(SpeciesID(42),maxSpeciesID);
+        assert(island.getNSpecies() == 1);
+    }
+    {   // anagenesis increases maxSpeciesID by 1
+        Island island(10);
+        SpeciesID maxSpeciesID(50);
+        island.immigrate(SpeciesID(42), 6.28);
+        island.speciateAna(SpeciesID(42),maxSpeciesID);
+        assert(maxSpeciesID.getSpeciesID() == 50 + 1);
+    }
+    {   // anagenesis deletes ancestor
+        Island island(10);
+        SpeciesID maxSpeciesID(50);
+        island.immigrate(SpeciesID(42), 6.28);
+        island.speciateAna(SpeciesID(42),maxSpeciesID);
+        assert(!island.hasSpecies(SpeciesID(42)));
+    }
+    {   // anagenetic species keeps ancestors birth time
+        Island island(10);
+        SpeciesID maxSpeciesID(50);
+        island.immigrate(SpeciesID(42), 6.28);
+        island.speciateAna(SpeciesID(42),maxSpeciesID);
+        assert(island.findSpecies(maxSpeciesID).getBirth() == 6.28);
+    }
+    {   // anagenetic species are of status 'A'
+        Island island(10);
+        SpeciesID maxSpeciesID(50);
+        island.immigrate(SpeciesID(42), 6.28);
+        island.speciateAna(SpeciesID(42),maxSpeciesID);
+        assert(island.getSpecies()[0].getStatus() == 'A');
     }
     { // Extinction of absent species throws an exception
         Island island(1);
@@ -193,61 +259,6 @@ void test_island()
         {
             assert(std::string(e.what()) == "Number of species exceeds carrying capacity.\n");
         }
-    }
-
-    {   // testing speciesID + speciation
-        //RJCB: test one thing at a time, seperately. The test discription
-        //is already vague, start by writing a concrete description of
-        //what you are testing, like I did above
-        Island island(10);
-        const int n_mainlandSpecies = 50;
-        SpeciesID maxSpeciesID(n_mainlandSpecies);
-        island.immigrate(SpeciesID(1), 3.14);
-        island.immigrate(SpeciesID(42), 3.01);
-        island.goExtinct(SpeciesID(42));
-        island.speciateAna(SpeciesID(1), maxSpeciesID);
-        assert(island.findSpecies(maxSpeciesID).getStatus() == 'A');
-        assert(maxSpeciesID.getSpeciesID()
-            == n_mainlandSpecies+1);
-        island.immigrate(SpeciesID(42), 2.56);
-        island.speciateClado(SpeciesID(42), 2.50, maxSpeciesID);
-        assert(island.findSpecies(maxSpeciesID).getStatus() == 'C');
-        assert(maxSpeciesID.getSpeciesID()
-                == n_mainlandSpecies+3);
-        assert(island.getNSpecies() == 3);
-    }
-    {   // testing calculating of rates
-        Island island1(10);
-        Island island2(20);
-        double sumLog = getLogGrowth(island1) + getLogGrowth(island2);
-        const int n_mainlandSpecies = 50;
-        const int n_islands = 2;
-        vector<double> islPars = { 0.1, 0.5, 0.2, 0.2, 0.15 };
-        island1.calculateIslRates(islPars, n_mainlandSpecies,
-                n_islands, sumLog);
-        double sumRates1 = extractSumOfRates(island1);
-        const int n_alive1 = island1.getNSpecies();
-        const int islandK1 = island1.getCarryingCap();
-        assert(1-static_cast<double>(n_alive1)/islandK1 == getLogGrowth(island1));
-        const double immiRate1 = max(0.0, islPars[0] * n_mainlandSpecies
-                * getLogGrowth(island1) / n_islands);
-        assert(sumRates1 == immiRate1);
-    }
-    {   // testing sampling of local event
-        Island island1(10);
-        Island island2(20);
-        double sumLog = getLogGrowth(island1) +getLogGrowth(island2);
-        const int n_mainlandSpecies = 50;
-        const int n_islands = 2;
-        vector<double> islPars = { 0.1, 0.5, 0.2, 0.2, 0.15 };
-        island1.calculateIslRates(islPars, n_mainlandSpecies,
-                n_islands, sumLog);
-        double sumRates1 = extractSumOfRates(island1);
-        const double immiRate1 = max(0.0, islPars[0] * n_mainlandSpecies
-                * getLogGrowth(island1) / n_islands);
-        assert(sumRates1 == immiRate1);
-        mt19937_64 prng;
-        // event_type event = island1.sampleLocalEvent(prng);
     }
 }
 
