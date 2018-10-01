@@ -388,7 +388,7 @@ void test_island()
         Island island1(10);
         Island island2(10);
         island2.immigrate(SpeciesID(), 4.0);
-        island1.migrate(island1.findSpecies(SpeciesID()), 2.0);
+        island1.migrate(island2.findSpecies(SpeciesID()), 2.0);
         island1.addIsland(island2);
         assert(island1.getNSpecies() == 1);
         assert(island1.findSpecies(SpeciesID()).getBirth() == 4.0);
