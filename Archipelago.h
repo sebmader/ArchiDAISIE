@@ -48,13 +48,20 @@ public:
     void goGlobalExtinct(const SpeciesID&);  // island species
                     // goes extinct on all islands it occures on
 
+    void doGlobalEvent(const event_type globalEvent,
+            const SpeciesID speciesID,
+            std::mt19937_64 prng,
+            const double& time,
+            SpeciesID& maxSpeciesID);
+
+    void doLocalEvent(const event_type localEvent, const SpeciesID speciesID, std::mt19937_64 prng, const double& time,
+            SpeciesID& maxSpeciesID, const int island, const double& iniMigrationRate);
+
     void doNextEvent(event_type, const double&,
             std::mt19937_64, double, SpeciesID& maxSpeciesID); // switch-statement
-                    // that calls event functions updates the ArchiPhylo vector
-                    // LOCAL events indicated by 3 elements: { event, species, island }
-                    // GLOBAL events indicated by 2 elements: { event, species }
+                    // that calls event functions to update the island vector
 
-    void addArchi(const Archipelago&);  // add an ArchiPhylo to this one / consolidate them
+    void addArchi(const Archipelago&);  // add an island vector to this one / consolidate them
 
     std::vector<Species> makeArchiTo1Island() const;   // aggregate all islands in
                     // archipelago as it would be one and return it

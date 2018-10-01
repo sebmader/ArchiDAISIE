@@ -455,13 +455,59 @@ void test_island()
 
 void test_archi()
 {
-    {  // default constructor creates empty archipelago with 0 islands
-        // and 0 carrying cap
+    {  // default constructor creates empty archipelago with 0 islands,
+        // 0 carrying cap and no species
         Archipelago archi = Archipelago();
         assert(archi.getNIslands() == 0);
+        assert(archi.getNSpecies() == 0);
         assert(archi.getCarryingCap() == 0);
     }
-    {  //
-
+    {  // non-default constructor creates wanted archipelago
+        int n_islands = 2;
+        int islCarryingCap = 5;
+        Archipelago archi = Archipelago(n_islands, islCarryingCap);
+        assert(archi.getNIslands() == 2);
+        assert(archi.getNSpecies() == 0);
+        assert(archi.getCarryingCap() == n_islands*islCarryingCap);
+    }
+    {  // immigration increases number of species
+        int n_islands = 2;
+        int islCarryingCap = 5;
+        Archipelago archi = Archipelago(n_islands, islCarryingCap);
+        assert(archi.getNSpecies() == 0);
+        int n_mainlandSp = 5;
+        SpeciesID maxSpeciesID(n_mainlandSp);
+        archi.doLocalEvent(event_type::local_immigration,
+                SpeciesID(1),
+                mt19937_64(),
+                4.0,
+                maxSpeciesID,
+                0,
+                0.3);
+        assert(archi.getNSpecies() == 1);
+    }
+    {  // immigration of same species to second islands doesn't increase number of species
+        int n_islands = 2;
+        int islCarryingCap = 5;
+        Archipelago archi = Archipelago(n_islands, islCarryingCap);
+        assert(archi.getNSpecies() == 0);
+        int n_mainlandSp = 5;
+        SpeciesID maxSpeciesID(n_mainlandSp);
+        archi.doLocalEvent(event_type::local_immigration,
+                SpeciesID(1),
+                mt19937_64(),
+                4.0,
+                maxSpeciesID,
+                0,
+                0.3);
+        assert(archi.getNSpecies() == 1);
+        archi.doLocalEvent(event_type::local_immigration,
+                SpeciesID(1),
+                mt19937_64(),
+                4.0,
+                maxSpeciesID,
+                1,
+                0.3);
+        assert(archi.getNSpecies() == 1);
     }
 }

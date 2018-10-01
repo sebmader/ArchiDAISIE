@@ -185,6 +185,82 @@ void Archipelago::goGlobalExtinct(const SpeciesID& speciesID)
     }
 }
 
+void Archipelago::doGlobalEvent(const event_type globalEvent,
+        const SpeciesID speciesID,
+        mt19937_64 prng,
+        const double& time,
+        SpeciesID& maxSpeciesID)
+{
+    switch(globalEvent) {
+    case event_type::global_cladogenesis:
+        assert(getEventInt(globalEvent) == 5);
+        speciateGlobalClado(speciesID, prng, time, maxSpeciesID);
+        break;
+    case event_type::global_anagenesis:
+        assert(getEventInt(globalEvent) == 6);
+        speciateGlobalAna(speciesID, maxSpeciesID);
+        break;
+    case event_type::global_extinction:
+        assert(getEventInt(globalEvent) == 7);
+        goGlobalExtinct(speciesID);
+        break;
+    default:
+        assert(!"Event is not global.\n");  //!OCLINT
+        break;
+    }
+}
+
+void Archipelago::doLocalEvent(const event_type localEvent,
+        const SpeciesID speciesID,
+        std::mt19937_64 prng,
+        const double& time,
+        SpeciesID& maxSpeciesID,
+        const int island,
+        const double& iniMigrationRate)
+{
+    switch(localEvent)
+    {
+    case event_type::local_immigration:
+    {
+        assert(getEventInt(localEvent) == 0);
+        mIslands[island].immigrate(speciesID, time);
+        break;
+    }
+    case event_type::local_migration:
+    {
+        assert(getEventInt(localEvent) == 1);
+        // save the logarithmic growth terms for all islands per island
+        const int n_islands = getNIslands();
+        vector<double> vLogs(n_islands, 0);
+        for (int j = 0; j < n_islands; ++j) {
+            vLogs[j] = getLogGrowth(mIslands[j]);
+        }
+        int destinationIsland = mIslands[island].drawMigDestinationIsland(
+                island, vLogs, iniMigrationRate, prng);
+        // output: position of island in mIslands where the species
+        // migrates to
+        Species newSpecies = mIslands[island].findSpecies(speciesID);
+        mIslands[destinationIsland].migrate(newSpecies, time);
+        break;
+    }
+    case event_type::local_cladogenesis:
+        assert(getEventInt(localEvent) == 2);
+        mIslands[island].speciateClado(speciesID, time, maxSpeciesID);
+        break;
+    case event_type::local_anagenesis:
+        assert(getEventInt(localEvent) == 3);
+        mIslands[island].speciateAna(speciesID, maxSpeciesID);
+        break;
+    case event_type::local_extinction:
+        assert(getEventInt(localEvent) == 4);
+        mIslands[island].goExtinct(speciesID);
+        break;
+    default:
+        assert(!"Event is not local.\n");  //!OCLINT
+        break;
+    }
+}
+
 void Archipelago::doNextEvent(const event_type nextEvent,
         const double& initialMigrationRate,
         mt19937_64 prng,
@@ -198,23 +274,7 @@ void Archipelago::doNextEvent(const event_type nextEvent,
     if (is_global(nextEvent)) {
         // sample global species
         SpeciesID speciesID = drawUniEvent(getGlobalSpeciesIDs(),prng);
-        switch(nextEvent) {
-            case event_type::global_cladogenesis:
-                assert(getEventInt(nextEvent) == 5);
-                speciateGlobalClado(speciesID, prng, time, maxSpeciesID);
-                break;
-            case event_type::global_anagenesis:
-                assert(getEventInt(nextEvent) == 6);
-                speciateGlobalAna(speciesID, maxSpeciesID);
-                break;
-            case event_type::global_extinction:
-                assert(getEventInt(nextEvent) == 7);
-                goGlobalExtinct(speciesID);
-                break;
-            default:
-                assert(!"Event is not global.\n");  //!OCLINT
-                break;
-        }
+        doGlobalEvent(nextEvent, speciesID, prng, time, maxSpeciesID);
     }
     else if (is_local(nextEvent)) {
         // sample island:
@@ -228,52 +288,10 @@ void Archipelago::doNextEvent(const event_type nextEvent,
         // sample species:
         vector<SpeciesID> aliveSpecies = mIslands[isl].getSpeciesIDs();
         SpeciesID speciesID = drawUniEvent(aliveSpecies, prng);
-        switch(nextEvent)
-        {
-            case event_type::local_immigration:
-            {
-                assert(getEventInt(nextEvent) == 0);
-                mIslands[isl].immigrate(speciesID, time);
-                break;
-            }
-            case event_type::local_migration:
-            {
-                assert(getEventInt(nextEvent) == 1);
-                // save the logarithmic growth terms for all islands per island
-                vector<double> vLogs(n_islands, 0);
-                for (int j = 0; j < n_islands; ++j) {
-                    vLogs[j] = getLogGrowth(mIslands[j]);
-                }
-                int destinationIsland = mIslands[isl].drawMigDestinationIsland(
-                        isl, vLogs, initialMigrationRate, prng);
-                    // output: position of island in mIslands where the species
-                        // migrates to
-                Species newSpecies = mIslands[isl].findSpecies(speciesID);
-                mIslands[destinationIsland].migrate(newSpecies, time);
-                break;
-            }
-            case event_type::local_cladogenesis:
-                assert(getEventInt(nextEvent) == 2);
-                mIslands[isl].speciateClado(speciesID, time, maxSpeciesID);
-                break;
-            case event_type::local_anagenesis:
-                assert(getEventInt(nextEvent) == 3);
-            mIslands[isl].speciateAna(speciesID, maxSpeciesID);
-                break;
-            case event_type::local_extinction:
-                assert(getEventInt(nextEvent) == 4);
-            mIslands[isl].goExtinct(speciesID);
-                break;
-            default:
-                assert(!"Event is not local.\n");  //!OCLINT
-                break;
-        }
+        doLocalEvent(nextEvent, speciesID, prng, time, maxSpeciesID, isl, initialMigrationRate);
     }
     else
-        assert(!"vHappening.size() is neither 2 nor 3. Something is wrong.\n"); //!OCLINT
-
-    // update archi-level extant species vector
-//    updateAliveSpec();
+        assert(!"Next event is neither global nor local.. Something is wrong.\n"); //!OCLINT
 }
 
 void Archipelago::addArchi(const Archipelago &newArchi)
