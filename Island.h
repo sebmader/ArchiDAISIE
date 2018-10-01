@@ -29,7 +29,7 @@ public:
         // speed optimization yet. Calculate this when needed
 
     void addSpecies(const Species &);  // adds new species to species vector
-    void deleteSpecies(const SpeciesID&);  // deletes species from species vector
+    void deleteSpecies(const int&);  // deletes species from species vector
                                      // UNORDERD -> swap with last and pop_back
     int findPos(const SpeciesID&) const;  // find the position of species (input) in island vector
             // RJCB: implementation detail, make private

@@ -87,10 +87,6 @@ void test_species()
         Species sp1 = Species(0.0, SpeciesID(), SpeciesID(),'M');
         assert(sp1.isMigrant());
     }
-    { // printing species works
-        Species sp1 = Species(0.0, SpeciesID(), SpeciesID(),'M');
-        sp1.printSpec();
-    }
 }
 
 void test_island()
@@ -357,8 +353,45 @@ void test_island()
         assert(is_local(event));
         assert(getEventInt(event) == 0);
     }
-    {
-
+    {   // add island to another: one immigrant on both islands
+        // -> most recent birth time
+        Island island1(10);
+        Island island2(10);
+        island1.immigrate(SpeciesID(), 4.0);
+        island2.immigrate(SpeciesID(), 2.0);
+        island1.addIsland(island2);
+        assert(island1.getNSpecies() == 1);
+        assert(island1.findSpecies(SpeciesID()).getBirth() == 2.0);
+    }
+    {   // add island to another: one immigrant on both islands (other way around)
+        // -> most recent birth time
+        Island island1(10);
+        Island island2(10);
+        island1.immigrate(SpeciesID(), 2.0);
+        island2.immigrate(SpeciesID(), 4.0);
+        island1.addIsland(island2);
+        assert(island1.getNSpecies() == 1);
+        assert(island1.findSpecies(SpeciesID()).getBirth() == 2.0);
+    }
+    {   // add island to another: immigrant migrated to other island
+        // -> colonisation == birth time
+        Island island1(10);
+        Island island2(10);
+        island1.immigrate(SpeciesID(), 4.0);
+        island2.migrate(island1.findSpecies(SpeciesID()), 2.0);
+        island1.addIsland(island2);
+        assert(island1.getNSpecies() == 1);
+        assert(island1.findSpecies(SpeciesID()).getBirth() == 4.0);
+    }
+    {   // add island to another: immigrant migrated to other island (other way around)
+        // -> colonisation == birth time
+        Island island1(10);
+        Island island2(10);
+        island2.immigrate(SpeciesID(), 4.0);
+        island1.migrate(island1.findSpecies(SpeciesID()), 2.0);
+        island1.addIsland(island2);
+        assert(island1.getNSpecies() == 1);
+        assert(island1.findSpecies(SpeciesID()).getBirth() == 4.0);
     }
 }
 
