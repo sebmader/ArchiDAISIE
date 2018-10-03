@@ -178,8 +178,8 @@ void Archipelago::goGlobalExtinct(const SpeciesID& speciesID)
 {   // one species (input) goes exinct on all islands it inhabits
     vector<int> onWhichIslands = findIsl(speciesID);
     if (onWhichIslands.size() < 2)
-        assert(!"Drawn species is present on less than 2 islands. "  //!OCLINT
-                "Something's wrong.. (global extinction)\n");  //!OCLINT
+        throw logic_error("Drawn species is present on less than 2 islands. "
+                          "Something's wrong.. (global extinction)\n");
     for (auto& Isl : onWhichIslands) {
         mIslands[Isl].goExtinct(speciesID);
     }
