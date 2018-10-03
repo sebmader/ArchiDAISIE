@@ -612,4 +612,97 @@ void test_archi()
         event_type event = archi.sampleNextEvent(mt19937_64());
         assert(event == event_type::local_immigration);
     }
+    {   // when there is at least one global species that is immigrant (anagenesis),
+        // the global rates are higher than 0
+        int n_islands = 2;
+        int islCarryingCap = 5;
+        Archipelago archi = Archipelago(n_islands, islCarryingCap);
+        int n_mainlandSp = 5;
+        SpeciesID maxSpeciesID(n_mainlandSp);
+        archi.doLocalEvent(event_type::local_immigration,
+                SpeciesID(1),
+                mt19937_64(),
+                4.0,
+                maxSpeciesID,
+                0,
+                0.3);
+        assert(archi.getGlobalSpeciesIDs().empty());
+        archi.doLocalEvent(event_type::local_migration,
+                SpeciesID(1),
+                mt19937_64(),
+                4.0,
+                maxSpeciesID,
+                0,
+                0.3);
+        assert(archi.getGlobalSpeciesIDs().size() == 1);
+        vector<double> iniPars { 0.05, 0.5, 0.2, 0.1, 0.2, 0.1, 0.05, 0.1 };
+        archi.calculateAllRates(iniPars, n_mainlandSp, n_islands);
+        for (int i = 0; i < (int)archi.getGlobalRates().size(); ++i) {
+            assert(archi.getGlobalRates()[i] > 0);
+        }
+    }
+    {   // global cladogenesis increases number of archipelago species
+        int n_islands = 2;
+        int islCarryingCap = 5;
+        Archipelago archi = Archipelago(n_islands, islCarryingCap);
+        int n_mainlandSp = 5;
+        SpeciesID maxSpeciesID(n_mainlandSp);
+        assert(archi.getNSpecies() == 0);
+        archi.doLocalEvent(event_type::local_immigration,
+                SpeciesID(1),
+                mt19937_64(),
+                4.0,
+                maxSpeciesID,
+                0,
+                0.3);
+        assert(archi.getNSpecies() == 1);
+        archi.doLocalEvent(event_type::local_migration,
+                SpeciesID(1),
+                mt19937_64(),
+                4.0,
+                maxSpeciesID,
+                0,
+                0.3);
+        assert(archi.getNSpecies() == 1);
+        archi.doGlobalEvent(event_type::global_cladogenesis,
+                SpeciesID(1),
+                mt19937_64(),
+                3.8,
+                maxSpeciesID);
+        assert(archi.getNSpecies() == 2);
+    }
+    {   // global cladogenesis doesn't increase the number of species on each island
+        int n_islands = 2;
+        int islCarryingCap = 5;
+        Archipelago archi = Archipelago(n_islands, islCarryingCap);
+        int n_mainlandSp = 5;
+        SpeciesID maxSpeciesID(n_mainlandSp);
+        assert(archi.getIslands()[0].getNSpecies() == 0);
+        assert(archi.getIslands()[1].getNSpecies() == 0);
+        archi.doLocalEvent(event_type::local_immigration,
+                SpeciesID(1),
+                mt19937_64(),
+                4.0,
+                maxSpeciesID,
+                0,
+                0.3);
+        assert(archi.getIslands()[0].getNSpecies() == 1);
+        assert(archi.getIslands()[1].getNSpecies() == 0);
+        archi.doLocalEvent(event_type::local_migration,
+                SpeciesID(1),
+                mt19937_64(),
+                4.0,
+                maxSpeciesID,
+                0,
+                0.3);
+        assert(archi.getIslands()[0].getNSpecies() == 1);
+        assert(archi.getIslands()[1].getNSpecies() == 1);
+        archi.doGlobalEvent(event_type::global_cladogenesis,
+                SpeciesID(1),
+                mt19937_64(),
+                3.8,
+                maxSpeciesID);
+        assert(archi.getIslands()[0].getNSpecies() == 1);
+        assert(archi.getIslands()[1].getNSpecies() == 1);
+    }
 }
