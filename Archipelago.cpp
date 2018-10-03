@@ -205,8 +205,7 @@ void Archipelago::doGlobalEvent(const event_type globalEvent,
         goGlobalExtinct(speciesID);
         break;
     default:
-        assert(!"Event is not global.\n");  //!OCLINT
-        break;
+        throw logic_error("Event is not global.\n");
     }
 }
 
@@ -256,8 +255,7 @@ void Archipelago::doLocalEvent(const event_type localEvent,
         mIslands[island].goExtinct(speciesID);
         break;
     default:
-        assert(!"Event is not local.\n");  //!OCLINT
-        break;
+        throw logic_error("Event is not local.\n");
     }
 }
 
@@ -291,7 +289,7 @@ void Archipelago::doNextEvent(const event_type nextEvent,
         doLocalEvent(nextEvent, speciesID, prng, time, maxSpeciesID, isl, initialMigrationRate);
     }
     else
-        assert(!"Next event is neither global nor local.. Something is wrong.\n"); //!OCLINT
+        throw logic_error("Next event is neither global nor local.. Something is wrong.\n");
 }
 
 void Archipelago::addArchi(const Archipelago &newArchi)
