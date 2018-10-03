@@ -130,8 +130,8 @@ void Archipelago::speciateGlobalClado(const SpeciesID& speciesID,
     vector<int> onWhichIslands = findIsl(speciesID);  // vector with islandIDs
         // (position in mIslands) where species is present
     if (onWhichIslands.size() < 2)
-        assert(!"Drawn species is present on less than 2 islands. "  //!OCLINT
-                          "Something's wrong.. (global cladogenesis)\n");  //!OCLINT
+        throw logic_error("Drawn species is present on less than 2 islands. "
+                          "Something's wrong.. (global cladogenesis)\n");
 
     // two daughter species
     const Species sp = mIslands[onWhichIslands[0]].findSpecies(speciesID);
@@ -143,7 +143,7 @@ void Archipelago::speciateGlobalClado(const SpeciesID& speciesID,
         // 0 to i-2 -> split after the island number drawn
     int n_inhabitedIslands = static_cast<int>(onWhichIslands.size());
     assert(n_inhabitedIslands >= 2);
-    const int split = drawUniEvent(0, n_inhabitedIslands-2, prng);
+    const int split = onWhichIslands[drawUniEvent(0, n_inhabitedIslands-2, prng)];
 
     // update data frame
     for (auto& isl : onWhichIslands) {
@@ -162,8 +162,8 @@ void Archipelago::speciateGlobalAna(const SpeciesID& speciesID, SpeciesID& maxSp
     vector<int> onWhichIslands = findIsl(speciesID);  // vector with islandIDs
                         // (position in mIslands) where species is present
     if (onWhichIslands.size() < 2)
-        assert(!"Drawn species is present on less than 2 islands. "  //!OCLINT
-                          " Something's wrong.. (global anagenesis)\n"); //!OCLINT
+        throw logic_error("Drawn species is present on less than 2 islands. "
+                          "Something's wrong.. (global anagenesis)\n");
     // daughter species
     const Species sp = mIslands[onWhichIslands[0]].findSpecies(speciesID);
     const double birthT = sp.getBirth();

@@ -705,4 +705,134 @@ void test_archi()
         assert(archi.getIslands()[0].getNSpecies() == 1);
         assert(archi.getIslands()[1].getNSpecies() == 1);
     }
+    {   // global cladogenesis creates species with status 'C'
+        int n_islands = 2;
+        int islCarryingCap = 5;
+        Archipelago archi = Archipelago(n_islands, islCarryingCap);
+        int n_mainlandSp = 5;
+        SpeciesID maxSpeciesID(n_mainlandSp);
+        archi.doLocalEvent(event_type::local_immigration,
+                SpeciesID(1),
+                mt19937_64(),
+                4.0,
+                maxSpeciesID,
+                0,
+                0.3);
+        archi.doLocalEvent(event_type::local_migration,
+                SpeciesID(1),
+                mt19937_64(),
+                4.0,
+                maxSpeciesID,
+                0,
+                0.3);
+        assert(archi.getIslands()[0].getSpecies()[0].getStatus() == 'I');
+        assert(archi.getIslands()[1].getSpecies()[0].getStatus() == 'M');
+        archi.doGlobalEvent(event_type::global_cladogenesis,
+                SpeciesID(1),
+                mt19937_64(),
+                3.8,
+                maxSpeciesID);
+        assert(archi.getIslands()[0].getSpecies()[0].getStatus() == 'C');
+        assert(archi.getIslands()[1].getSpecies()[0].getStatus() == 'C');
+    }
+    {   // global cladogenesis throws if species is not present on at least 2 islands
+        try {
+            int n_islands = 2;
+            int islCarryingCap = 5;
+            Archipelago archi = Archipelago(n_islands, islCarryingCap);
+            int n_mainlandSp = 5;
+            SpeciesID maxSpeciesID(n_mainlandSp);
+            archi.doGlobalEvent(event_type::global_cladogenesis,
+                    SpeciesID(1),
+                    mt19937_64(),
+                    3.8,
+                    maxSpeciesID);
+            assert(!"should not get here!\n"); //!OCLINT
+        }
+        catch (const std::exception& e)
+        {
+            assert(std::string(e.what()) == "Drawn species is present on less than 2 islands. "
+                                            "Something's wrong.. (global cladogenesis)\n");
+        }
+    }
+    {   // global anagenesis doesn't increase number of archipelago species
+        int n_islands = 2;
+        int islCarryingCap = 5;
+        Archipelago archi = Archipelago(n_islands, islCarryingCap);
+        int n_mainlandSp = 5;
+        SpeciesID maxSpeciesID(n_mainlandSp);
+        assert(archi.getNSpecies() == 0);
+        archi.doLocalEvent(event_type::local_immigration,
+                SpeciesID(1),
+                mt19937_64(),
+                4.0,
+                maxSpeciesID,
+                0,
+                0.3);
+        assert(archi.getNSpecies() == 1);
+        archi.doLocalEvent(event_type::local_migration,
+                SpeciesID(1),
+                mt19937_64(),
+                4.0,
+                maxSpeciesID,
+                0,
+                0.3);
+        assert(archi.getNSpecies() == 1);
+        archi.doGlobalEvent(event_type::global_anagenesis,
+                SpeciesID(1),
+                mt19937_64(),
+                3.8,
+                maxSpeciesID);
+        assert(archi.getNSpecies() == 1);
+    }
+    {   // global anagenesis creates species with status 'A'
+        int n_islands = 2;
+        int islCarryingCap = 5;
+        Archipelago archi = Archipelago(n_islands, islCarryingCap);
+        int n_mainlandSp = 5;
+        SpeciesID maxSpeciesID(n_mainlandSp);
+        archi.doLocalEvent(event_type::local_immigration,
+                SpeciesID(1),
+                mt19937_64(),
+                4.0,
+                maxSpeciesID,
+                0,
+                0.3);
+        archi.doLocalEvent(event_type::local_migration,
+                SpeciesID(1),
+                mt19937_64(),
+                4.0,
+                maxSpeciesID,
+                0,
+                0.3);
+        assert(archi.getIslands()[0].getSpecies()[0].getStatus() == 'I');
+        assert(archi.getIslands()[1].getSpecies()[0].getStatus() == 'M');
+        archi.doGlobalEvent(event_type::global_anagenesis,
+                SpeciesID(1),
+                mt19937_64(),
+                3.8,
+                maxSpeciesID);
+        assert(archi.getIslands()[0].getSpecies()[0].getStatus() == 'A');
+        assert(archi.getIslands()[1].getSpecies()[0].getStatus() == 'A');
+    }
+    {   // global anagenesis throws if species is not present on at least 2 islands
+        try {
+            int n_islands = 2;
+            int islCarryingCap = 5;
+            Archipelago archi = Archipelago(n_islands, islCarryingCap);
+            int n_mainlandSp = 5;
+            SpeciesID maxSpeciesID(n_mainlandSp);
+            archi.doGlobalEvent(event_type::global_anagenesis,
+                    SpeciesID(1),
+                    mt19937_64(),
+                    3.8,
+                    maxSpeciesID);
+            assert(!"should not get here!\n"); //!OCLINT
+        }
+        catch (const std::exception& e)
+        {
+            assert(std::string(e.what()) == "Drawn species is present on less than 2 islands. "
+                                            "Something's wrong.. (global anagenesis)\n");
+        }
+    }
 }
