@@ -86,7 +86,7 @@ void Archipelago::calculateAllRates(
     for (auto &j : mIslands) {
         sumLogGrowth += getLogGrowth(j);
     }
-    // sum of local rates:
+    // calculate and save local rates per island:
     for (auto &i : mIslands) {
         double sumLogGrowthWOThis = sumLogGrowth - getLogGrowth(i); // sum
                     // of log-growth of all except THIS island (i)

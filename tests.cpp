@@ -534,7 +534,7 @@ void test_archi()
                 0.3);
         assert(archi.getGlobalSpeciesIDs().size() == 1);
     }
-    {  // after immigration and migrationof same species to 2 islands it is found on both islands
+    {  // after immigration and migration of same species to 2 islands it is found on both islands
         int n_islands = 2;
         int islCarryingCap = 5;
         Archipelago archi = Archipelago(n_islands, islCarryingCap);
@@ -560,5 +560,56 @@ void test_archi()
         assert(onWhichIslands.size() == 2);
         assert(onWhichIslands[0] == 0);
         assert(onWhichIslands[1] == 1);
+    }
+    {  // calculating rates initialises rates vectors
+        int n_islands = 2;
+        int islCarryingCap = 5;
+        Archipelago archi = Archipelago(n_islands, islCarryingCap);
+        vector<double> iniPars { 0.05, 0.5, 0.2, 0.1, 0.2, 0.1, 0.05, 0.1 };
+        int n_mainlandSp = 5;
+        assert(archi.getGlobalRates().empty());
+        vector<Island> tmpIsls1 = archi.getIslands();
+        assert(tmpIsls1[0].getLocalRates().empty());
+        assert(tmpIsls1[1].getLocalRates().empty());
+        archi.calculateAllRates(iniPars, n_mainlandSp, n_islands);
+        assert(archi.getGlobalRates().size() == 3);
+        vector<Island> tmpIsls2 = archi.getIslands();
+        assert(tmpIsls2[0].getLocalRates().size() == 5);
+        assert(tmpIsls2[1].getLocalRates().size() == 5);
+    }
+    {  // calculated rates are all 0 except for immigration
+        int n_islands = 2;
+        int islCarryingCap = 5;
+        Archipelago archi = Archipelago(n_islands, islCarryingCap);
+        vector<double> iniPars { 0.05, 0.5, 0.2, 0.1, 0.2, 0.1, 0.05, 0.1 };
+        int n_mainlandSp = 5;
+        assert(archi.getGlobalRates().empty());
+        archi.calculateAllRates(iniPars, n_mainlandSp, n_islands);
+        assert(archi.getGlobalRates().size() == 3);
+        assert(archi.getGlobalRates()[0] == 0.0);
+        assert(archi.getGlobalRates()[1] == 0.0);
+        assert(archi.getGlobalRates()[2] == 0.0);
+        vector<Island> tmpIsls = archi.getIslands();
+        assert(tmpIsls[0].getLocalRates()[0] > 0);
+        assert(tmpIsls[1].getLocalRates()[0] > 0);
+        double sumRatesIsl1 = 0.0;
+        double sumRatesIsl2 = 0.0;
+        for (int i = 1; i < static_cast<int>(tmpIsls[0].getLocalRates().size()); ++i) {
+            sumRatesIsl1 += tmpIsls[0].getLocalRates()[i];
+            sumRatesIsl2 += tmpIsls[1].getLocalRates()[i];
+        }
+        assert(sumRatesIsl1 == 0.0);
+        assert(sumRatesIsl2 == 0.0);
+    }
+    {  // after calculating rates sampled event == immigration
+        int n_islands = 2;
+        int islCarryingCap = 5;
+        Archipelago archi = Archipelago(n_islands, islCarryingCap);
+        vector<double> iniPars { 0.05, 0.5, 0.2, 0.1, 0.2, 0.1, 0.05, 0.1 };
+        int n_mainlandSp = 5;
+        assert(archi.getGlobalRates().empty());
+        archi.calculateAllRates(iniPars, n_mainlandSp, n_islands);
+        event_type event = archi.sampleNextEvent(mt19937_64());
+        assert(event == event_type::local_immigration);
     }
 }
