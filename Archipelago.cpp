@@ -270,8 +270,11 @@ void Archipelago::doNextEvent(const event_type nextEvent,
         // localExtinct (4), globalClado(5), GlobalAna(6), GlobalExtinct(7)
 
     if (is_global(nextEvent)) {
+        if (getGlobalSpeciesIDs().empty())
+            throw logic_error("No global species exist on archipelago "
+                              "but drawn event is global.\n");
         // sample global species
-        SpeciesID speciesID = drawUniEvent(getGlobalSpeciesIDs(),prng);
+        const SpeciesID speciesID = drawUniEvent(getGlobalSpeciesIDs(),prng);
         doGlobalEvent(nextEvent, speciesID, prng, time, maxSpeciesID);
     }
     else if (is_local(nextEvent)) {
@@ -279,13 +282,13 @@ void Archipelago::doNextEvent(const event_type nextEvent,
         const int n_islands = getNIslands();
         vector<double> eventRatePerIsland(n_islands, 0);
         for (int i = 0; i < n_islands; ++i) {
-            vector<double> localRates = mIslands[i].getLocalRates();
+            const vector<double> localRates = mIslands[i].getLocalRates();
             eventRatePerIsland[i] = localRates[getEventInt(nextEvent)];
         }
         const int isl = drawDisEvent(eventRatePerIsland, prng);
         // sample species:
-        vector<SpeciesID> aliveSpecies = mIslands[isl].getSpeciesIDs();
-        SpeciesID speciesID = drawUniEvent(aliveSpecies, prng);
+        const vector<SpeciesID> aliveSpecies = mIslands[isl].getSpeciesIDs();
+        const SpeciesID speciesID = drawUniEvent(aliveSpecies, prng);
         doLocalEvent(nextEvent, speciesID, prng, time, maxSpeciesID, isl, initialMigrationRate);
     }
     else

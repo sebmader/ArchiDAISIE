@@ -20,8 +20,7 @@ int drawUniEvent(const int &botBoundary, const int &topBoundary, std::mt19937_64
 SpeciesID drawUniEvent(const std::vector<SpeciesID> &speciesVec, std::mt19937_64 &prng)
 {  // draw species from vector
     const int vecSize = static_cast<int>(speciesVec.size());
-    std::uniform_int_distribution<int> drawSpecies(0, vecSize);
-    SpeciesID specID = speciesVec[drawSpecies(prng)];
-
+    std::uniform_int_distribution<int> drawSpecies(0, vecSize-1);
+    const SpeciesID specID = speciesVec[drawSpecies(prng)];
     return specID;
 }
