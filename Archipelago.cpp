@@ -262,7 +262,7 @@ void Archipelago::doLocalEvent(const event_type localEvent,
 void Archipelago::doNextEvent(const event_type nextEvent,
         const double& initialMigrationRate,
         mt19937_64 prng,
-        double time,
+        const double time,
         SpeciesID& maxSpeciesID,
         const int& n_mainlandSp)
 {   // updates data frames; based on output of sampleNextEvent (event_type)

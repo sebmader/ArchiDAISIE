@@ -62,7 +62,7 @@ public:
             const int island,
             const double& iniMigrationRate);
 
-    void doNextEvent(const event_type, const double&, std::mt19937_64, double, SpeciesID& maxSpeciesID,
+    void doNextEvent(const event_type, const double&, std::mt19937_64, const double, SpeciesID& maxSpeciesID,
             const int& n_mainlandSp); // switch-statement
                     // that calls event functions to update the island vector
 

@@ -1264,4 +1264,35 @@ void test_archi()
                 4.0, maxSpeciesID, n_mainlandSp);
         assert(archi.getNSpecies() == 1);
     }
+    {   // archipelago with 3 islands, migration doesn't increase number of species
+        int n_islands = 2;
+        int islCarryingCap = 5;
+        Archipelago archi = Archipelago(n_islands, islCarryingCap);
+        int n_mainlandSp = 5;
+        SpeciesID maxSpeciesID(n_mainlandSp);
+        vector<double> iniPars { 0.05, 0.5, 0.2, 0.1, 0.2, 0.1, 0.05, 0.1 };
+        mt19937_64 prng;
+        archi.calculateAllRates(iniPars, n_mainlandSp, n_islands);
+        event_type event = archi.sampleNextEvent(prng);
+        assert(archi.getNSpecies() == 0);
+        archi.doNextEvent(event, iniPars[1], prng,
+                4.0, maxSpeciesID, n_mainlandSp);
+        assert(archi.getNSpecies() == 1);
+        archi.calculateAllRates(iniPars, n_mainlandSp, n_islands);
+        archi.doNextEvent(event_type::local_migration,
+                0.3,
+                prng,
+                3.5,
+                maxSpeciesID,
+                n_mainlandSp);
+        assert(archi.getNSpecies() == 1);
+        archi.calculateAllRates(iniPars, n_mainlandSp, n_islands);
+        archi.doNextEvent(event_type::local_migration,
+                0.3,
+                prng,
+                3.5,
+                maxSpeciesID,
+                n_mainlandSp);
+        assert(archi.getNSpecies() == 1);
+    }
 }
