@@ -1028,7 +1028,7 @@ void test_archi()
                 0.3,
                 mt19937_64(),
                 3.8,
-                maxSpeciesID);
+                maxSpeciesID, n_mainlandSp);
         assert(archi.getNSpecies() == 2);
     }
     {   // global cladogenesis doesn't increase the number of species on each island
@@ -1061,7 +1061,7 @@ void test_archi()
                 0.3,
                 mt19937_64(),
                 3.8,
-                maxSpeciesID);
+                maxSpeciesID, n_mainlandSp);
         assert(archi.getIslands()[0].getNSpecies() == 1);
         assert(archi.getIslands()[1].getNSpecies() == 1);
     }
@@ -1091,7 +1091,7 @@ void test_archi()
                 0.3,
                 mt19937_64(),
                 3.8,
-                maxSpeciesID);
+                maxSpeciesID, n_mainlandSp);
         assert(archi.getIslands()[0].getSpecies()[0].getStatus() == 'C');
         assert(archi.getIslands()[1].getSpecies()[0].getStatus() == 'C');
         assert(archi.getIslands()[0].getSpecies()[0].getSpecID() !=
@@ -1108,7 +1108,7 @@ void test_archi()
                     0.3,
                     mt19937_64(),
                     3.8,
-                    maxSpeciesID);
+                    maxSpeciesID, n_mainlandSp);
             assert(!"should not get here!\n"); //!OCLINT
         }
         catch (const std::exception& e)
@@ -1144,7 +1144,7 @@ void test_archi()
                 0.3,
                 mt19937_64(),
                 3.8,
-                maxSpeciesID);
+                maxSpeciesID, n_mainlandSp);
         assert(archi.getNSpecies() == 1);
     }
     {   // global anagenesis creates one new species with status 'A'
@@ -1173,7 +1173,7 @@ void test_archi()
                 0.3,
                 mt19937_64(),
                 3.8,
-                maxSpeciesID);
+                maxSpeciesID, n_mainlandSp);
         assert(archi.getIslands()[0].getSpecies()[0].getStatus() == 'A');
         assert(archi.getIslands()[1].getSpecies()[0].getStatus() == 'A');
         assert(archi.getIslands()[0].getSpecies()[0].getSpecID()
@@ -1190,7 +1190,7 @@ void test_archi()
                     0.3,
                     mt19937_64(),
                     3.8,
-                    maxSpeciesID);
+                    maxSpeciesID, n_mainlandSp);
             assert(!"should not get here!\n"); //!OCLINT
         }
         catch (const std::exception& e)
@@ -1226,7 +1226,7 @@ void test_archi()
                 0.3,
                 mt19937_64(),
                 3.8,
-                maxSpeciesID);
+                maxSpeciesID, n_mainlandSp);
         assert(archi.getNSpecies() == 0);
     }
     {   // doNextEvent throws if there are no global species (global extinct)
@@ -1240,12 +1240,28 @@ void test_archi()
                     0.3,
                     mt19937_64(),
                     3.8,
-                    maxSpeciesID);
+                    maxSpeciesID, n_mainlandSp);
         }
         catch (const exception &e)
         {
             assert(string(e.what()) == "No global species exist on archipelago "
                                        "but drawn event is global.\n");
         }
+    }
+    {   // first event = immigration with doNextEvent function
+        // increases number of species on archipelago
+        int n_islands = 2;
+        int islCarryingCap = 5;
+        Archipelago archi = Archipelago(n_islands, islCarryingCap);
+        int n_mainlandSp = 5;
+        SpeciesID maxSpeciesID(n_mainlandSp);
+        vector<double> iniPars { 0.05, 0.5, 0.2, 0.1, 0.2, 0.1, 0.05, 0.1 };
+        mt19937_64 prng;
+        archi.calculateAllRates(iniPars, n_mainlandSp, n_islands);
+        event_type event = archi.sampleNextEvent(prng);
+        assert(archi.getNSpecies() == 0);
+        archi.doNextEvent(event, iniPars[1], prng,
+                4.0, maxSpeciesID, n_mainlandSp);
+        assert(archi.getNSpecies() == 1);
     }
 }

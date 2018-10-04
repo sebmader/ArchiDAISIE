@@ -263,7 +263,8 @@ void Archipelago::doNextEvent(const event_type nextEvent,
         const double& initialMigrationRate,
         mt19937_64 prng,
         double time,
-        SpeciesID& maxSpeciesID)
+        SpeciesID& maxSpeciesID,
+        const int& n_mainlandSp)
 {   // updates data frames; based on output of sampleNextEvent (event_type)
     // order of parameter indexes (Event):
         // immigration (0), migration (1), localClado(2), localAna (3),
@@ -287,8 +288,11 @@ void Archipelago::doNextEvent(const event_type nextEvent,
         }
         const int isl = drawDisEvent(eventRatePerIsland, prng);
         // sample species:
-        const vector<SpeciesID> aliveSpecies = mIslands[isl].getSpeciesIDs();
-        const SpeciesID speciesID = drawUniEvent(aliveSpecies, prng);
+        SpeciesID speciesID = static_cast<SpeciesID>(drawUniEvent(1, n_mainlandSp, prng));
+        if (getEventInt(nextEvent)) { // -> if not immigration
+            const vector<SpeciesID> aliveSpecies = mIslands[isl].getSpeciesIDs();
+            speciesID = drawUniEvent(aliveSpecies, prng);
+        }
         doLocalEvent(nextEvent, speciesID, prng, time, maxSpeciesID, isl, initialMigrationRate);
     }
     else

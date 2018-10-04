@@ -54,11 +54,16 @@ public:
             const double& time,
             SpeciesID& maxSpeciesID);
 
-    void doLocalEvent(const event_type localEvent, const SpeciesID speciesID, std::mt19937_64 prng, const double& time,
-            SpeciesID& maxSpeciesID, const int island, const double& iniMigrationRate);
+    void doLocalEvent(const event_type localEvent,
+            const SpeciesID speciesID,
+            std::mt19937_64 prng,
+            const double& time,
+            SpeciesID& maxSpeciesID,
+            const int island,
+            const double& iniMigrationRate);
 
-    void doNextEvent(event_type, const double&,
-            std::mt19937_64, double, SpeciesID& maxSpeciesID); // switch-statement
+    void doNextEvent(const event_type, const double&, std::mt19937_64, double, SpeciesID& maxSpeciesID,
+            const int& n_mainlandSp); // switch-statement
                     // that calls event functions to update the island vector
 
     void addArchi(const Archipelago&);  // add an island vector to this one / consolidate them

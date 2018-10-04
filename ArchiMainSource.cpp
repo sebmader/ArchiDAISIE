@@ -73,7 +73,7 @@ Archipelago ArchiDAISIE_core(const double islandAge,
 
             // update the phylogeny
             aArchi.doNextEvent(nextEvent, initialParameters[1], prng, timeNow,
-                    maxSpeciesID);
+                    maxSpeciesID, n_mainlandSpecies);
         }
         return aArchi;
     }
