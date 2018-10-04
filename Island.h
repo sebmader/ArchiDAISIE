@@ -47,7 +47,7 @@ public:
                     // gam_i, gam_m, lamb_cl, lamb_al, mu_l
                     // per island -> doesn't include global rates !!!
 
-    event_type sampleLocalEvent(std::mt19937_64);
+    event_type sampleLocalEvent(std::mt19937_64&);
                     // in case a local event is drawn, sample island, event and species
                     // it happens to
 

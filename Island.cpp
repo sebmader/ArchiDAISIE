@@ -83,7 +83,7 @@ void Island::calculateIslRates(
                                    localAnaRate, localExtinctRate };
 }
 
-event_type Island::sampleLocalEvent(mt19937_64 prng)
+event_type Island::sampleLocalEvent(mt19937_64& prng)
 {   // samples local event and species it happens to on THIS island
     // draw event
     return static_cast<event_type>(drawDisEvent(mLocalRates, prng));

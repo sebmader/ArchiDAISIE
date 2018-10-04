@@ -50,7 +50,7 @@ public:
 
     void doGlobalEvent(const event_type globalEvent,
             const SpeciesID speciesID,
-            std::mt19937_64 prng,
+            std::mt19937_64& prng,
             const double& time,
             SpeciesID& maxSpeciesID);
 

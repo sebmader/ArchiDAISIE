@@ -187,7 +187,7 @@ void Archipelago::goGlobalExtinct(const SpeciesID& speciesID)
 
 void Archipelago::doGlobalEvent(const event_type globalEvent,
         const SpeciesID speciesID,
-        mt19937_64 prng,
+        mt19937_64& prng,
         const double& time,
         SpeciesID& maxSpeciesID)
 {
@@ -309,7 +309,7 @@ void Archipelago::addArchi(const Archipelago &newArchi)
     // consolidate single islands together
     const int n_islands = getNIslands();
     for (int i = 0; i < n_islands; ++i) {
-        if (!addArch[i].getSpecies().empty()) { // ### CAUTION ### : does this make sense ??
+        if (!addArch[i].getSpecies().empty()) {
             mIslands[i].addIsland(addArch[i]);
         }
     }
@@ -319,42 +319,13 @@ vector<Species> Archipelago::makeArchiTo1Island() const
 {   // put islands of archipelago together in one Island vector,
         // delete duplicates, sort by time of birth/immigration
 
-    vector<Species> archiToIsland;
+    Island archiToIsland(mK);
     // add all island species vectors together
     for(auto& island : mIslands) {
-        if (!island.getSpecies().empty()) {
-            const vector<Species>& vTmp = island.getSpecies();
-            archiToIsland.reserve(archiToIsland.size() + vTmp.size());
-            archiToIsland.insert(archiToIsland.begin(),
-                    vTmp.begin(), vTmp.end());
-        }
+        archiToIsland.addIsland(island);
     }
 
-    // delete duplicates; ### CAUTION ### : what birth time ?!
-    for (int j = 0; j < static_cast<int>(archiToIsland.size()); ++j) {
-        for (int k = j + 1; k < static_cast<int>(archiToIsland.size()); ++k)
-            if (archiToIsland[j].getSpecID() ==
-                    archiToIsland[k].getSpecID()) { // TODO
-                // ExtinctTime: take the extant one, or the later extinction
-                // BirthTime: take the oldest birth time (initial colonisation) or
-                    // the latest re-immigration time.. ### CAUTION ### : How??
-                archiToIsland[k] = archiToIsland.back();
-                archiToIsland.pop_back();
-                --k;
-            }
-    }
-    // sort by birth time
-    const int newVecSize = static_cast<int>(archiToIsland.size());
-    for (int l = 0; l < newVecSize - 1; ++l) {
-        for (int m = l + 1; m < newVecSize; ++m) {
-            if(archiToIsland[l].getBirth() <archiToIsland[m].getBirth()) {
-                const Species tmpSp = archiToIsland[m];
-                archiToIsland[m] = archiToIsland[l];
-                archiToIsland[l] = tmpSp;
-            }
-        }
-    }
-    return archiToIsland;
+    return archiToIsland.getSpecies();
 }
 
 void Archipelago::printArchi()
