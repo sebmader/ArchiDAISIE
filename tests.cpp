@@ -463,6 +463,22 @@ void test_archi()
         assert(archi.getNSpecies() == 0);
         assert(archi.getCarryingCap() == 0);
     }
+    {  // non-default constructor with carryingCap of 0 and 1 island creates that archipelago
+        int n_islands = 1;
+        int islCarryingCap = 0;
+        Archipelago archi = Archipelago(n_islands, islCarryingCap);
+        assert(archi.getNIslands() == 1);
+        assert(archi.getNSpecies() == 0);
+        assert(archi.getCarryingCap() == n_islands*islCarryingCap);
+    }
+    {  // non-default constructor with 0 islands and a carryingcap creates that archipelago
+        int n_islands = 0;
+        int islCarryingCap = 1;
+        Archipelago archi = Archipelago(n_islands, islCarryingCap);
+        assert(archi.getNIslands() == 0);
+        assert(archi.getNSpecies() == 0);
+        assert(archi.getCarryingCap() == n_islands*islCarryingCap);
+    }
     {  // non-default constructor creates wanted archipelago
         int n_islands = 2;
         int islCarryingCap = 5;
@@ -663,6 +679,86 @@ void test_archi()
             assert(string(e.what()) == "Event is not local.\n");
         }
     }
+    // local events with doNextEvent function
+    {  // local cladogenesis increases archi species by one
+        int n_islands = 2;
+        int islCarryingCap = 5;
+        Archipelago archi = Archipelago(n_islands, islCarryingCap);
+        assert(archi.getNSpecies() == 0);
+        int n_mainlandSp = 5;
+        SpeciesID maxSpeciesID(n_mainlandSp);
+        mt19937_64 prng;
+        vector<double> iniPars { 0.05, 0.5, 0.2, 0.1, 0.2, 0.1, 0.05, 0.1 };
+        archi.calculateAllRates(iniPars, n_mainlandSp, n_islands);
+        archi.doNextEvent(event_type::local_immigration,
+                0.3,
+                prng,
+                4.0,
+                maxSpeciesID,
+                n_mainlandSp);
+        assert(archi.getNSpecies() == 1);
+        archi.calculateAllRates(iniPars, n_mainlandSp, n_islands);
+        archi.doNextEvent(event_type::local_cladogenesis,
+                0.3,
+                prng,
+                3.9,
+                maxSpeciesID,
+                n_mainlandSp);
+        assert(archi.getNSpecies() == 2);
+    }
+    {  // local anagenesis does not increase archi species
+        int n_islands = 2;
+        int islCarryingCap = 5;
+        Archipelago archi = Archipelago(n_islands, islCarryingCap);
+        assert(archi.getNSpecies() == 0);
+        int n_mainlandSp = 5;
+        SpeciesID maxSpeciesID(n_mainlandSp);
+        mt19937_64 prng;
+        vector<double> iniPars { 0.05, 0.5, 0.2, 0.1, 0.2, 0.1, 0.05, 0.1 };
+        archi.calculateAllRates(iniPars, n_mainlandSp, n_islands);
+        archi.doNextEvent(event_type::local_immigration,
+                0.3,
+                prng,
+                4.0,
+                maxSpeciesID,
+                n_mainlandSp);
+        assert(archi.getNSpecies() == 1);
+        archi.calculateAllRates(iniPars,n_mainlandSp, n_islands);
+        archi.doNextEvent(event_type::local_anagenesis,
+                0.3,
+                prng,
+                3.9,
+                maxSpeciesID,
+                n_mainlandSp);
+        assert(archi.getNSpecies() == 1);
+    }
+    {  // local extinction decreases archi species
+        int n_islands = 2;
+        int islCarryingCap = 5;
+        Archipelago archi = Archipelago(n_islands, islCarryingCap);
+        assert(archi.getNSpecies() == 0);
+        int n_mainlandSp = 5;
+        SpeciesID maxSpeciesID(n_mainlandSp);
+        mt19937_64 prng;
+        vector<double> iniPars { 0.05, 0.5, 0.2, 0.1, 0.2, 0.1, 0.05, 0.1 };
+        archi.calculateAllRates(iniPars, n_mainlandSp, n_islands);
+        archi.doNextEvent(event_type::local_immigration,
+                0.3,
+                prng,
+                4.0,
+                maxSpeciesID,
+                n_mainlandSp);
+        assert(archi.getNSpecies() == 1);
+        archi.calculateAllRates(iniPars, n_mainlandSp, n_islands);
+        archi.doNextEvent(event_type::local_extinction,
+                0.3,
+                prng,
+                3.9,
+                maxSpeciesID,
+                n_mainlandSp);
+        assert(archi.getNSpecies() == 0);
+    }
+
     {  // calculating rates initialises rates vectors
         int n_islands = 2;
         int islCarryingCap = 5;
@@ -1303,19 +1399,11 @@ void test_archi()
         SpeciesID maxSpeciesID(n_mainlandSp);
         vector<double> iniPars { 0.05, 0.5, 0.2, 0.1, 0.2, 0.1, 0.05, 0.1 };
         mt19937_64 prng;
-        chrono::high_resolution_clock::time_point tp =
-                chrono::high_resolution_clock::now();
-        const unsigned seed = static_cast<unsigned>(
-                tp.time_since_epoch().count());
-        prng.seed(seed);
         archi.calculateAllRates(iniPars, n_mainlandSp, n_islands);
-        cout << '\n';
         event_type event = archi.sampleNextEvent(prng);
         assert(archi.getNSpecies() == 0);
-        cout << '\n';
         archi.doNextEvent(event, iniPars[1], prng,
                 4.0, maxSpeciesID, n_mainlandSp);
-        cout << '\n';
         assert(archi.getNSpecies() == 1);
         archi.calculateAllRates(iniPars, n_mainlandSp, n_islands);
         assert(archi.getGlobalSpeciesIDs().empty());
@@ -1325,7 +1413,6 @@ void test_archi()
                 3.5,
                 maxSpeciesID,
                 n_mainlandSp);
-        cout << '\n';
         assert(archi.getGlobalSpeciesIDs().size() == 1);
         archi.calculateAllRates(iniPars, n_mainlandSp, n_islands);
         archi.doNextEvent(event_type::local_migration,
@@ -1334,7 +1421,6 @@ void test_archi()
                 3.3,
                 maxSpeciesID,
                 n_mainlandSp);
-        cout << '\n';
         assert(archi.getNSpecies() == 1);
         assert(archi.getGlobalSpeciesIDs().size() == 1);
         archi.calculateAllRates(iniPars, n_mainlandSp, n_islands);
@@ -1344,39 +1430,5 @@ void test_archi()
                 3.2,
                 maxSpeciesID,
                 n_mainlandSp);
-        cout << '\n';
-        archi.calculateAllRates(iniPars, n_mainlandSp, n_islands);
-        archi.doNextEvent(event_type::local_migration,
-                0.3,
-                prng,
-                3.1,
-                maxSpeciesID,
-                n_mainlandSp);
-        cout << '\n';
-        archi.calculateAllRates(iniPars, n_mainlandSp, n_islands);
-        archi.doNextEvent(event_type::local_migration,
-                0.3,
-                prng,
-                3.0,
-                maxSpeciesID,
-                n_mainlandSp);
-        cout << '\n';
-        archi.calculateAllRates(iniPars, n_mainlandSp, n_islands);
-        archi.doNextEvent(event_type::local_migration,
-                0.3,
-                prng,
-                2.9,
-                maxSpeciesID,
-                n_mainlandSp);
-        cout << '\n';
-        archi.calculateAllRates(iniPars, n_mainlandSp, n_islands);
-        archi.doNextEvent(event_type::local_migration,
-                0.3,
-                prng,
-                2.8,
-                maxSpeciesID,
-                n_mainlandSp);
-        cout << '\n';
-        archi.printArchi();
-    }  // TODO: it always picks the same island of destination !!!
+    }
 }
