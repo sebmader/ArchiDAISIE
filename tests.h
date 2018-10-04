@@ -9,6 +9,7 @@
 #include <cassert>
 #include <random>
 #include <iostream>
+#include <chrono>
 #include "event_type.h"
 #include "Species.h"
 #include "Island.h"

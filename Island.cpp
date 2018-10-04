@@ -69,8 +69,7 @@ void Island::calculateIslRates(
     // migration from this island to all other islands:
     const double migrationRate = max(0.0, (islandParameters[1] * n_alive
             * sumLogGrowthWOThis) / (n_islands*n_islands - n_islands));
-        // ### CAUTION ### : all other islands: '/iNumIsl',
-                // one-way: '/iNumIsl^2 - iNumIsl' ???
+                // one-way ('/iNumIsl^2 - iNumIsl') times sum of log growths of all other islands
     // local cladogenesis:
     const double localCladoRate = max(0.0, islandParameters[2] * n_alive
             * logGrowth);
@@ -114,13 +113,13 @@ int Island::drawMigDestinationIsland(
         const int originIsland,
         vector<double>& LogGrowthTerms,
         const double& initialMigrationRate,
-        mt19937_64 prng)
+        mt19937_64& prng)
 {   // migration from THIS island to another; output: island of destination
     // draw island to which species migrates
         // -> initial migration rate as parameter !!
     const int n_islands = static_cast<int>(LogGrowthTerms.size());
     const int n_speciesAlive = getNSpecies();
-    vector<double> migrationRates(n_islands);
+    vector<double> migrationRates((unsigned)n_islands);
     for (int k = 0; k < n_islands; ++k) {
         if (k == originIsland) {     // for the island it migrates from:
                         // migration rate = 0 -> this event doesn't happen

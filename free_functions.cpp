@@ -9,7 +9,7 @@ using namespace std;
 double getLogGrowth(const Island& island) noexcept
 {
     return 1.0 - static_cast<double>(island.getNSpecies())
-            / island.getCarryingCap();
+            / static_cast<double>(island.getCarryingCap());
 }
 
 double extractSumOfRates(const Island& island)

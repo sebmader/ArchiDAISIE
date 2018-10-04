@@ -53,11 +53,10 @@ public:
 
     void immigrate(const SpeciesID&, double);  // mainland species immigrates to that island
     int drawMigDestinationIsland(
-        int originIsland, //RJCB: doesn't Island have a const int ID?
-        std::vector<double>& LogGrowthTerms, //RJCB: AFAICS, can be calculated when needed
-        const double& initialMigrationRate,
-        std::mt19937_64
-    );
+            int originIsland, //RJCB: doesn't Island have a const int ID?
+            std::vector<double>& LogGrowthTerms, //RJCB: AFAICS, can be calculated when needed
+            const double& initialMigrationRate,
+            std::mt19937_64&);
                     // draw island species migrates to
     void migrate(Species, const double& );  // migrating onto this island
             // RJCB: Use 'const double' instead of 'const double&'

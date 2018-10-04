@@ -332,7 +332,8 @@ void test_island()
         Island island2(10);
         island1.addSpecies(Species());
         vector<double> logGrowthTerms { getLogGrowth(island1), getLogGrowth(island2)};
-        int destination = island1.drawMigDestinationIsland(0,logGrowthTerms, 0.1, mt19937_64());
+        mt19937_64 prng;
+        int destination = island1.drawMigDestinationIsland(0,logGrowthTerms, 0.1, prng);
         assert(destination == 1);
     }
     {   // caculating rates of empty island initialises localRates vector
@@ -477,9 +478,10 @@ void test_archi()
         assert(archi.getNSpecies() == 0);
         int n_mainlandSp = 5;
         SpeciesID maxSpeciesID(n_mainlandSp);
+        mt19937_64 prng;
         archi.doLocalEvent(event_type::local_immigration,
                 SpeciesID(1),
-                mt19937_64(),
+                prng,
                 4.0,
                 maxSpeciesID,
                 0,
@@ -493,9 +495,10 @@ void test_archi()
         assert(archi.getNSpecies() == 0);
         int n_mainlandSp = 5;
         SpeciesID maxSpeciesID(n_mainlandSp);
+        mt19937_64 prng;
         archi.doLocalEvent(event_type::local_immigration,
                 SpeciesID(1),
-                mt19937_64(),
+                prng,
                 4.0,
                 maxSpeciesID,
                 0,
@@ -503,7 +506,7 @@ void test_archi()
         assert(archi.getNSpecies() == 1);
         archi.doLocalEvent(event_type::local_immigration,
                 SpeciesID(1),
-                mt19937_64(),
+                prng,
                 4.0,
                 maxSpeciesID,
                 1,
@@ -517,9 +520,10 @@ void test_archi()
         assert(archi.getGlobalSpeciesIDs().empty());
         int n_mainlandSp = 5;
         SpeciesID maxSpeciesID(n_mainlandSp);
+        mt19937_64 prng;
         archi.doLocalEvent(event_type::local_immigration,
                 SpeciesID(1),
-                mt19937_64(),
+                prng,
                 4.0,
                 maxSpeciesID,
                 0,
@@ -527,7 +531,7 @@ void test_archi()
         assert(archi.getGlobalSpeciesIDs().empty());
         archi.doLocalEvent(event_type::local_migration,
                 SpeciesID(1),
-                mt19937_64(),
+                prng,
                 4.0,
                 maxSpeciesID,
                 0,
@@ -541,9 +545,10 @@ void test_archi()
         assert(archi.findIsl(SpeciesID(1)).empty());
         int n_mainlandSp = 5;
         SpeciesID maxSpeciesID(n_mainlandSp);
+        mt19937_64 prng;
         archi.doLocalEvent(event_type::local_immigration,
                 SpeciesID(1),
-                mt19937_64(),
+                prng,
                 4.0,
                 maxSpeciesID,
                 0,
@@ -551,7 +556,7 @@ void test_archi()
         assert(archi.findIsl(SpeciesID(1)).size() == 1);
         archi.doLocalEvent(event_type::local_migration,
                 SpeciesID(1),
-                mt19937_64(),
+                prng,
                 4.0,
                 maxSpeciesID,
                 0,
@@ -568,9 +573,10 @@ void test_archi()
         assert(archi.getNSpecies() == 0);
         int n_mainlandSp = 5;
         SpeciesID maxSpeciesID(n_mainlandSp);
+        mt19937_64 prng;
         archi.doLocalEvent(event_type::local_immigration,
                 SpeciesID(1),
-                mt19937_64(),
+                prng,
                 4.0,
                 maxSpeciesID,
                 0,
@@ -578,7 +584,7 @@ void test_archi()
         assert(archi.getNSpecies() == 1);
         archi.doLocalEvent(event_type::local_cladogenesis,
                 SpeciesID(1),
-                mt19937_64(),
+                prng,
                 3.9,
                 maxSpeciesID,
                 0,
@@ -592,9 +598,10 @@ void test_archi()
         assert(archi.getNSpecies() == 0);
         int n_mainlandSp = 5;
         SpeciesID maxSpeciesID(n_mainlandSp);
+        mt19937_64 prng;
         archi.doLocalEvent(event_type::local_immigration,
                 SpeciesID(1),
-                mt19937_64(),
+                prng,
                 4.0,
                 maxSpeciesID,
                 0,
@@ -602,7 +609,7 @@ void test_archi()
         assert(archi.getNSpecies() == 1);
         archi.doLocalEvent(event_type::local_anagenesis,
                 SpeciesID(1),
-                mt19937_64(),
+                prng,
                 3.9,
                 maxSpeciesID,
                 0,
@@ -616,9 +623,10 @@ void test_archi()
         assert(archi.getNSpecies() == 0);
         int n_mainlandSp = 5;
         SpeciesID maxSpeciesID(n_mainlandSp);
+        mt19937_64 prng;
         archi.doLocalEvent(event_type::local_immigration,
                 SpeciesID(1),
-                mt19937_64(),
+                prng,
                 4.0,
                 maxSpeciesID,
                 0,
@@ -626,7 +634,7 @@ void test_archi()
         assert(archi.getNSpecies() == 1);
         archi.doLocalEvent(event_type::local_extinction,
                 SpeciesID(1),
-                mt19937_64(),
+                prng,
                 3.9,
                 maxSpeciesID,
                 0,
@@ -641,9 +649,10 @@ void test_archi()
             assert(archi.getNSpecies() == 0);
             int n_mainlandSp = 5;
             SpeciesID maxSpeciesID(n_mainlandSp);
+            mt19937_64 prng;
             archi.doLocalEvent(event_type::global_cladogenesis,
                     SpeciesID(1),
-                    mt19937_64(),
+                    prng,
                     4.0,
                     maxSpeciesID,
                     0,
@@ -702,7 +711,8 @@ void test_archi()
         int n_mainlandSp = 5;
         assert(archi.getGlobalRates().empty());
         archi.calculateAllRates(iniPars, n_mainlandSp, n_islands);
-        event_type event = archi.sampleNextEvent(mt19937_64());
+        mt19937_64 prng;
+        event_type event = archi.sampleNextEvent(prng);
         assert(event == event_type::local_immigration);
     }
     {   // when there is at least one global species that is immigrant (anagenesis),
@@ -712,9 +722,10 @@ void test_archi()
         Archipelago archi = Archipelago(n_islands, islCarryingCap);
         int n_mainlandSp = 5;
         SpeciesID maxSpeciesID(n_mainlandSp);
+        mt19937_64 prng;
         archi.doLocalEvent(event_type::local_immigration,
                 SpeciesID(1),
-                mt19937_64(),
+                prng,
                 4.0,
                 maxSpeciesID,
                 0,
@@ -722,7 +733,7 @@ void test_archi()
         assert(archi.getGlobalSpeciesIDs().empty());
         archi.doLocalEvent(event_type::local_migration,
                 SpeciesID(1),
-                mt19937_64(),
+                prng,
                 4.0,
                 maxSpeciesID,
                 0,
@@ -741,9 +752,10 @@ void test_archi()
         int n_mainlandSp = 5;
         SpeciesID maxSpeciesID(n_mainlandSp);
         assert(archi.getNSpecies() == 0);
+        mt19937_64 prng;
         archi.doLocalEvent(event_type::local_immigration,
                 SpeciesID(1),
-                mt19937_64(),
+                prng,
                 4.0,
                 maxSpeciesID,
                 0,
@@ -751,7 +763,7 @@ void test_archi()
         assert(archi.getNSpecies() == 1);
         archi.doLocalEvent(event_type::local_migration,
                 SpeciesID(1),
-                mt19937_64(),
+                prng,
                 4.0,
                 maxSpeciesID,
                 0,
@@ -759,7 +771,7 @@ void test_archi()
         assert(archi.getNSpecies() == 1);
         archi.doGlobalEvent(event_type::global_cladogenesis,
                 SpeciesID(1),
-                mt19937_64(),
+                prng,
                 3.8,
                 maxSpeciesID);
         assert(archi.getNSpecies() == 2);
@@ -772,9 +784,10 @@ void test_archi()
         SpeciesID maxSpeciesID(n_mainlandSp);
         assert(archi.getIslands()[0].getNSpecies() == 0);
         assert(archi.getIslands()[1].getNSpecies() == 0);
+        mt19937_64 prng;
         archi.doLocalEvent(event_type::local_immigration,
                 SpeciesID(1),
-                mt19937_64(),
+                prng,
                 4.0,
                 maxSpeciesID,
                 0,
@@ -783,7 +796,7 @@ void test_archi()
         assert(archi.getIslands()[1].getNSpecies() == 0);
         archi.doLocalEvent(event_type::local_migration,
                 SpeciesID(1),
-                mt19937_64(),
+                prng,
                 4.0,
                 maxSpeciesID,
                 0,
@@ -792,7 +805,7 @@ void test_archi()
         assert(archi.getIslands()[1].getNSpecies() == 1);
         archi.doGlobalEvent(event_type::global_cladogenesis,
                 SpeciesID(1),
-                mt19937_64(),
+                prng,
                 3.8,
                 maxSpeciesID);
         assert(archi.getIslands()[0].getNSpecies() == 1);
@@ -804,16 +817,17 @@ void test_archi()
         Archipelago archi = Archipelago(n_islands, islCarryingCap);
         int n_mainlandSp = 5;
         SpeciesID maxSpeciesID(n_mainlandSp);
+        mt19937_64 prng;
         archi.doLocalEvent(event_type::local_immigration,
                 SpeciesID(1),
-                mt19937_64(),
+                prng,
                 4.0,
                 maxSpeciesID,
                 0,
                 0.3);
         archi.doLocalEvent(event_type::local_migration,
                 SpeciesID(1),
-                mt19937_64(),
+                prng,
                 4.0,
                 maxSpeciesID,
                 0,
@@ -822,7 +836,7 @@ void test_archi()
         assert(archi.getIslands()[1].getSpecies()[0].getStatus() == 'M');
         archi.doGlobalEvent(event_type::global_cladogenesis,
                 SpeciesID(1),
-                mt19937_64(),
+                prng,
                 3.8,
                 maxSpeciesID);
         assert(archi.getIslands()[0].getSpecies()[0].getStatus() == 'C');
@@ -837,9 +851,10 @@ void test_archi()
             Archipelago archi = Archipelago(n_islands, islCarryingCap);
             int n_mainlandSp = 5;
             SpeciesID maxSpeciesID(n_mainlandSp);
+            mt19937_64 prng;
             archi.doGlobalEvent(event_type::global_cladogenesis,
                     SpeciesID(1),
-                    mt19937_64(),
+                    prng,
                     3.8,
                     maxSpeciesID);
             assert(!"should not get here!\n"); //!OCLINT
@@ -857,9 +872,10 @@ void test_archi()
         int n_mainlandSp = 5;
         SpeciesID maxSpeciesID(n_mainlandSp);
         assert(archi.getNSpecies() == 0);
+        mt19937_64 prng;
         archi.doLocalEvent(event_type::local_immigration,
                 SpeciesID(1),
-                mt19937_64(),
+                prng,
                 4.0,
                 maxSpeciesID,
                 0,
@@ -867,7 +883,7 @@ void test_archi()
         assert(archi.getNSpecies() == 1);
         archi.doLocalEvent(event_type::local_migration,
                 SpeciesID(1),
-                mt19937_64(),
+                prng,
                 4.0,
                 maxSpeciesID,
                 0,
@@ -875,7 +891,7 @@ void test_archi()
         assert(archi.getNSpecies() == 1);
         archi.doGlobalEvent(event_type::global_anagenesis,
                 SpeciesID(1),
-                mt19937_64(),
+                prng,
                 3.8,
                 maxSpeciesID);
         assert(archi.getNSpecies() == 1);
@@ -886,16 +902,17 @@ void test_archi()
         Archipelago archi = Archipelago(n_islands, islCarryingCap);
         int n_mainlandSp = 5;
         SpeciesID maxSpeciesID(n_mainlandSp);
+        mt19937_64 prng;
         archi.doLocalEvent(event_type::local_immigration,
                 SpeciesID(1),
-                mt19937_64(),
+                prng,
                 4.0,
                 maxSpeciesID,
                 0,
                 0.3);
         archi.doLocalEvent(event_type::local_migration,
                 SpeciesID(1),
-                mt19937_64(),
+                prng,
                 4.0,
                 maxSpeciesID,
                 0,
@@ -904,7 +921,7 @@ void test_archi()
         assert(archi.getIslands()[1].getSpecies()[0].getStatus() == 'M');
         archi.doGlobalEvent(event_type::global_anagenesis,
                 SpeciesID(1),
-                mt19937_64(),
+                prng,
                 3.8,
                 maxSpeciesID);
         assert(archi.getIslands()[0].getSpecies()[0].getStatus() == 'A');
@@ -919,9 +936,10 @@ void test_archi()
             Archipelago archi = Archipelago(n_islands, islCarryingCap);
             int n_mainlandSp = 5;
             SpeciesID maxSpeciesID(n_mainlandSp);
+            mt19937_64 prng;
             archi.doGlobalEvent(event_type::global_anagenesis,
                     SpeciesID(1),
-                    mt19937_64(),
+                    prng,
                     3.8,
                     maxSpeciesID);
             assert(!"should not get here!\n"); //!OCLINT
@@ -939,9 +957,10 @@ void test_archi()
         int n_mainlandSp = 5;
         SpeciesID maxSpeciesID(n_mainlandSp);
         assert(archi.getNSpecies() == 0);
+        mt19937_64 prng;
         archi.doLocalEvent(event_type::local_immigration,
                 SpeciesID(1),
-                mt19937_64(),
+                prng,
                 4.0,
                 maxSpeciesID,
                 0,
@@ -949,7 +968,7 @@ void test_archi()
         assert(archi.getNSpecies() == 1);
         archi.doLocalEvent(event_type::local_migration,
                 SpeciesID(1),
-                mt19937_64(),
+                prng,
                 4.0,
                 maxSpeciesID,
                 0,
@@ -957,7 +976,7 @@ void test_archi()
         assert(archi.getNSpecies() == 1);
         archi.doGlobalEvent(event_type::global_extinction,
                 SpeciesID(1),
-                mt19937_64(),
+                prng,
                 3.8,
                 maxSpeciesID);
         assert(archi.getNSpecies() == 0);
@@ -969,9 +988,10 @@ void test_archi()
             Archipelago archi = Archipelago(n_islands, islCarryingCap);
             int n_mainlandSp = 5;
             SpeciesID maxSpeciesID(n_mainlandSp);
+            mt19937_64 prng;
             archi.doGlobalEvent(event_type::global_extinction,
                     SpeciesID(1),
-                    mt19937_64(),
+                    prng,
                     3.8,
                     maxSpeciesID);
         }
@@ -987,10 +1007,11 @@ void test_archi()
             int islCarryingCap = 5;
             Archipelago archi = Archipelago(n_islands, islCarryingCap);
             int n_mainlandSp = 5;
+            mt19937_64 prng;
             SpeciesID maxSpeciesID(n_mainlandSp);
             archi.doGlobalEvent(event_type::local_immigration,
                     SpeciesID(1),
-                    mt19937_64(),
+                    prng,
                     3.8,
                     maxSpeciesID);
             assert(!"Should not get here.\n");  //!OCLINT
@@ -1008,9 +1029,10 @@ void test_archi()
         int n_mainlandSp = 5;
         SpeciesID maxSpeciesID(n_mainlandSp);
         assert(archi.getNSpecies() == 0);
+        mt19937_64 prng;
         archi.doLocalEvent(event_type::local_immigration,
                 SpeciesID(1),
-                mt19937_64(),
+                prng,
                 4.0,
                 maxSpeciesID,
                 0,
@@ -1018,7 +1040,7 @@ void test_archi()
         assert(archi.getNSpecies() == 1);
         archi.doLocalEvent(event_type::local_migration,
                 SpeciesID(1),
-                mt19937_64(),
+                prng,
                 4.0,
                 maxSpeciesID,
                 0,
@@ -1026,7 +1048,7 @@ void test_archi()
         assert(archi.getNSpecies() == 1);
         archi.doNextEvent(event_type::global_cladogenesis,
                 0.3,
-                mt19937_64(),
+                prng,
                 3.8,
                 maxSpeciesID, n_mainlandSp);
         assert(archi.getNSpecies() == 2);
@@ -1037,11 +1059,12 @@ void test_archi()
         Archipelago archi = Archipelago(n_islands, islCarryingCap);
         int n_mainlandSp = 5;
         SpeciesID maxSpeciesID(n_mainlandSp);
+        mt19937_64 prng;
         assert(archi.getIslands()[0].getNSpecies() == 0);
         assert(archi.getIslands()[1].getNSpecies() == 0);
         archi.doLocalEvent(event_type::local_immigration,
                 SpeciesID(1),
-                mt19937_64(),
+                prng,
                 4.0,
                 maxSpeciesID,
                 0,
@@ -1050,7 +1073,7 @@ void test_archi()
         assert(archi.getIslands()[1].getNSpecies() == 0);
         archi.doLocalEvent(event_type::local_migration,
                 SpeciesID(1),
-                mt19937_64(),
+                prng,
                 4.0,
                 maxSpeciesID,
                 0,
@@ -1059,7 +1082,7 @@ void test_archi()
         assert(archi.getIslands()[1].getNSpecies() == 1);
         archi.doNextEvent(event_type::global_cladogenesis,
                 0.3,
-                mt19937_64(),
+                prng,
                 3.8,
                 maxSpeciesID, n_mainlandSp);
         assert(archi.getIslands()[0].getNSpecies() == 1);
@@ -1071,16 +1094,17 @@ void test_archi()
         Archipelago archi = Archipelago(n_islands, islCarryingCap);
         int n_mainlandSp = 5;
         SpeciesID maxSpeciesID(n_mainlandSp);
+        mt19937_64 prng;
         archi.doLocalEvent(event_type::local_immigration,
                 SpeciesID(1),
-                mt19937_64(),
+                prng,
                 4.0,
                 maxSpeciesID,
                 0,
                 0.3);
         archi.doLocalEvent(event_type::local_migration,
                 SpeciesID(1),
-                mt19937_64(),
+                prng,
                 4.0,
                 maxSpeciesID,
                 0,
@@ -1089,7 +1113,7 @@ void test_archi()
         assert(archi.getIslands()[1].getSpecies()[0].getStatus() == 'M');
         archi.doNextEvent(event_type::global_cladogenesis,
                 0.3,
-                mt19937_64(),
+                prng,
                 3.8,
                 maxSpeciesID, n_mainlandSp);
         assert(archi.getIslands()[0].getSpecies()[0].getStatus() == 'C');
@@ -1103,10 +1127,11 @@ void test_archi()
             int islCarryingCap = 5;
             Archipelago archi = Archipelago(n_islands, islCarryingCap);
             int n_mainlandSp = 5;
+            mt19937_64 prng;
             SpeciesID maxSpeciesID(n_mainlandSp);
             archi.doNextEvent(event_type::global_cladogenesis,
                     0.3,
-                    mt19937_64(),
+                    prng,
                     3.8,
                     maxSpeciesID, n_mainlandSp);
             assert(!"should not get here!\n"); //!OCLINT
@@ -1124,9 +1149,10 @@ void test_archi()
         int n_mainlandSp = 5;
         SpeciesID maxSpeciesID(n_mainlandSp);
         assert(archi.getNSpecies() == 0);
+        mt19937_64 prng;
         archi.doLocalEvent(event_type::local_immigration,
                 SpeciesID(1),
-                mt19937_64(),
+                prng,
                 4.0,
                 maxSpeciesID,
                 0,
@@ -1134,7 +1160,7 @@ void test_archi()
         assert(archi.getNSpecies() == 1);
         archi.doLocalEvent(event_type::local_migration,
                 SpeciesID(1),
-                mt19937_64(),
+                prng,
                 4.0,
                 maxSpeciesID,
                 0,
@@ -1142,7 +1168,7 @@ void test_archi()
         assert(archi.getNSpecies() == 1);
         archi.doNextEvent(event_type::global_anagenesis,
                 0.3,
-                mt19937_64(),
+                prng,
                 3.8,
                 maxSpeciesID, n_mainlandSp);
         assert(archi.getNSpecies() == 1);
@@ -1152,17 +1178,18 @@ void test_archi()
         int islCarryingCap = 5;
         Archipelago archi = Archipelago(n_islands, islCarryingCap);
         int n_mainlandSp = 5;
+        mt19937_64 prng;
         SpeciesID maxSpeciesID(n_mainlandSp);
         archi.doLocalEvent(event_type::local_immigration,
                 SpeciesID(1),
-                mt19937_64(),
+                prng,
                 4.0,
                 maxSpeciesID,
                 0,
                 0.3);
         archi.doLocalEvent(event_type::local_migration,
                 SpeciesID(1),
-                mt19937_64(),
+                prng,
                 4.0,
                 maxSpeciesID,
                 0,
@@ -1171,7 +1198,7 @@ void test_archi()
         assert(archi.getIslands()[1].getSpecies()[0].getStatus() == 'M');
         archi.doNextEvent(event_type::global_anagenesis,
                 0.3,
-                mt19937_64(),
+                prng,
                 3.8,
                 maxSpeciesID, n_mainlandSp);
         assert(archi.getIslands()[0].getSpecies()[0].getStatus() == 'A');
@@ -1186,9 +1213,10 @@ void test_archi()
             Archipelago archi = Archipelago(n_islands, islCarryingCap);
             int n_mainlandSp = 5;
             SpeciesID maxSpeciesID(n_mainlandSp);
+            mt19937_64 prng;
             archi.doNextEvent(event_type::global_anagenesis,
                     0.3,
-                    mt19937_64(),
+                    prng,
                     3.8,
                     maxSpeciesID, n_mainlandSp);
             assert(!"should not get here!\n"); //!OCLINT
@@ -1205,10 +1233,11 @@ void test_archi()
         Archipelago archi = Archipelago(n_islands, islCarryingCap);
         int n_mainlandSp = 5;
         SpeciesID maxSpeciesID(n_mainlandSp);
+        mt19937_64 prng;
         assert(archi.getNSpecies() == 0);
         archi.doLocalEvent(event_type::local_immigration,
                 SpeciesID(1),
-                mt19937_64(),
+                prng,
                 4.0,
                 maxSpeciesID,
                 0,
@@ -1216,7 +1245,7 @@ void test_archi()
         assert(archi.getNSpecies() == 1);
         archi.doLocalEvent(event_type::local_migration,
                 SpeciesID(1),
-                mt19937_64(),
+                prng,
                 4.0,
                 maxSpeciesID,
                 0,
@@ -1224,7 +1253,7 @@ void test_archi()
         assert(archi.getNSpecies() == 1);
         archi.doNextEvent(event_type::global_extinction,
                 0.3,
-                mt19937_64(),
+                prng,
                 3.8,
                 maxSpeciesID, n_mainlandSp);
         assert(archi.getNSpecies() == 0);
@@ -1235,10 +1264,11 @@ void test_archi()
             int islCarryingCap = 5;
             Archipelago archi = Archipelago(n_islands, islCarryingCap);
             int n_mainlandSp = 5;
+            mt19937_64 prng;
             SpeciesID maxSpeciesID(n_mainlandSp);
             archi.doNextEvent(event_type::global_extinction,
                     0.3,
-                    mt19937_64(),
+                    prng,
                     3.8,
                     maxSpeciesID, n_mainlandSp);
         }
@@ -1264,35 +1294,89 @@ void test_archi()
                 4.0, maxSpeciesID, n_mainlandSp);
         assert(archi.getNSpecies() == 1);
     }
-    {   // archipelago with 3 islands, migration doesn't increase number of species
-        int n_islands = 2;
+    {   // archipelago with 3 islands, species inhabiting all,
+        // doesn't create duplicates in global species vector
+        int n_islands = 3;
         int islCarryingCap = 5;
         Archipelago archi = Archipelago(n_islands, islCarryingCap);
         int n_mainlandSp = 5;
         SpeciesID maxSpeciesID(n_mainlandSp);
         vector<double> iniPars { 0.05, 0.5, 0.2, 0.1, 0.2, 0.1, 0.05, 0.1 };
         mt19937_64 prng;
+        chrono::high_resolution_clock::time_point tp =
+                chrono::high_resolution_clock::now();
+        const unsigned seed = static_cast<unsigned>(
+                tp.time_since_epoch().count());
+        prng.seed(seed);
         archi.calculateAllRates(iniPars, n_mainlandSp, n_islands);
+        cout << '\n';
         event_type event = archi.sampleNextEvent(prng);
         assert(archi.getNSpecies() == 0);
+        cout << '\n';
         archi.doNextEvent(event, iniPars[1], prng,
                 4.0, maxSpeciesID, n_mainlandSp);
+        cout << '\n';
         assert(archi.getNSpecies() == 1);
         archi.calculateAllRates(iniPars, n_mainlandSp, n_islands);
+        assert(archi.getGlobalSpeciesIDs().empty());
         archi.doNextEvent(event_type::local_migration,
                 0.3,
                 prng,
                 3.5,
                 maxSpeciesID,
                 n_mainlandSp);
-        assert(archi.getNSpecies() == 1);
+        cout << '\n';
+        assert(archi.getGlobalSpeciesIDs().size() == 1);
         archi.calculateAllRates(iniPars, n_mainlandSp, n_islands);
         archi.doNextEvent(event_type::local_migration,
                 0.3,
                 prng,
-                3.5,
+                3.3,
                 maxSpeciesID,
                 n_mainlandSp);
+        cout << '\n';
         assert(archi.getNSpecies() == 1);
-    }
+        assert(archi.getGlobalSpeciesIDs().size() == 1);
+        archi.calculateAllRates(iniPars, n_mainlandSp, n_islands);
+        archi.doNextEvent(event_type::local_migration,
+                0.3,
+                prng,
+                3.2,
+                maxSpeciesID,
+                n_mainlandSp);
+        cout << '\n';
+        archi.calculateAllRates(iniPars, n_mainlandSp, n_islands);
+        archi.doNextEvent(event_type::local_migration,
+                0.3,
+                prng,
+                3.1,
+                maxSpeciesID,
+                n_mainlandSp);
+        cout << '\n';
+        archi.calculateAllRates(iniPars, n_mainlandSp, n_islands);
+        archi.doNextEvent(event_type::local_migration,
+                0.3,
+                prng,
+                3.0,
+                maxSpeciesID,
+                n_mainlandSp);
+        cout << '\n';
+        archi.calculateAllRates(iniPars, n_mainlandSp, n_islands);
+        archi.doNextEvent(event_type::local_migration,
+                0.3,
+                prng,
+                2.9,
+                maxSpeciesID,
+                n_mainlandSp);
+        cout << '\n';
+        archi.calculateAllRates(iniPars, n_mainlandSp, n_islands);
+        archi.doNextEvent(event_type::local_migration,
+                0.3,
+                prng,
+                2.8,
+                maxSpeciesID,
+                n_mainlandSp);
+        cout << '\n';
+        archi.printArchi();
+    }  // TODO: it always picks the same island of destination !!!
 }

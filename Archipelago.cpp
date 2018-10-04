@@ -95,7 +95,7 @@ void Archipelago::calculateAllRates(
     }
 }
 
-event_type Archipelago::sampleNextEvent(mt19937_64 prng)
+event_type Archipelago::sampleNextEvent(mt19937_64& prng)
 {   // which event will happen next
 
     // draw local event
@@ -122,7 +122,7 @@ event_type Archipelago::sampleNextEvent(mt19937_64 prng)
 // global events:
 
 void Archipelago::speciateGlobalClado(const SpeciesID& speciesID,
-        mt19937_64 prng,
+        mt19937_64& prng,
         double time,
         SpeciesID& maxSpeciesID)
     // species (input) globally cladogenetically speciates
@@ -211,7 +211,7 @@ void Archipelago::doGlobalEvent(const event_type globalEvent,
 
 void Archipelago::doLocalEvent(const event_type localEvent,
         const SpeciesID speciesID,
-        std::mt19937_64 prng,
+        mt19937_64& prng,
         const double& time,
         SpeciesID& maxSpeciesID,
         const int island,
@@ -261,7 +261,7 @@ void Archipelago::doLocalEvent(const event_type localEvent,
 
 void Archipelago::doNextEvent(const event_type nextEvent,
         const double& initialMigrationRate,
-        mt19937_64 prng,
+        mt19937_64& prng,
         const double time,
         SpeciesID& maxSpeciesID,
         const int& n_mainlandSp)
@@ -295,8 +295,6 @@ void Archipelago::doNextEvent(const event_type nextEvent,
         }
         doLocalEvent(nextEvent, speciesID, prng, time, maxSpeciesID, isl, initialMigrationRate);
     }
-    else
-        throw logic_error("Next event is neither global nor local.. Something is wrong.\n");
 }
 
 void Archipelago::addArchi(const Archipelago &newArchi)

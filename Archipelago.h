@@ -33,11 +33,11 @@ public:
                     // calculate per-island rates and global rates
                     // and save them in LocalRates and GlobalRates vector, resp.
                     // Also, output of sum of both global (.first) and local (.second) rates
-    event_type sampleNextEvent(std::mt19937_64);   // draw next event;
+    event_type sampleNextEvent(std::mt19937_64&);   // draw next event;
                                     // output -> {event(0-7), species(ID)(,island(0-i))}
                                     // if global event -> vector.size() = 2, if local -> size = 3
 
-    void speciateGlobalClado(const SpeciesID&, std::mt19937_64,
+    void speciateGlobalClado(const SpeciesID&, std::mt19937_64&,
             double time, SpeciesID& maxSpeciesID);  // island species
                     // cladogenetically speciates over all islands
                     // (one population gets replaced by two new species populations)
@@ -56,13 +56,13 @@ public:
 
     void doLocalEvent(const event_type localEvent,
             const SpeciesID speciesID,
-            std::mt19937_64 prng,
+            std::mt19937_64& prng,
             const double& time,
             SpeciesID& maxSpeciesID,
             const int island,
             const double& iniMigrationRate);
 
-    void doNextEvent(const event_type, const double&, std::mt19937_64, const double, SpeciesID& maxSpeciesID,
+    void doNextEvent(const event_type, const double&, std::mt19937_64&, const double, SpeciesID& maxSpeciesID,
             const int& n_mainlandSp); // switch-statement
                     // that calls event functions to update the island vector
 
