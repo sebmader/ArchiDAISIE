@@ -93,11 +93,11 @@ event_type Island::sampleLocalEvent(mt19937_64& prng)
 void Island::immigrate(const SpeciesID& speciesID, double time)
 {   // immigration from the mainland to THIS island
 
-    Species newSpecies(time, speciesID, speciesID, 'I');
+    Species newSpecies(time, speciesID, speciesID, 'I', time);
     if (hasSpecies(speciesID)) {  // if extant -> re-immigration
         // ("re-setting the clock" (= BirthT))
         const int pos = findPos(speciesID);
-        assert(pos < static_cast<int>(mSpecies.size()));
+        assert(pos < getNSpecies());
         assert(pos >= 0);
         mSpecies[pos] = newSpecies;
     }
@@ -135,12 +135,15 @@ int Island::drawMigDestinationIsland(
     return destinationIsland;
 }
 
-void Island::migrate(Species newSpecies, const double& time)
+void Island::migrate(const Species& oldSpecies, const double& time)
 {
-    newSpecies.setBirth(time);  // set birth time of migrating species
-    // to the time of migration
-    newSpecies.setStatus('M');
-    const SpeciesID speciesID = newSpecies.getSpecID();
+    Species newSpecies = Species(time, oldSpecies.getParID(),
+            oldSpecies.getSpecID(), 'M', oldSpecies.getCladeBirthT());
+    // save birth time of migrant as clade birth IF it hasn't already migrated before
+    if (oldSpecies.getBirth() == oldSpecies.getCladeBirthT())
+        newSpecies.setCladeBirth(oldSpecies.getBirth());
+
+    const SpeciesID speciesID = oldSpecies.getSpecID();
     if(!hasSpecies(speciesID)) {  // if first migration: add species to island
         if (getNSpecies() + 1 > mK)
             throw logic_error("Migration would make number of species"
@@ -149,12 +152,12 @@ void Island::migrate(Species newSpecies, const double& time)
     }
     else {  // else (if re-migration): re-set clock // TODO: correct?
         const int pos = findPos(speciesID);
-        assert(pos >= 0 && pos < static_cast<int>(mSpecies.size()));
+        assert(pos >= 0 && pos < getNSpecies());
         mSpecies[pos] = newSpecies;
     }
 }
 
-void Island::speciateClado(const SpeciesID& speciesID, double time,
+void Island::speciateClado(const SpeciesID& speciesID, const double& time,
         SpeciesID& maxSpeciesID)
 {   // island species cladogenetically diverges
     if(!hasSpecies(speciesID))
@@ -167,9 +170,9 @@ void Island::speciateClado(const SpeciesID& speciesID, double time,
 
     // 2 new species:
     Species newSpecies1 = Species(oldSpecies.getBirth(), speciesID,
-            maxSpeciesID.createNewSpeciesID(), 'C');
+            maxSpeciesID.createNewSpeciesID(), 'C', oldSpecies.getCladeBirthT());
     Species newSpecies2 = Species(time, speciesID,
-            maxSpeciesID.createNewSpeciesID(), 'C');
+            maxSpeciesID.createNewSpeciesID(), 'C', oldSpecies.getCladeBirthT());
 
     // parent goes extinct and daughters are added
     goExtinct(speciesID);
@@ -189,7 +192,7 @@ void Island::speciateAna(const SpeciesID& speciesID, SpeciesID& maxSpeciesID)
     // new species
     const double birthT = oldSpecies.getBirth();
     Species newSpecies = Species(birthT, speciesID,
-            maxSpeciesID.createNewSpeciesID(), 'A');
+            maxSpeciesID.createNewSpeciesID(), 'A', oldSpecies.getCladeBirthT());
     // parent goes extinct & daugther gets added to island
     goExtinct(speciesID);
     addSpecies(newSpecies);

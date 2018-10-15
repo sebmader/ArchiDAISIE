@@ -58,9 +58,9 @@ public:
             const double& initialMigrationRate,
             std::mt19937_64&);
                     // draw island species migrates to
-    void migrate(Species, const double& );  // migrating onto this island
+    void migrate(const Species&, const double&);  // migrating onto this island
             // RJCB: Use 'const double' instead of 'const double&'
-    void speciateClado(const SpeciesID&, double, SpeciesID&);
+    void speciateClado(const SpeciesID&, const double&, SpeciesID&);
                     // island species cladogenetically speciates
     void speciateAna(const SpeciesID&, SpeciesID&);
                     // island species anagenetically speciates
