@@ -36,9 +36,9 @@ public:
     }
 
 private:
-    double mBirthT;     // Should be const one day
-    SpeciesID mParentID;      // Should be const one day
-    SpeciesID mSpeciesID;     // Should be const one day
+    double mBirthT;     // time of birth/colonisation of species
+    SpeciesID mParentID;      // ID of parent species
+    SpeciesID mSpeciesID;     // ID of species
     char mStatus;       // immigrant, anagenesis, cladogenesis, migrant, default
                             // ('I','A','C','M','0')
     double mCladeBirthT;     // birth time of clade = colonisation/cladogenesis (if 2nd daughter)

@@ -68,6 +68,7 @@ void test_species()
         assert(sp1.getSpecID() == SpeciesID());
         assert(sp1.getParID() == SpeciesID());
         assert(sp1.getStatus() == '0');
+        assert(sp1.getCladeBirthT() == 0.0);
     }
     { // setBirth function does set the birth time
         Species sp1 = Species();
@@ -78,6 +79,11 @@ void test_species()
         Species sp1 = Species();
         sp1.setStatus('I');
         assert(sp1.getStatus() == 'I');
+    }
+    { // setCladeBirth function does set the birth time of the clade
+        Species sp1 = Species();
+        sp1.setCladeBirth(2.0);
+        assert(sp1.getCladeBirthT() == 2.0);
     }
     { // identifies immigrant correctly
         Species sp1 = Species(0.0, SpeciesID(), SpeciesID(),'I');
@@ -146,6 +152,18 @@ void test_island()
         assert(island.getNSpecies()==1);
         assert(island.findSpecies(SpeciesID(42)).getBirth()==3.14);
     }
+    {   // An immigrant gets its immigration time stored as clade birth time
+        Island island(10);
+        assert(island.getNSpecies()==0);
+        island.immigrate(SpeciesID(42), 3.14);
+        assert(island.findSpecies(SpeciesID(42)).getCladeBirthT()==3.14);
+    }
+    {   // Species cannot be found on island before immigration
+        Island island(10);
+        assert(!island.hasSpecies(SpeciesID(42)));
+        island.immigrate(SpeciesID(42), 6.28);
+        assert(island.hasSpecies(SpeciesID(42)));
+    }
     {  // Species cannot immigrate if island which has as much species as its carrying capacity
         Island island(0);
         try
@@ -158,12 +176,6 @@ void test_island()
             assert(std::string(e.what()) == "Immigration would make number of species"
                                             " exceed carrying capacity.\n");
         }
-    }
-    {   // Species cannot be found on island before immigration
-        Island island(10);
-        assert(!island.hasSpecies(SpeciesID(42)));
-        island.immigrate(SpeciesID(42), 6.28);
-        assert(island.hasSpecies(SpeciesID(42)));
     }
     {   // Extinction decreases the number of species
         Island island(10);
@@ -205,6 +217,28 @@ void test_island()
         island.immigrate(SpeciesID(42), 6.28);
         island.speciateClado(SpeciesID(42), 4.0,maxSpeciesID);
         assert(!island.hasSpecies(SpeciesID(42)));
+    }
+    {   // 1st daughter inherits birth time of parent
+        Island island(10);
+        SpeciesID maxSpeciesID(50);
+        island.immigrate(SpeciesID(42), 6.28);
+        island.speciateClado(SpeciesID(42), 4.0, maxSpeciesID);
+        assert(island.findSpecies(SpeciesID(51)).getBirth() == 6.28);
+    }
+    {   // 2st daughter gets new birth time
+        Island island(10);
+        SpeciesID maxSpeciesID(50);
+        island.immigrate(SpeciesID(42), 6.28);
+        island.speciateClado(SpeciesID(42), 4.0, maxSpeciesID);
+        assert(island.findSpecies(SpeciesID(52)).getBirth() == 4.0);
+    }
+    {   // both daughters inherit clade birth
+        Island island(10);
+        SpeciesID maxSpeciesID(50);
+        island.immigrate(SpeciesID(42), 6.28);
+        island.speciateClado(SpeciesID(42), 4.0, maxSpeciesID);
+        assert(island.findSpecies(SpeciesID(51)).getCladeBirthT() == 6.28);
+        assert(island.findSpecies(SpeciesID(52)).getCladeBirthT() == 6.28);
     }
     {   // cladogenetic species are of status 'C'
         Island island(10);

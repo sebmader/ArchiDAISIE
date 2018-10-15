@@ -5,14 +5,14 @@
 #include "Species.h"
 
 Species::Species(const double birthTime, const SpeciesID parentId,
-         const SpeciesID speciesId, const char status, const double preMigBT)
+         const SpeciesID speciesId, const char status, const double cladeBirth)
         : mBirthT{birthTime}, mParentID{parentId}, mSpeciesID{speciesId},
-        mStatus{status}, mCladeBirthT{preMigBT}
+        mStatus{status}, mCladeBirthT{cladeBirth}
 {
     assert(birthTime >= 0.0);
     assert(status == 'I' || status == 'A' || status == 'C' || status == 'M'
             || status == '0');
-    assert(preMigBT >= 0.0);
+    assert(cladeBirth >= 0.0);
 }
 
 void Species::setBirth(const double time)
