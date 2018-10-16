@@ -305,6 +305,13 @@ void test_island()
         island.speciateAna(SpeciesID(42),maxSpeciesID);
         assert(island.findSpecies(maxSpeciesID).getBirth() == 6.28);
     }
+    {   // anagenetic species keeps ancestors clade birth
+        Island island(10);
+        SpeciesID maxSpeciesID(50);
+        island.immigrate(SpeciesID(42), 6.28);
+        island.speciateAna(SpeciesID(42),maxSpeciesID);
+        assert(island.findSpecies(maxSpeciesID).getCladeBirthT() == 6.28);
+    }
     {   // anagenetic species are of status 'A'
         Island island(10);
         SpeciesID maxSpeciesID(50);
@@ -342,6 +349,22 @@ void test_island()
         assert(island.findSpecies(SpeciesID()).getBirth() == 4.0);
         island.migrate(Species(), 2.0);
         assert(island.findSpecies(SpeciesID()).getBirth() == 2.0);
+    }
+    {   // migration of absent species saves clade birth
+        Island island1(1);
+        Island island2(1);
+        island1.immigrate(SpeciesID(), 4.0);
+        island2.migrate(island1.findSpecies(SpeciesID()), 2.0);
+        assert(island2.findSpecies(SpeciesID()).getCladeBirthT() == 4.0);
+    }
+    {   // re-migration of already present species doesn't overwrite clade birth
+        Island island1(1);
+        Island island2(1);
+        island1.immigrate(SpeciesID(), 4.0);
+        island2.migrate(island1.findSpecies(SpeciesID()), 2.0);
+        assert(island2.findSpecies(SpeciesID()).getCladeBirthT() == 4.0);
+        island2.migrate(island1.findSpecies(SpeciesID()), 1.0);
+        assert(island2.findSpecies(SpeciesID()).getCladeBirthT() == 4.0);
     }
     {   // migration changes status to 'M'
         Island island(1);
