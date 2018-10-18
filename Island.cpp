@@ -138,7 +138,8 @@ int Island::drawMigDestinationIsland(
 void Island::migrate(const Species& oldSpecies, const double& time)
 {
     Species newSpecies = Species(time, oldSpecies.getParID(),
-            oldSpecies.getSpecID(), 'M', oldSpecies.getCladeBirthT());
+            oldSpecies.getSpecID(), 'M', oldSpecies.getCladeBirthT(),
+            oldSpecies.getCladoStates());
     // save birth time of migrant as clade birth IF it hasn't already migrated before
     if (oldSpecies.getBirth() == oldSpecies.getCladeBirthT())
         newSpecies.setCladeBirth(oldSpecies.getBirth());
@@ -169,10 +170,15 @@ void Island::speciateClado(const SpeciesID& speciesID, const double& time,
     const Species oldSpecies = findSpecies(speciesID);
 
     // 2 new species:
+    vector<char> newCladoStates = oldSpecies.getCladoStates();
+    newCladoStates.push_back('a');
     Species newSpecies1 = Species(oldSpecies.getBirth(), oldSpecies.getParID(),
-            maxSpeciesID.createNewSpeciesID(), 'C', oldSpecies.getCladeBirthT());
+            maxSpeciesID.createNewSpeciesID(), 'C', oldSpecies.getCladeBirthT(),
+            newCladoStates);
+    newCladoStates.back() = 'b';
     Species newSpecies2 = Species(time, oldSpecies.getParID(),
-            maxSpeciesID.createNewSpeciesID(), 'C', oldSpecies.getCladeBirthT());
+            maxSpeciesID.createNewSpeciesID(), 'C', oldSpecies.getCladeBirthT(),
+            newCladoStates);
 
     // parent goes extinct and daughters are added
     goExtinct(speciesID);
@@ -192,7 +198,8 @@ void Island::speciateAna(const SpeciesID& speciesID, SpeciesID& maxSpeciesID)
     // new species
     const double birthT = oldSpecies.getBirth();
     Species newSpecies = Species(birthT, oldSpecies.getParID(),
-            maxSpeciesID.createNewSpeciesID(), 'A', oldSpecies.getCladeBirthT());
+            maxSpeciesID.createNewSpeciesID(), 'A', oldSpecies.getCladeBirthT(),
+            oldSpecies.getCladoStates());
     // parent goes extinct & daugther gets added to island
     goExtinct(speciesID);
     addSpecies(newSpecies);

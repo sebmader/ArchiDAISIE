@@ -136,8 +136,13 @@ void Archipelago::speciateGlobalClado(const SpeciesID& speciesID,
     // two daughter species
     const Species oldSpecies = mIslands[onWhichIslands[0]].findSpecies(speciesID);
     const double birthT = oldSpecies.getBirth();
-    Species spNew1(birthT, oldSpecies.getParID(), maxSpeciesID.createNewSpeciesID(), 'C');
-    Species spNew2(time, oldSpecies.getParID(), maxSpeciesID.createNewSpeciesID(), 'C');
+    vector<char> newSpCladoStates = oldSpecies.getCladoStates();
+    newSpCladoStates.push_back('a');
+    Species spNew1(birthT, oldSpecies.getParID(), maxSpeciesID.createNewSpeciesID(),
+            'C', oldSpecies.getCladeBirthT(), newSpCladoStates);
+    newSpCladoStates.back() = 'b';
+    Species spNew2(time, oldSpecies.getParID(), maxSpeciesID.createNewSpeciesID(),
+            'C', oldSpecies.getCladeBirthT(), newSpCladoStates);
 
     // draw where to split the archipelago:
         // 0 to i-2 -> split after the island number drawn
@@ -167,10 +172,13 @@ void Archipelago::speciateGlobalAna(const SpeciesID& speciesID, SpeciesID& maxSp
     // daughter species
     const Species oldSpecies = mIslands[onWhichIslands[0]].findSpecies(speciesID);
     const double birthT = oldSpecies.getBirth();
-    Species spNew(birthT, oldSpecies.getParID(), maxSpeciesID.createNewSpeciesID(), 'A');
+    assert(oldSpecies.isImmigrant());
+    assert(oldSpecies.getCladoStates().empty());    // as it only effects immigrants
+    Species newSpecies(birthT, oldSpecies.getParID(), maxSpeciesID.createNewSpeciesID(),
+            'A');
     for (auto& iIsl : onWhichIslands) {
         mIslands[iIsl].goExtinct(speciesID);
-        mIslands[iIsl].addSpecies(spNew);
+        mIslands[iIsl].addSpecies(newSpecies);
     }
 }
 

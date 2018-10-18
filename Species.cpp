@@ -3,11 +3,13 @@
 //
 
 #include "Species.h"
+using namespace std;
 
 Species::Species(const double birthTime, const SpeciesID parentId,
-         const SpeciesID speciesId, const char status, const double cladeBirth)
+         const SpeciesID speciesId, const char status, const double cladeBirth,
+         const vector<char> cladoStates)
         : mBirthT{birthTime}, mParentID{parentId}, mSpeciesID{speciesId},
-        mStatus{status}, mCladeBirthT{cladeBirth}
+        mStatus{status}, mCladeBirthT{cladeBirth}, mCladoStates{cladoStates}
 {
     assert(birthTime >= 0.0);
     assert(status == 'I' || status == 'A' || status == 'C' || status == 'M'
@@ -38,6 +40,11 @@ bool Species::isImmigrant() const noexcept
 bool Species::isMigrant() const noexcept
 {
     return mStatus == 'M';
+}
+
+bool Species::isCladogenetic() const noexcept
+{
+    return mStatus == 'C';
 }
 
 
