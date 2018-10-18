@@ -37,7 +37,7 @@ public:
 
 private:
     double mBirthT;     // time of birth/colonisation of species
-    SpeciesID mParentID;      // ID of parent species
+    SpeciesID mParentID;      // ID of parent species TODO: test Mainland parent !!
     SpeciesID mSpeciesID;     // ID of species
     char mStatus;       // immigrant, anagenesis, cladogenesis, migrant, default
                             // ('I','A','C','M','0')

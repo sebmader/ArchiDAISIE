@@ -105,7 +105,7 @@ void Island::immigrate(const SpeciesID& speciesID, double time)
         if (getNSpecies() + 1 > mK)
             throw logic_error("Immigration would make number of species"
                               " exceed carrying capacity.\n");
-        mSpecies.push_back(newSpecies);
+        addSpecies(newSpecies);
     }
 }
 
@@ -169,9 +169,9 @@ void Island::speciateClado(const SpeciesID& speciesID, const double& time,
     const Species oldSpecies = findSpecies(speciesID);
 
     // 2 new species:
-    Species newSpecies1 = Species(oldSpecies.getBirth(), speciesID,
+    Species newSpecies1 = Species(oldSpecies.getBirth(), oldSpecies.getParID(),
             maxSpeciesID.createNewSpeciesID(), 'C', oldSpecies.getCladeBirthT());
-    Species newSpecies2 = Species(time, speciesID,
+    Species newSpecies2 = Species(time, oldSpecies.getParID(),
             maxSpeciesID.createNewSpeciesID(), 'C', oldSpecies.getCladeBirthT());
 
     // parent goes extinct and daughters are added
@@ -191,7 +191,7 @@ void Island::speciateAna(const SpeciesID& speciesID, SpeciesID& maxSpeciesID)
     const Species oldSpecies = findSpecies(speciesID);
     // new species
     const double birthT = oldSpecies.getBirth();
-    Species newSpecies = Species(birthT, speciesID,
+    Species newSpecies = Species(birthT, oldSpecies.getParID(),
             maxSpeciesID.createNewSpeciesID(), 'A', oldSpecies.getCladeBirthT());
     // parent goes extinct & daugther gets added to island
     goExtinct(speciesID);

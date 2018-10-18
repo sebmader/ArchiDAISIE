@@ -134,10 +134,10 @@ void Archipelago::speciateGlobalClado(const SpeciesID& speciesID,
                           "Something's wrong.. (global cladogenesis)\n");
 
     // two daughter species
-    const Species sp = mIslands[onWhichIslands[0]].findSpecies(speciesID);
-    const double birthT = sp.getBirth();
-    Species spNew1(birthT, speciesID, maxSpeciesID.createNewSpeciesID(), 'C');
-    Species spNew2(time, speciesID, maxSpeciesID.createNewSpeciesID(), 'C');
+    const Species oldSpecies = mIslands[onWhichIslands[0]].findSpecies(speciesID);
+    const double birthT = oldSpecies.getBirth();
+    Species spNew1(birthT, oldSpecies.getParID(), maxSpeciesID.createNewSpeciesID(), 'C');
+    Species spNew2(time, oldSpecies.getParID(), maxSpeciesID.createNewSpeciesID(), 'C');
 
     // draw where to split the archipelago:
         // 0 to i-2 -> split after the island number drawn
@@ -165,9 +165,9 @@ void Archipelago::speciateGlobalAna(const SpeciesID& speciesID, SpeciesID& maxSp
         throw logic_error("Drawn species is present on less than 2 islands. "
                           "Something's wrong.. (global anagenesis)\n");
     // daughter species
-    const Species sp = mIslands[onWhichIslands[0]].findSpecies(speciesID);
-    const double birthT = sp.getBirth();
-    Species spNew(birthT, speciesID, maxSpeciesID.createNewSpeciesID(), 'A');
+    const Species oldSpecies = mIslands[onWhichIslands[0]].findSpecies(speciesID);
+    const double birthT = oldSpecies.getBirth();
+    Species spNew(birthT, oldSpecies.getParID(), maxSpeciesID.createNewSpeciesID(), 'A');
     for (auto& iIsl : onWhichIslands) {
         mIslands[iIsl].goExtinct(speciesID);
         mIslands[iIsl].addSpecies(spNew);
