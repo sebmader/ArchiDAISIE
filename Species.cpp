@@ -8,8 +8,8 @@ using namespace std;
 Species::Species(const double birthTime, const SpeciesID parentId,
          const SpeciesID speciesId, const char status, const double cladeBirth,
          const vector<char> cladoStates)
-        : mBirthT{birthTime}, mParentID{parentId}, mSpeciesID{speciesId},
-        mStatus{status}, mCladeBirthT{cladeBirth}, mCladoStates{cladoStates}
+        : mBirthT{birthTime}, mMainParentID{parentId}, mSpeciesID{speciesId},
+        mStatus{status}, mAncestralBT{cladeBirth}, mCladoStates{cladoStates}
 {
     assert(birthTime >= 0.0);
     assert(status == 'I' || status == 'A' || status == 'C' || status == 'M'
@@ -19,17 +19,21 @@ Species::Species(const double birthTime, const SpeciesID parentId,
 
 void Species::setBirth(const double time)
 {
+    assert(time >= 0.0);
     mBirthT = time;
 }
 
 void Species::setStatus(char status)
 {
+    assert(status == 'I' || status == 'A' || status == 'C' || status == 'M'
+            || status == '0');
     mStatus = status;
 }
 
-void Species::setCladeBirth(const double time)
+void Species::setAncestralBT(const double time)
 {
-    mCladeBirthT = time;
+    assert(time >= 0.0);
+    mAncestralBT = time;
 }
 
 bool Species::isImmigrant() const noexcept

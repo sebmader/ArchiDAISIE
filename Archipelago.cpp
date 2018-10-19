@@ -139,10 +139,10 @@ void Archipelago::speciateGlobalClado(const SpeciesID& speciesID,
     vector<char> newSpCladoStates = oldSpecies.getCladoStates();
     newSpCladoStates.push_back('a');
     Species spNew1(birthT, oldSpecies.getParID(), maxSpeciesID.createNewSpeciesID(),
-            'C', oldSpecies.getCladeBirthT(), newSpCladoStates);
+            'C', oldSpecies.getAncestralBT(), newSpCladoStates);
     newSpCladoStates.back() = 'b';
     Species spNew2(time, oldSpecies.getParID(), maxSpeciesID.createNewSpeciesID(),
-            'C', oldSpecies.getCladeBirthT(), newSpCladoStates);
+            'C', time, newSpCladoStates);
 
     // draw where to split the archipelago:
         // 0 to i-2 -> split after the island number drawn

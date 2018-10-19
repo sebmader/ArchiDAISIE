@@ -138,11 +138,11 @@ int Island::drawMigDestinationIsland(
 void Island::migrate(const Species& oldSpecies, const double& time)
 {
     Species newSpecies = Species(time, oldSpecies.getParID(),
-            oldSpecies.getSpecID(), 'M', oldSpecies.getCladeBirthT(),
+            oldSpecies.getSpecID(), 'M', oldSpecies.getAncestralBT(),
             oldSpecies.getCladoStates());
-    // save birth time of migrant as clade birth IF it hasn't already migrated before
-    if (oldSpecies.getBirth() == oldSpecies.getCladeBirthT())
-        newSpecies.setCladeBirth(oldSpecies.getBirth());
+    // save birth time of migrant as ancestral birthT IF it hasn't already migrated before
+    if (oldSpecies.getBirth() ==oldSpecies.getAncestralBT())
+        newSpecies.setAncestralBT(oldSpecies.getBirth());
 
     const SpeciesID speciesID = oldSpecies.getSpecID();
     if(!hasSpecies(speciesID)) {  // if first migration: add species to island
@@ -173,11 +173,11 @@ void Island::speciateClado(const SpeciesID& speciesID, const double& time,
     vector<char> newCladoStates = oldSpecies.getCladoStates();
     newCladoStates.push_back('a');
     Species newSpecies1 = Species(oldSpecies.getBirth(), oldSpecies.getParID(),
-            maxSpeciesID.createNewSpeciesID(), 'C', oldSpecies.getCladeBirthT(),
+            maxSpeciesID.createNewSpeciesID(), 'C', oldSpecies.getAncestralBT(),
             newCladoStates);
     newCladoStates.back() = 'b';
     Species newSpecies2 = Species(time, oldSpecies.getParID(),
-            maxSpeciesID.createNewSpeciesID(), 'C', oldSpecies.getCladeBirthT(),
+            maxSpeciesID.createNewSpeciesID(), 'C', time,
             newCladoStates);
 
     // parent goes extinct and daughters are added
@@ -198,7 +198,7 @@ void Island::speciateAna(const SpeciesID& speciesID, SpeciesID& maxSpeciesID)
     // new species
     const double birthT = oldSpecies.getBirth();
     Species newSpecies = Species(birthT, oldSpecies.getParID(),
-            maxSpeciesID.createNewSpeciesID(), 'A', oldSpecies.getCladeBirthT(),
+            maxSpeciesID.createNewSpeciesID(), 'A', oldSpecies.getAncestralBT(),
             oldSpecies.getCladoStates());
     // parent goes extinct & daugther gets added to island
     goExtinct(speciesID);
@@ -211,10 +211,19 @@ void Island::goExtinct(const SpeciesID& speciesID)
         throw logic_error("Species does not exist on island.\n");
 
     // find species
-    const int pos = findPos(speciesID);
-    assert(pos >= 0);
-    // remove species
-    mSpecies.erase(mSpecies.begin() + pos);
+    const Species oldSpecies = findSpecies(speciesID);
+    if(!oldSpecies.isCladogenetic()) {
+        const int pos = findPos(speciesID);
+        assert(pos >= 0);
+        // remove species
+        mSpecies.erase(mSpecies.begin() + pos);
+    }
+    else {
+        const int numSplits = static_cast<int>(oldSpecies.getCladoStates().size());
+        assert(numSplits > 0);  // -> because it is cladogenetic
+        if(numSplits == 1) {    // sister becomes anagenetic
+        }
+    }
 }
 
 void Island::addIsland(const Island& islNew)
