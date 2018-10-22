@@ -93,7 +93,7 @@ event_type Island::sampleLocalEvent(mt19937_64& prng)
 void Island::immigrate(const SpeciesID& speciesID, double time)
 {   // immigration from the mainland to THIS island
 
-    Species newSpecies(time, speciesID, speciesID, 'I', time);
+    Species newSpecies(time, speciesID, speciesID, 'I', false, time, vector<char>());
     if (hasSpecies(speciesID)) {  // if extant -> re-immigration
         // ("re-setting the clock" (= BirthT))
         const int pos = findPos(speciesID);
@@ -138,11 +138,11 @@ int Island::drawMigDestinationIsland(
 void Island::migrate(const Species& oldSpecies, const double& time)
 {
     Species newSpecies = Species(time, oldSpecies.getParID(),
-            oldSpecies.getSpecID(), 'M', oldSpecies.getAncestralBT(),
-            oldSpecies.getCladoStates());
-    // save birth time of migrant as ancestral birthT IF it hasn't already migrated before
-    if (oldSpecies.getBirth() ==oldSpecies.getAncestralBT())
-        newSpecies.setAncestralBT(oldSpecies.getBirth());
+            oldSpecies.getSpecID(), oldSpecies.getStatus(), true,
+            oldSpecies.getBirth(), oldSpecies.getCladoStates());
+    // inherit ancestral birthT of oldSpecies IF it has already migrated before
+    if (oldSpecies.getBirth() != oldSpecies.getAncestralBT())
+        newSpecies.setAncestralBT(oldSpecies.getAncestralBT());
 
     const SpeciesID speciesID = oldSpecies.getSpecID();
     if(!hasSpecies(speciesID)) {  // if first migration: add species to island
@@ -173,12 +173,12 @@ void Island::speciateClado(const SpeciesID& speciesID, const double& time,
     vector<char> newCladoStates = oldSpecies.getCladoStates();
     newCladoStates.push_back('a');
     Species newSpecies1 = Species(oldSpecies.getBirth(), oldSpecies.getParID(),
-            maxSpeciesID.createNewSpeciesID(), 'C', oldSpecies.getAncestralBT(),
-            newCladoStates);
+            maxSpeciesID.createNewSpeciesID(), 'C', oldSpecies.hasMigrated(),
+            oldSpecies.getAncestralBT(), newCladoStates);
     newCladoStates.back() = 'b';
     Species newSpecies2 = Species(time, oldSpecies.getParID(),
-            maxSpeciesID.createNewSpeciesID(), 'C', time,
-            newCladoStates);
+            maxSpeciesID.createNewSpeciesID(), 'C', oldSpecies.hasMigrated(),
+            time, newCladoStates);
 
     // parent goes extinct and daughters are added
     goExtinct(speciesID);
@@ -196,10 +196,9 @@ void Island::speciateAna(const SpeciesID& speciesID, SpeciesID& maxSpeciesID)
     // find species
     const Species oldSpecies = findSpecies(speciesID);
     // new species
-    const double birthT = oldSpecies.getBirth();
-    Species newSpecies = Species(birthT, oldSpecies.getParID(),
-            maxSpeciesID.createNewSpeciesID(), 'A', oldSpecies.getAncestralBT(),
-            oldSpecies.getCladoStates());
+    Species newSpecies = Species(oldSpecies.getBirth(), oldSpecies.getParID(),
+            maxSpeciesID.createNewSpeciesID(), 'A', oldSpecies.hasMigrated(),
+            oldSpecies.getAncestralBT(), oldSpecies.getCladoStates());
     // parent goes extinct & daugther gets added to island
     goExtinct(speciesID);
     addSpecies(newSpecies);
@@ -242,8 +241,9 @@ void Island::addIsland(const Island& islNew)
             for (int k = j + 1; k < getNSpecies(); ++k) { ;
                 if (mSpecies[j].getSpecID() ==
                         mSpecies[k].getSpecID()) {
-                    if (mSpecies[j].isImmigrant()) {
-                        if (mSpecies[k].isImmigrant()) {  // if both immigrants
+                    if (mSpecies[j].isImmigrant() && !mSpecies[j].hasMigrated()) {
+                        if (mSpecies[k].isImmigrant() && !mSpecies[k].hasMigrated()) {
+                                // if both immigrants
                                 // take the most recent -> re-immigration
                             if (mSpecies[j].getBirth() <= mSpecies[k].getBirth()) {
                                 deleteSpecies(k);
@@ -255,21 +255,22 @@ void Island::addIsland(const Island& islNew)
                             }
                         }
                         else {  // if j is immigrant but k is not
-                                    // delete the non-immigrant (= migrant?!)
-                            assert(mSpecies[k].isMigrant());
+                                    // delete the non-immigrant (= migrant)
+                            assert(mSpecies[k].hasMigrated());
                             deleteSpecies(k);
                             --k;
                         }
                     }
                     else {  // if j is not immigrant
-                        if (mSpecies[k].isImmigrant()) {  // but k is -> k stays
-                            assert(mSpecies[j].isMigrant());
+                                // but k is -> k stays
+                        if (mSpecies[k].isImmigrant() && !mSpecies[k].hasMigrated()) {
+                            assert(mSpecies[j].hasMigrated());
                             deleteSpecies(j);
                             --j;
                         }
                         else {  // both not immigrants -> older one stays
-                            assert(mSpecies[j].isMigrant() || mSpecies[k].isMigrant());
-                            if (mSpecies[j].getBirth() >=mSpecies[k].getBirth()) {
+                            assert(mSpecies[j].hasMigrated() || mSpecies[k].hasMigrated());
+                            if (mSpecies[j].getBirth() >= mSpecies[k].getBirth()) {
                                 deleteSpecies(k);
                                 --k;
                             }

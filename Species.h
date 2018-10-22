@@ -14,8 +14,13 @@
 class Species {
 
 public:
-    explicit Species(double = 0.0, SpeciesID = SpeciesID(), SpeciesID = SpeciesID(),
-            char = '0', double = 0.0, std::vector<char> = {});
+    explicit Species(double birthTime = 0.0,
+            SpeciesID parentId = SpeciesID(),
+            SpeciesID speciesId = SpeciesID(),
+            char status = '0',
+            bool migrated = false,
+            double ancestralBT = 0.0,
+            std::vector<char> cladoStates = {});
 
     double getBirth() const noexcept { return mBirthT; }
     SpeciesID getSpecID() const noexcept { return mSpeciesID; }
@@ -27,14 +32,14 @@ public:
     void setStatus(char);
     void setAncestralBT(double);
     bool isImmigrant() const noexcept;
-    bool isMigrant() const noexcept;
+    bool hasMigrated() const noexcept;
     bool isCladogenetic() const noexcept;
 
 
 
     void printSpec() {
         std::cout << mBirthT << '\t' << mMainParentID.getSpeciesID() << '\t'
-                  << mSpeciesID.getSpeciesID() << '\t' << mStatus
+                  << mSpeciesID.getSpeciesID() << '\t' << mStatus << '\t' << mMigrated
                   << '\t' << mAncestralBT << '\n';
     }
 
@@ -42,8 +47,9 @@ private:
     double mBirthT;     // time of birth/colonisation of species
     SpeciesID mMainParentID;      // ID of parent species TODO: test Mainland parent !!
     SpeciesID mSpeciesID;     // ID of species
-    char mStatus;       // immigrant, anagenesis, cladogenesis, migrant, default
-                            // ('I','A','C','M','0')
+    char mStatus;       // immigrant, anagenesis, cladogenesis, default
+                            // ('I','A','C','0') -> no need for migrant
+    bool mMigrated;     // has it migrated or not
     double mAncestralBT;     // birth time of ancestor = colonisation/cladogenesis (if 2nd daughter)
                             // saved before migration (gives species a new birth time)
                             // -> need to save this for preparing data for DAISIE_ML

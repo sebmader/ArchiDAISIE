@@ -133,30 +133,34 @@ void Archipelago::speciateGlobalClado(const SpeciesID& speciesID,
         throw logic_error("Drawn species is present on less than 2 islands. "
                           "Something's wrong.. (global cladogenesis)\n");
 
-    // two daughter species
-    const Species oldSpecies = mIslands[onWhichIslands[0]].findSpecies(speciesID);
-    const double birthT = oldSpecies.getBirth();
-    vector<char> newSpCladoStates = oldSpecies.getCladoStates();
-    newSpCladoStates.push_back('a');
-    Species spNew1(birthT, oldSpecies.getParID(), maxSpeciesID.createNewSpeciesID(),
-            'C', oldSpecies.getAncestralBT(), newSpCladoStates);
-    newSpCladoStates.back() = 'b';
-    Species spNew2(time, oldSpecies.getParID(), maxSpeciesID.createNewSpeciesID(),
-            'C', time, newSpCladoStates);
-
     // draw where to split the archipelago:
         // 0 to i-2 -> split after the island number drawn
     int n_inhabitedIslands = static_cast<int>(onWhichIslands.size());
     assert(n_inhabitedIslands >= 2);
     const int split = onWhichIslands[drawUniEvent(0, n_inhabitedIslands-2, prng)];
 
+    // daughter IDs
+    SpeciesID newSpeciesID1 = maxSpeciesID.createNewSpeciesID();
+    SpeciesID newSpeciesID2 = maxSpeciesID.createNewSpeciesID();
     // update data frame
     for (auto& isl : onWhichIslands) {
+        const Species oldSpecies = mIslands[isl].findSpecies(speciesID);
+        vector<char> newSpCladoStates = oldSpecies.getCladoStates();
+        if (isl <= split) {   // split: after island with position equal to 'split'
+            newSpCladoStates.push_back('a');
+            Species newSpecies1(oldSpecies.getBirth(), oldSpecies.getParID(),
+                    newSpeciesID1, 'C', oldSpecies.hasMigrated(),
+                    oldSpecies.getAncestralBT(), newSpCladoStates);
+            mIslands[isl].addSpecies(newSpecies1);
+        }
+        else {
+            newSpCladoStates.push_back('b');
+            Species newSpecies2(time, oldSpecies.getParID(),
+                    newSpeciesID2, 'C', oldSpecies.hasMigrated(),
+                    time, newSpCladoStates);
+            mIslands[isl].addSpecies(newSpecies2);
+        }
         mIslands[isl].goExtinct(speciesID);
-        if (isl <= split)   // split: after island with position equal to 'split'
-            mIslands[isl].addSpecies(spNew1);
-        else
-            mIslands[isl].addSpecies(spNew2);
     }
 }
 
@@ -169,16 +173,17 @@ void Archipelago::speciateGlobalAna(const SpeciesID& speciesID, SpeciesID& maxSp
     if (onWhichIslands.size() < 2)
         throw logic_error("Drawn species is present on less than 2 islands. "
                           "Something's wrong.. (global anagenesis)\n");
+    const SpeciesID newSpeciesID = maxSpeciesID.createNewSpeciesID();
     // daughter species
-    const Species oldSpecies = mIslands[onWhichIslands[0]].findSpecies(speciesID);
-    const double birthT = oldSpecies.getBirth();
-    assert(oldSpecies.isImmigrant());
-    assert(oldSpecies.getCladoStates().empty());    // as it only effects immigrants
-    Species newSpecies(birthT, oldSpecies.getParID(), maxSpeciesID.createNewSpeciesID(),
-            'A');
-    for (auto& iIsl : onWhichIslands) {
-        mIslands[iIsl].goExtinct(speciesID);
-        mIslands[iIsl].addSpecies(newSpecies);
+    for (auto& isl : onWhichIslands) {
+        const Species oldSpecies = mIslands[isl].findSpecies(speciesID);
+        assert(oldSpecies.isImmigrant());
+        assert(oldSpecies.getCladoStates().empty());    // as it only effects immigrants
+        Species newSpecies(oldSpecies.getBirth(), oldSpecies.getParID(),
+                newSpeciesID, 'A', oldSpecies.hasMigrated(),
+                oldSpecies.getAncestralBT());
+        mIslands[isl].goExtinct(speciesID);
+        mIslands[isl].addSpecies(newSpecies);
     }
 }
 

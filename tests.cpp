@@ -68,6 +68,7 @@ void test_species()
         assert(sp1.getSpecID() == SpeciesID());
         assert(sp1.getParID() == SpeciesID());
         assert(sp1.getStatus() == '0');
+        assert(!sp1.hasMigrated());
         assert(sp1.getAncestralBT() == 0.0);
     }
     { // setBirth function does set the birth time
@@ -86,12 +87,9 @@ void test_species()
         assert(sp1.getAncestralBT() == 2.0);
     }
     { // identifies immigrant correctly
-        Species sp1 = Species(0.0, SpeciesID(), SpeciesID(),'I');
+        Species sp1 = Species();
+        sp1.setStatus('I');
         assert(sp1.isImmigrant());
-    }
-    { // identifies migrant correctly
-        Species sp1 = Species(0.0, SpeciesID(), SpeciesID(),'M');
-        assert(sp1.isMigrant());
     }
 }
 
@@ -401,7 +399,7 @@ void test_island()
     {   // anagenetic species keeps ancestors cladogenesis states
         Island island(10);
         SpeciesID maxSpeciesID(50);
-        island.addSpecies(Species(1.0,SpeciesID(),SpeciesID(),'0',1.0,{'a'}));
+        island.addSpecies(Species(1.0, SpeciesID(), SpeciesID(), '0', 0, 1.0, { 'a' }));
         island.speciateAna(SpeciesID(),maxSpeciesID);
         assert(island.findSpecies(maxSpeciesID).getCladoStates().size()==1);
         assert(island.findSpecies(maxSpeciesID).getCladoStates()[0] == 'a');
@@ -462,14 +460,14 @@ void test_island()
     }
     {   // migration keeps cladogenesis states
         Island island(1);
-        island.migrate(Species(1.0,SpeciesID(),SpeciesID(),'C',2.3,{'a'}), 4.0);
+        island.migrate(Species(1.0, SpeciesID(), SpeciesID(), 'C', 0, 2.3, { 'a' }), 4.0);
         assert(island.findSpecies(SpeciesID()).getCladoStates().size() == 1);
         assert(island.findSpecies(SpeciesID()).getCladoStates()[0] == 'a');
     }
-    {   // migration changes status to 'M'
+    {   // migration does not change status
         Island island(1);
         island.migrate(Species(), 4.0);
-        assert(island.findSpecies(SpeciesID()).getStatus() == 'M');
+        assert(island.findSpecies(SpeciesID()).getStatus() == '0');
     }
     {  // Species cannot migrate if island which has as much species as its carrying capacity
         Island island(0);
@@ -1085,15 +1083,15 @@ void test_archi()
                 maxSpeciesID,
                 0,
                 0.3);
-        assert(archi.getIslands()[0].getSpecies()[0].getStatus() == 'I');
-        assert(archi.getIslands()[1].getSpecies()[0].getStatus() == 'M');
+        assert(archi.getIslands()[0].getSpecies()[0].isImmigrant());
+        assert(archi.getIslands()[1].getSpecies()[0].hasMigrated());
         archi.doGlobalEvent(event_type::global_cladogenesis,
                 SpeciesID(1),
                 prng,
                 3.8,
                 maxSpeciesID);
-        assert(archi.getIslands()[0].getSpecies()[0].getStatus() == 'C');
-        assert(archi.getIslands()[1].getSpecies()[0].getStatus() == 'C');
+        assert(archi.getIslands()[0].getSpecies()[0].isCladogenetic());
+        assert(archi.getIslands()[1].getSpecies()[0].isCladogenetic());
         assert(archi.getIslands()[0].getSpecies()[0].getSpecID() !=
                 archi.getIslands()[1].getSpecies()[0].getSpecID());
     }
@@ -1170,8 +1168,8 @@ void test_archi()
                 maxSpeciesID,
                 0,
                 0.3);
-        assert(archi.getIslands()[0].getSpecies()[0].getStatus() == 'I');
-        assert(archi.getIslands()[1].getSpecies()[0].getStatus() == 'M');
+        assert(archi.getIslands()[0].getSpecies()[0].isImmigrant());
+        assert(archi.getIslands()[1].getSpecies()[0].hasMigrated());
         archi.doGlobalEvent(event_type::global_anagenesis,
                 SpeciesID(1),
                 prng,
@@ -1362,15 +1360,15 @@ void test_archi()
                 maxSpeciesID,
                 0,
                 0.3);
-        assert(archi.getIslands()[0].getSpecies()[0].getStatus() == 'I');
-        assert(archi.getIslands()[1].getSpecies()[0].getStatus() == 'M');
+        assert(archi.getIslands()[0].getSpecies()[0].isImmigrant());
+        assert(archi.getIslands()[1].getSpecies()[0].hasMigrated());
         archi.doNextEvent(event_type::global_cladogenesis,
                 0.3,
                 prng,
                 3.8,
                 maxSpeciesID, n_mainlandSp);
-        assert(archi.getIslands()[0].getSpecies()[0].getStatus() == 'C');
-        assert(archi.getIslands()[1].getSpecies()[0].getStatus() == 'C');
+        assert(archi.getIslands()[0].getSpecies()[0].isCladogenetic());
+        assert(archi.getIslands()[1].getSpecies()[0].isCladogenetic());
         assert(archi.getIslands()[0].getSpecies()[0].getSpecID() !=
                 archi.getIslands()[1].getSpecies()[0].getSpecID());
     }
@@ -1447,8 +1445,8 @@ void test_archi()
                 maxSpeciesID,
                 0,
                 0.3);
-        assert(archi.getIslands()[0].getSpecies()[0].getStatus() == 'I');
-        assert(archi.getIslands()[1].getSpecies()[0].getStatus() == 'M');
+        assert(archi.getIslands()[0].getSpecies()[0].isImmigrant());
+        assert(archi.getIslands()[1].getSpecies()[0].hasMigrated());
         archi.doNextEvent(event_type::global_anagenesis,
                 0.3,
                 prng,
