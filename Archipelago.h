@@ -25,8 +25,10 @@ public:
     int getNSpecies();
     std::vector<SpeciesID> getSpeciesIDs();
     std::vector<SpeciesID> getGlobalSpeciesIDs() const;
+    bool isGlobal(const SpeciesID& speciesID) const;
     std::vector<int> findIsl(const SpeciesID&) const;    // find the island(s) where
                                     // species (input) is within archipelago
+    std::vector<SpeciesID> findSisters(const SpeciesID&) const;
 
     void calculateAllRates(const std::vector<double>&,
             const int& n_mainlandSpecies, const int& n_islands);

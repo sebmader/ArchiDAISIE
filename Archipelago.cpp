@@ -146,18 +146,20 @@ void Archipelago::speciateGlobalClado(const SpeciesID& speciesID,
     for (auto& isl : onWhichIslands) {
         const Species oldSpecies = mIslands[isl].findSpecies(speciesID);
         vector<char> newSpCladoStates = oldSpecies.getCladoStates();
+        newSpCladoStates.push_back(' ');
         if (isl <= split) {   // split: after island with position equal to 'split'
-            newSpCladoStates.push_back('a');
+            newSpCladoStates.back() = 'a';
             Species newSpecies1(oldSpecies.getBirth(), oldSpecies.getParID(),
-                    newSpeciesID1, 'C', oldSpecies.hasMigrated(),
-                    oldSpecies.getAncestralBT(), newSpCladoStates);
+                    newSpeciesID1, 'C', false,
+                    oldSpecies.getAncestralBT(), oldSpecies.getColonisationT(),
+                    newSpCladoStates);
             mIslands[isl].addSpecies(newSpecies1);
         }
         else {
-            newSpCladoStates.push_back('b');
+            newSpCladoStates.back() = 'b';
             Species newSpecies2(time, oldSpecies.getParID(),
-                    newSpeciesID2, 'C', oldSpecies.hasMigrated(),
-                    time, newSpCladoStates);
+                    newSpeciesID2, 'C', false,
+                    time, oldSpecies.getColonisationT(), newSpCladoStates);
             mIslands[isl].addSpecies(newSpecies2);
         }
         mIslands[isl].goExtinct(speciesID);
@@ -180,8 +182,8 @@ void Archipelago::speciateGlobalAna(const SpeciesID& speciesID, SpeciesID& maxSp
         assert(oldSpecies.isImmigrant());
         assert(oldSpecies.getCladoStates().empty());    // as it only effects immigrants
         Species newSpecies(oldSpecies.getBirth(), oldSpecies.getParID(),
-                newSpeciesID, 'A', oldSpecies.hasMigrated(),
-                oldSpecies.getAncestralBT());
+                newSpeciesID, 'A', false,
+                oldSpecies.getAncestralBT(), oldSpecies.getColonisationT());
         mIslands[isl].goExtinct(speciesID);
         mIslands[isl].addSpecies(newSpecies);
     }
@@ -264,6 +266,8 @@ void Archipelago::doLocalEvent(const event_type localEvent,
         mIslands[island].speciateAna(speciesID, maxSpeciesID);
         break;
     case event_type::local_extinction:
+        // is the species present on other islands?
+        // do sisters exist on other islands?
         assert(getEventInt(localEvent) == 4);
         mIslands[island].goExtinct(speciesID);
         break;
@@ -420,3 +424,15 @@ int Archipelago::getNIslands() const noexcept
 {
     return static_cast<int>(mIslands.size());
 }
+
+bool Archipelago::isGlobal(const SpeciesID& speciesID) const
+{
+    return findIsl(speciesID).size() >= 2;
+}
+
+vector<SpeciesID> Archipelago::findSisters(const SpeciesID&) const
+{
+
+    return vector<SpeciesID>();
+}
+
