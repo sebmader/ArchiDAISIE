@@ -25,10 +25,14 @@ public:
     int getNSpecies();
     std::vector<SpeciesID> getSpeciesIDs();
     std::vector<SpeciesID> getGlobalSpeciesIDs() const;
+    const std::vector<Island> & getIslands() const { return mIslands; }
+    int getCarryingCap() const noexcept { return mK; }
+    std::vector<double> getGlobalRates() const noexcept { return mGlobalRates; }
+
     bool isGlobal(const SpeciesID& speciesID) const;
     std::vector<int> findIsl(const SpeciesID&) const;    // find the island(s) where
                                     // species (input) is within archipelago
-    std::vector<SpeciesID> findSisters(const SpeciesID&) const;
+    std::vector<SpeciesID> findMostRecentSisters(const Species& species) const;
 
     void calculateAllRates(const std::vector<double>&,
             const int& n_mainlandSpecies, const int& n_islands);
@@ -72,11 +76,8 @@ public:
 
     std::vector<Species> makeArchiTo1Island() const;   // aggregate all islands in
                     // archipelago as it would be one and return it
-    const std::vector<Island> & getIslands() const {return mIslands;}
     void printArchi();  // print archipelago islands to screen
 
-    int getCarryingCap() const noexcept { return mK; }
-    std::vector<double> getGlobalRates() const noexcept { return mGlobalRates; }
 
 private:
     std::vector<double> mGlobalRates;  // vector of rates for global events

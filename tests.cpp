@@ -301,7 +301,6 @@ void test_island()
         island.immigrate(SpeciesID(42), 6.28);
         island.speciateClado(SpeciesID(42), 4.0, maxSpeciesID);
         island.speciateClado(SpeciesID(51), 3.7, maxSpeciesID);
-        island.printIsland();
         Species sp1 = island.findSpecies(SpeciesID(52));
         Species sp2 = island.findSpecies(SpeciesID(53));
         Species sp3 = island.findSpecies(SpeciesID(54));
@@ -315,7 +314,6 @@ void test_island()
         island.immigrate(SpeciesID(42), 6.28);
         island.speciateClado(SpeciesID(42), 4.0, maxSpeciesID);
         island.speciateClado(SpeciesID(51), 3.7, maxSpeciesID);
-        island.printIsland();
         Species sp1 = island.findSpecies(SpeciesID(52));
         Species sp2 = island.findSpecies(SpeciesID(53));
         Species sp3 = island.findSpecies(SpeciesID(54));
@@ -1661,5 +1659,101 @@ void test_archi()
                 3.2,
                 maxSpeciesID,
                 n_mainlandSp);
+    }
+    {  // after local cladogenesis most recent sister is found correctly
+        int n_islands = 2;
+        int islCarryingCap = 5;
+        Archipelago archi = Archipelago(n_islands, islCarryingCap);
+        int n_mainlandSp = 5;
+        SpeciesID maxSpeciesID(n_mainlandSp);
+        mt19937_64 prng;
+        archi.doLocalEvent(event_type::local_immigration,
+                SpeciesID(1),
+                prng,
+                4.0,
+                maxSpeciesID,
+                0,
+                0.3);
+        archi.doLocalEvent(event_type::local_cladogenesis,
+                SpeciesID(1),
+                prng,
+                3.9,
+                maxSpeciesID,
+                0,
+                0.3);
+        Species sp = archi.getIslands()[0].findSpecies(SpeciesID(6));
+        assert(archi.findMostRecentSisters(sp).size() == 1);
+        assert(archi.findMostRecentSisters(sp)[0] == SpeciesID(7));
+    }
+    {  // after local cladogenesis, migration & extinction of original sister
+        // most recent sister is found correctly
+        int n_islands = 2;
+        int islCarryingCap = 5;
+        Archipelago archi = Archipelago(n_islands, islCarryingCap);
+        int n_mainlandSp = 5;
+        SpeciesID maxSpeciesID(n_mainlandSp);
+        mt19937_64 prng;
+        archi.doLocalEvent(event_type::local_immigration,
+                SpeciesID(1),
+                prng,
+                4.0,
+                maxSpeciesID,
+                0,
+                0.3);
+        archi.doLocalEvent(event_type::local_cladogenesis,
+                SpeciesID(1),
+                prng,
+                3.9,
+                maxSpeciesID,
+                0,
+                0.3);
+        archi.doLocalEvent(event_type::local_migration,
+                SpeciesID(7),
+                prng,
+                3.8,
+                maxSpeciesID,
+                0,
+                0.3);
+        archi.doLocalEvent(event_type::local_extinction,
+                SpeciesID(7),
+                prng,
+                3.7,
+                maxSpeciesID,
+                0,
+                0.3);
+        Species sp = archi.getIslands()[0].findSpecies(SpeciesID(6));
+        assert(archi.findMostRecentSisters(sp).size() == 1);
+        assert(archi.findMostRecentSisters(sp)[0] == SpeciesID(7));
+    }
+    {  // after global cladogenesis most recent sister is found correctly
+        int n_islands = 2;
+        int islCarryingCap = 5;
+        Archipelago archi = Archipelago(n_islands, islCarryingCap);
+        int n_mainlandSp = 5;
+        SpeciesID maxSpeciesID(n_mainlandSp);
+        mt19937_64 prng;
+        archi.doLocalEvent(event_type::local_immigration,
+                SpeciesID(1),
+                prng,
+                4.0,
+                maxSpeciesID,
+                0,
+                0.3);
+        archi.doLocalEvent(event_type::local_migration,
+                SpeciesID(1),
+                prng,
+                3.6,
+                maxSpeciesID,
+                0,
+                0.3);
+        archi.doGlobalEvent(event_type::global_cladogenesis,
+                SpeciesID(1),
+                prng,
+                3.5,
+                maxSpeciesID);
+        archi.printArchi();
+        Species sp = archi.getIslands()[0].findSpecies(SpeciesID(6));
+        assert(archi.findMostRecentSisters(sp).size() == 1);
+        assert(archi.findMostRecentSisters(sp)[0] == SpeciesID(7));
     }
 }

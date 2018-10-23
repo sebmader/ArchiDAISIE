@@ -352,7 +352,9 @@ void Archipelago::printArchi()
         ++i;
         cout << "Island " << i << '\n';
         cout << "BirT" << '\t' << "ParID" << '\t'
-             << "SpID" << '\t' << "Stac" << '\n';
+             << "SpID" << '\t' << "Status" << '\t'
+             << "Mig" << '\t'  << "AncesT" << '\t'
+             << "ColoT" << '\t' << "CladoStac" << '\n';
         z.printIsland();
     }
 }
@@ -430,9 +432,16 @@ bool Archipelago::isGlobal(const SpeciesID& speciesID) const
     return findIsl(speciesID).size() >= 2;
 }
 
-vector<SpeciesID> Archipelago::findSisters(const SpeciesID&) const
+vector<SpeciesID> Archipelago::findMostRecentSisters(const Species& species) const
 {
-
-    return vector<SpeciesID>();
+    vector<SpeciesID> sisters;
+    for(auto& isl : mIslands) {
+        vector<Species> islSpecies = isl.getSpecies();
+        for(auto& sp : islSpecies) {
+            if (species.isMostRecentSis(sp))
+                sisters.push_back(sp.getSpecID());
+        }
+    }
+    return sisters;
 }
 
