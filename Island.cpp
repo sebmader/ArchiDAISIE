@@ -176,7 +176,7 @@ void Island::speciateClado(const SpeciesID& speciesID, const double& time,
     newCladoStates.push_back('a');
     Species newSpecies1 = Species(oldSpecies.getBirth(), oldSpecies.getParID(),
             maxSpeciesID.createNewSpeciesID(), 'C', false,
-            oldSpecies.getAncestralBT(), oldSpecies.getColonisationT(),
+            oldSpecies.getBirth(), oldSpecies.getColonisationT(),
             newCladoStates);
     newCladoStates.back() = 'b';
     Species newSpecies2 = Species(time, oldSpecies.getParID(),
@@ -201,7 +201,7 @@ void Island::speciateAna(const SpeciesID& speciesID, SpeciesID& maxSpeciesID)
     // new species
     Species newSpecies = Species(oldSpecies.getBirth(), oldSpecies.getParID(),
             maxSpeciesID.createNewSpeciesID(), 'A', false,
-            oldSpecies.getAncestralBT(), oldSpecies.getColonisationT(),
+            oldSpecies.getBirth(), oldSpecies.getColonisationT(),
             oldSpecies.getCladoStates());
     // parent goes extinct & daugther gets added to island
     goExtinct(speciesID);

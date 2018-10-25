@@ -1097,7 +1097,6 @@ void test_archi()
         archi.doGlobalEvent(event_type::global_cladogenesis,
                 SpeciesID(1),
                 prng,
-                3.8,
                 maxSpeciesID);
         assert(archi.getNSpecies() == 2);
     }
@@ -1131,7 +1130,6 @@ void test_archi()
         archi.doGlobalEvent(event_type::global_cladogenesis,
                 SpeciesID(1),
                 prng,
-                3.8,
                 maxSpeciesID);
         assert(archi.getIslands()[0].getNSpecies() == 1);
         assert(archi.getIslands()[1].getNSpecies() == 1);
@@ -1162,7 +1160,6 @@ void test_archi()
         archi.doGlobalEvent(event_type::global_cladogenesis,
                 SpeciesID(1),
                 prng,
-                3.8,
                 maxSpeciesID);
         assert(archi.getIslands()[0].getSpecies()[0].isCladogenetic());
         assert(archi.getIslands()[1].getSpecies()[0].isCladogenetic());
@@ -1180,7 +1177,6 @@ void test_archi()
             archi.doGlobalEvent(event_type::global_cladogenesis,
                     SpeciesID(1),
                     prng,
-                    3.8,
                     maxSpeciesID);
             assert(!"should not get here!\n"); //!OCLINT
         }
@@ -1217,7 +1213,6 @@ void test_archi()
         archi.doGlobalEvent(event_type::global_anagenesis,
                 SpeciesID(1),
                 prng,
-                3.8,
                 maxSpeciesID);
         assert(archi.getNSpecies() == 1);
     }
@@ -1247,7 +1242,6 @@ void test_archi()
         archi.doGlobalEvent(event_type::global_anagenesis,
                 SpeciesID(1),
                 prng,
-                3.8,
                 maxSpeciesID);
         assert(archi.getIslands()[0].getSpecies()[0].getStatus() == 'A');
         assert(archi.getIslands()[1].getSpecies()[0].getStatus() == 'A');
@@ -1265,7 +1259,6 @@ void test_archi()
             archi.doGlobalEvent(event_type::global_anagenesis,
                     SpeciesID(1),
                     prng,
-                    3.8,
                     maxSpeciesID);
             assert(!"should not get here!\n"); //!OCLINT
         }
@@ -1302,7 +1295,6 @@ void test_archi()
         archi.doGlobalEvent(event_type::global_extinction,
                 SpeciesID(1),
                 prng,
-                3.8,
                 maxSpeciesID);
         assert(archi.getNSpecies() == 0);
     }
@@ -1317,7 +1309,6 @@ void test_archi()
             archi.doGlobalEvent(event_type::global_extinction,
                     SpeciesID(1),
                     prng,
-                    3.8,
                     maxSpeciesID);
         }
         catch (const exception &e)
@@ -1337,7 +1328,6 @@ void test_archi()
             archi.doGlobalEvent(event_type::local_immigration,
                     SpeciesID(1),
                     prng,
-                    3.8,
                     maxSpeciesID);
             assert(!"Should not get here.\n");  //!OCLINT
         }
@@ -1783,7 +1773,6 @@ void test_archi()
         archi.doGlobalEvent(event_type::global_cladogenesis,
                 SpeciesID(1),
                 prng,
-                3.5,
                 maxSpeciesID);
         Species sp = archi.getIslands()[0].findSpecies(SpeciesID(6));
         assert(archi.findMostRecentSisters(sp).size() == 1);

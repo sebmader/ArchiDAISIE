@@ -123,7 +123,6 @@ event_type Archipelago::sampleNextEvent(mt19937_64& prng)
 
 void Archipelago::speciateGlobalClado(const SpeciesID& speciesID,
         mt19937_64& prng,
-        double time,
         SpeciesID& maxSpeciesID)
     // species (input) globally cladogenetically speciates
 {   // -> archipelago population splits into two new species
@@ -151,15 +150,15 @@ void Archipelago::speciateGlobalClado(const SpeciesID& speciesID,
             newSpCladoStates.back() = 'a';
             Species newSpecies1(oldSpecies.getBirth(), oldSpecies.getParID(),
                     newSpeciesID1, 'C', false,
-                    oldSpecies.getAncestralBT(), oldSpecies.getColonisationT(),
+                    oldSpecies.getBirth(), oldSpecies.getColonisationT(),
                     newSpCladoStates);
             mIslands[isl].addSpecies(newSpecies1);
         }
         else {
             newSpCladoStates.back() = 'b';
-            Species newSpecies2(time, oldSpecies.getParID(),
+            Species newSpecies2(oldSpecies.getBirth(), oldSpecies.getParID(),
                     newSpeciesID2, 'C', false,
-                    time, oldSpecies.getColonisationT(), newSpCladoStates);
+                    oldSpecies.getBirth(), oldSpecies.getColonisationT(), newSpCladoStates);
             mIslands[isl].addSpecies(newSpecies2);
         }
         mIslands[isl].goExtinct(speciesID);
@@ -183,7 +182,7 @@ void Archipelago::speciateGlobalAna(const SpeciesID& speciesID, SpeciesID& maxSp
         assert(oldSpecies.getCladoStates().empty());    // as it only effects immigrants
         Species newSpecies(oldSpecies.getBirth(), oldSpecies.getParID(),
                 newSpeciesID, 'A', false,
-                oldSpecies.getAncestralBT(), oldSpecies.getColonisationT());
+                oldSpecies.getBirth(), oldSpecies.getColonisationT());
         mIslands[isl].goExtinct(speciesID);
         mIslands[isl].addSpecies(newSpecies);
     }
@@ -203,13 +202,12 @@ void Archipelago::goGlobalExtinct(const SpeciesID& speciesID)
 void Archipelago::doGlobalEvent(const event_type globalEvent,
         const SpeciesID speciesID,
         mt19937_64& prng,
-        const double& time,
         SpeciesID& maxSpeciesID)
 {
     switch(globalEvent) {
     case event_type::global_cladogenesis:
         assert(getEventInt(globalEvent) == 5);
-        speciateGlobalClado(speciesID, prng, time, maxSpeciesID);
+        speciateGlobalClado(speciesID, prng, maxSpeciesID);
         break;
     case event_type::global_anagenesis:
         assert(getEventInt(globalEvent) == 6);
@@ -293,7 +291,7 @@ void Archipelago::doNextEvent(const event_type nextEvent,
                               "but drawn event is global.\n");
         // sample global species
         const SpeciesID speciesID = drawUniEvent(getGlobalSpeciesIDs(),prng);
-        doGlobalEvent(nextEvent, speciesID, prng, time, maxSpeciesID);
+        doGlobalEvent(nextEvent, speciesID, prng, maxSpeciesID);
     }
     else if (is_local(nextEvent)) {
         // sample island:

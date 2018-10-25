@@ -43,8 +43,7 @@ public:
                                     // output -> {event(0-7), species(ID)(,island(0-i))}
                                     // if global event -> vector.size() = 2, if local -> size = 3
 
-    void speciateGlobalClado(const SpeciesID&, std::mt19937_64&,
-            double time, SpeciesID& maxSpeciesID);  // island species
+    void speciateGlobalClado(const SpeciesID&, std::mt19937_64&, SpeciesID& maxSpeciesID);  // island species
                     // cladogenetically speciates over all islands
                     // (one population gets replaced by two new species populations)
                     // with random separation of archipelago into two groups/populations
@@ -54,10 +53,7 @@ public:
     void goGlobalExtinct(const SpeciesID&);  // island species
                     // goes extinct on all islands it occures on
 
-    void doGlobalEvent(const event_type globalEvent,
-            const SpeciesID speciesID,
-            std::mt19937_64& prng,
-            const double& time,
+    void doGlobalEvent(const event_type globalEvent, const SpeciesID speciesID, std::mt19937_64& prng,
             SpeciesID& maxSpeciesID);
 
     void doLocalEvent(const event_type localEvent,
