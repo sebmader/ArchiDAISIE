@@ -38,6 +38,18 @@ vector<int> Archipelago::findIsl(const SpeciesID& speciesID) const
     return locations;
 }
 
+vector<Species> Archipelago::findIslSpecies(const SpeciesID& speciesID) const
+// find the island(s) where certain species (input) is within archipelago
+// returns vector with island IDs (position in mIslands vector)
+{
+    vector<Species> locations;
+    for (auto& isl : mIslands) {
+        if (isl.hasSpecies(speciesID))
+            locations.push_back(isl.findSpecies(speciesID));
+    }
+    return locations;
+}
+
 void Archipelago::calculateAllRates(
         const vector<double>& initialParameters,
         const int& n_mainlandSpecies,
@@ -303,7 +315,7 @@ void Archipelago::doNextEvent(const event_type nextEvent,
         }
         const int isl = drawDisEvent(eventRatePerIsland, prng);
         // sample species:
-        SpeciesID speciesID = static_cast<SpeciesID>(drawUniEvent(1, n_mainlandSp, prng));
+        SpeciesID speciesID = SpeciesID(drawUniEvent(1, n_mainlandSp, prng));
         if (getEventInt(nextEvent)) { // -> if not immigration
             const vector<SpeciesID> aliveSpecies = mIslands[isl].getSpeciesIDs();
             speciesID = drawUniEvent(aliveSpecies, prng);
@@ -430,16 +442,102 @@ bool Archipelago::isGlobal(const SpeciesID& speciesID) const
     return findIsl(speciesID).size() >= 2;
 }
 
-vector<SpeciesID> Archipelago::findMostRecentSisters(const Species& species) const
+vector<Species> Archipelago::findMostRecentSisters(const Species& species) const
 {
-    vector<SpeciesID> sisters;
+    vector<Species> sisters;  // maybe: vector<pairs> with island where it is on
     for(auto& isl : mIslands) {
         vector<Species> islSpecies = isl.getSpecies();
         for(auto& sp : islSpecies) {
             if (species.isMostRecentSis(sp))
-                sisters.push_back(sp.getSpecID());
+                sisters.push_back(sp);
         }
     }
     return sisters;
+}
+
+void Archipelago::correctSisterTaxaLocal(const SpeciesID& extinctSpID, const int island)
+{
+    assert(mIslands[island].hasSpecies(extinctSpID));
+    const Species extinctSp = mIslands[island].findSpecies(extinctSpID);
+
+    if (extinctSp.getCladoStates().empty()) {   // if not cladogenetic
+        vector<int> onWhichIsls = findIsl(extinctSpID);
+        if (onWhichIsls.size() > 1) {   // but present on other islands
+            vector<Species> populations = findIslSpecies(extinctSpID);
+            Species oldestPop = findOldestSpecies(populations);
+            if (oldestPop == extinctSp) {   // if oldest population goes extinct
+                assert(!extinctSp.hasMigrated());
+                Species secondOldestPop = Species();
+                for (auto& pop : populations) {
+                    if (pop.getBirth() > secondOldestPop.getBirth()
+                            && pop.getBirth() < oldestPop.getBirth())
+                        secondOldestPop = pop;
+                }
+                const double secondOldBirth = secondOldestPop.getBirth();
+                for (auto& isl : onWhichIsls) {  // second oldest becomes coloniser
+                    Species refSpecies = mIslands[isl].findRefSpecies(extinctSpID);
+                    refSpecies.setColonisationT(secondOldBirth);
+                    assert(mIslands[isl].findSpecies(extinctSpID).getColonisationT()
+                            == secondOldBirth);
+                    if (refSpecies == secondOldestPop)
+                        refSpecies.setMigrated(false);
+                }
+            }  // no correction if not oldest population
+        }  // no correction if not present on other islands
+    }
+    else {   // if cladogenetic
+        assert(extinctSp.getStatus() == 'C' || extinctSp.getStatus() == 'A');
+        assert(!extinctSp.getCladoStates().empty());
+        vector<int> onWhichIsls = findIsl(extinctSpID);
+        if (onWhichIsls.size() > 1) {   // if present on other islands
+            vector<Species> populations = findIslSpecies(extinctSpID);
+            Species oldestPop = findOldestSpecies(populations);
+            if (extinctSp.getCladoStates().back() == 'a' && extinctSp == oldestPop) {
+                vector<Species> sisters = findMostRecentSisters(extinctSp);
+                Species oldestSis = findOldestSpecies(sisters);
+                Species secondOldestSis = Species();
+                for (auto& sis : sisters) {
+                    if (sis.getBirth() > secondOldestSis.getBirth()
+                            && sis.getBirth() < oldestSis.getBirth())
+                        secondOldestSis = sis;
+                }
+                for (size_t i = 0; i < onWhichIsls.size(); ++i) {
+                    Species tmpSp = mIslands[i].findRefSpecies(extinctSpID);
+                    if (tmpSp == oldestSis) {
+                        tmpSp.setBirth(extinctSp.getBirth());
+                        assert(mIslands[i].findSpecies(extinctSpID).getBirth()
+                                == extinctSp.getBirth());
+                    }
+                    else if (tmpSp == secondOldestSis) {
+                        tmpSp.setMigrated(false);
+                        assert(!mIslands[i].findSpecies(extinctSpID).hasMigrated());
+                    }
+                }
+            }  // no correction if not oldest or not daughter 'a'
+        }
+        else {  // not present on other islands
+            if (extinctSp.getCladoStates().back() == 'a') {
+                const vector<Species> sisters = findMostRecentSisters(extinctSp);
+                const Species oldestSisPop = findOldestSpecies(sisters);
+                vector<int> sisOnWhichIsls = findIsl(oldestSisPop.getSpecID());
+                for (auto& isl : sisOnWhichIsls) {
+                    Species oldestSis = mIslands[isl].findRefSpecies(oldestSisPop.getSpecID());
+                    if (oldestSis == oldestSisPop) {
+                        oldestSis.setBirth(extinctSp.getBirth());
+                        assert(mIslands[isl].findSpecies(oldestSis.getSpecID()).getBirth()
+                                == extinctSp.getBirth());
+                    }
+                    oldestSis.setAncestralBT(extinctSp.getBirth());
+                    assert(mIslands[isl].findSpecies(oldestSis.getSpecID()).getAncestralBT()
+                            == extinctSp.getBirth());
+                    int posSpeciation = static_cast<int>(extinctSp.getCladoStates().size()) - 1;
+                    oldestSis.getCladoStates().erase(oldestSis.getCladoStates().begin()
+                            + posSpeciation);
+                    assert(mIslands[isl].findSpecies(oldestSis.getSpecID()).getCladoStates().size()
+                            == oldestSisPop.getCladoStates().size() - 1);
+                }
+            }
+        }
+    }
 }
 

@@ -32,7 +32,9 @@ public:
     std::vector<char> getCladoStates() const noexcept { return mCladoStates; }
     void setBirth(double);
     void setStatus(char);
+    void setMigrated(bool);
     void setAncestralBT(double);
+    void setColonisationT(const double&);
     bool isImmigrant() const noexcept;
     bool hasMigrated() const noexcept;
     bool isCladogenetic() const noexcept;

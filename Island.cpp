@@ -50,6 +50,13 @@ const Species& Island::findSpecies(const SpeciesID speciesID) const
     return mSpecies[index];
 }
 
+Species& Island::findRefSpecies(const SpeciesID& speciesID)
+{
+    const int index = findPos(speciesID);
+    assert(index >= 0);
+    return mSpecies[index];
+}
+
 void Island::calculateIslRates(
         const std::vector<double>& islandParameters,
         const int& n_mainlandSpecies,

@@ -20,6 +20,7 @@ public:
     explicit Island(int k = 0);
 
     const std::vector<Species>& getSpecies() const { return mSpecies; }
+    std::vector<Species>& getRefSpecies() { return mSpecies; }
     int getCarryingCap() const noexcept;
     std::vector<SpeciesID> getSpeciesIDs() const;
     int getNSpecies() const noexcept;
@@ -37,6 +38,7 @@ public:
     const Species& findSpecies(SpeciesID) const;  // find the position
                     // of species (input) in island vector
                     // MUST find species -> otherwise will fail !!!
+    Species& findRefSpecies(const SpeciesID&);
 
     void calculateIslRates(
             const std::vector<double>& islandParameters,

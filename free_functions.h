@@ -17,5 +17,7 @@ double getLogGrowth(const Island& island) noexcept;
 
 double extractSumOfRates(const Island& island);
 
+Species findOldestSpecies(const std::vector<Species> speciesVec);
+
 
 #endif //ARCHIDAISIE_FREE_FUNCTIONS_H

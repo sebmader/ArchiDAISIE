@@ -110,3 +110,13 @@ bool Species::operator!=(const Species& rhs) const
     return !(rhs==*this);
 }
 
+void Species::setColonisationT(const double& time)
+{
+    mColonisationT = time;
+}
+
+void Species::setMigrated(const bool migrated)
+{
+    mMigrated = migrated;
+}
+

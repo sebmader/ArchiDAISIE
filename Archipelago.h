@@ -32,7 +32,8 @@ public:
     bool isGlobal(const SpeciesID& speciesID) const;
     std::vector<int> findIsl(const SpeciesID&) const;    // find the island(s) where
                                     // species (input) is within archipelago
-    std::vector<SpeciesID> findMostRecentSisters(const Species& species) const;
+    std::vector<Species> findIslSpecies(const SpeciesID& speciesID) const;
+    std::vector<Species> findMostRecentSisters(const Species& species) const;
 
     void calculateAllRates(const std::vector<double>&,
             const int& n_mainlandSpecies, const int& n_islands);
@@ -52,6 +53,8 @@ public:
                     // from mainland ancestor
     void goGlobalExtinct(const SpeciesID&);  // island species
                     // goes extinct on all islands it occures on
+
+    void correctSisterTaxaLocal(const SpeciesID&, const int island);
 
     void doGlobalEvent(const event_type globalEvent, const SpeciesID speciesID, std::mt19937_64& prng,
             SpeciesID& maxSpeciesID);

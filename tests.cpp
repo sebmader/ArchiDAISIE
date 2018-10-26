@@ -1134,6 +1134,7 @@ void test_archi()
         assert(archi.getIslands()[0].getNSpecies() == 1);
         assert(archi.getIslands()[1].getNSpecies() == 1);
     }
+    // TODO: test for birth times and ancestral birth times
     {   // global cladogenesis creates 2 different species with status 'C'
         int n_islands = 2;
         int islCarryingCap = 5;
@@ -1673,7 +1674,7 @@ void test_archi()
                 0.3);
         Species sp = archi.getIslands()[0].findSpecies(SpeciesID(6));
         assert(archi.findMostRecentSisters(sp).size() == 1);
-        assert(archi.findMostRecentSisters(sp)[0] == SpeciesID(7));
+        assert(archi.findMostRecentSisters(sp)[0].getSpecID() == SpeciesID(7));
     }
     {  // after local cladogenesis, migration of original sister
         // most recent sister is found on both islands separately
@@ -1706,8 +1707,8 @@ void test_archi()
                 0.3);
         Species sp = archi.getIslands()[0].findSpecies(SpeciesID(6));
         assert(archi.findMostRecentSisters(sp).size() == 2);
-        assert(archi.findMostRecentSisters(sp)[0] == SpeciesID(7));
-        assert(archi.findMostRecentSisters(sp)[1] == SpeciesID(7));
+        assert(archi.findMostRecentSisters(sp)[0].getSpecID() == SpeciesID(7));
+        assert(archi.findMostRecentSisters(sp)[1].getSpecID() == SpeciesID(7));
     }
     {  // after local cladogenesis, migration & extinction of original sister
         // most recent sister is found correctly
@@ -1747,7 +1748,7 @@ void test_archi()
                 0.3);
         Species sp = archi.getIslands()[0].findSpecies(SpeciesID(6));
         assert(archi.findMostRecentSisters(sp).size() == 1);
-        assert(archi.findMostRecentSisters(sp)[0] == SpeciesID(7));
+        assert(archi.findMostRecentSisters(sp)[0].getSpecID() == SpeciesID(7));
     }
     {  // after global cladogenesis most recent sister is found correctly
         int n_islands = 2;
@@ -1776,6 +1777,6 @@ void test_archi()
                 maxSpeciesID);
         Species sp = archi.getIslands()[0].findSpecies(SpeciesID(6));
         assert(archi.findMostRecentSisters(sp).size() == 1);
-        assert(archi.findMostRecentSisters(sp)[0] == SpeciesID(7));
+        assert(archi.findMostRecentSisters(sp)[0].getSpecID() == SpeciesID(7));
     }
 }
