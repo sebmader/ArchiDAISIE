@@ -47,16 +47,16 @@ void test_speciesID()
     { // equality operators <=
         SpeciesID spId1 = SpeciesID(1);
         SpeciesID spId2 = SpeciesID(2);
-        assert(spId1<=spId2);
+        assert(spId1<spId2);
         spId1.incrementSpeciesID();
-        assert(spId1<=spId2);
+        assert(spId1==spId2);
     }
     { // equality operators >=
         SpeciesID spId1 = SpeciesID(1);
         SpeciesID spId2 = SpeciesID(2);
-        assert(spId2>=spId1);
+        assert(spId2>spId1);
         spId1.incrementSpeciesID();
-        assert(spId2>=spId1);
+        assert(spId2==spId1);
     }
 }
 
@@ -92,6 +92,29 @@ void test_species()
         Species sp1 = Species();
         sp1.setStatus('I');
         assert(sp1.isImmigrant());
+    }
+    { // identifies cladogenetic species correctly -> only about cladoStates, not status
+        Species sp1 = Species(3.5,SpeciesID(),SpeciesID(5),'A',false,3.5,3.5,{'a','b'});
+        assert(sp1.isCladogenetic());
+    }
+    { // operator== identifies equal species
+        Species sp1 = Species();
+        Species sp2 = Species();
+        assert(sp1 == sp2);
+        sp1 = Species(3.5,SpeciesID(),SpeciesID(5),'A',false,3.5,3.5,{'a','b'});
+        sp2 = Species(3.5,SpeciesID(),SpeciesID(5),'A',false,3.5,3.5,{'a','b'});
+        assert(sp1 == sp2);
+    }
+    { // operator!= identifies unequal species
+        Species sp1 = Species();
+        Species sp2 = Species(1.0);
+        assert(sp1 != sp2);
+        sp1 = Species(3.5,SpeciesID(),SpeciesID(5),'A',false,3.5,3.5,{'a','b'});
+        sp2 = Species(3.5,SpeciesID(),SpeciesID(6),'A',false,3.5,3.5,{'a','b'});
+        assert(sp1 != sp2);
+        sp1 = Species(3.5,SpeciesID(),SpeciesID(5),'A',false,3.5,3.5,{'a','b'});
+        sp2 = Species(3.5,SpeciesID(),SpeciesID(5),'A',false,3.5,3.5,{'b','a'});
+        assert(sp1 != sp2);
     }
     { // species is not recognized as its own sister
         Species sp1 = Species(3.2, SpeciesID(5), SpeciesID(53), 'A', false,
@@ -174,6 +197,12 @@ void test_island()
         assert(island.getNSpecies()==0);
         island.immigrate(SpeciesID(42), 3.14);
         assert(island.findSpecies(SpeciesID(42)).getColonisationT()==3.14);
+    }
+    {   // An immigrant has not migrated
+        Island island(10);
+        assert(island.getNSpecies()==0);
+        island.immigrate(SpeciesID(42), 3.14);
+        assert(!island.findSpecies(SpeciesID(42)).hasMigrated());
     }
     {   // An immigrant has empty cladogenesis states
         Island island(10);
@@ -366,19 +395,21 @@ void test_island()
         vector<char> cladoStates = island.findSpecies(SpeciesID(54)).getCladoStates();
         assert(cladoStates[0] == 'b' && cladoStates[1] == 'b');
     }
-    {   // 1st daughter inherits clade birth
+    {   // 1st daughter inherits ancestral birth
         Island island(10);
         SpeciesID maxSpeciesID(50);
         island.immigrate(SpeciesID(42), 6.28);
         island.speciateClado(SpeciesID(42), 4.0, maxSpeciesID);
         assert(island.findSpecies(SpeciesID(51)).getAncestralBT() == 6.28);
     }
-    {   // 2nd daughter gets new clade birth
+    {   // 2nd daughter gets new ancestral birth = its own birth time
         Island island(10);
         SpeciesID maxSpeciesID(50);
         island.immigrate(SpeciesID(42), 6.28);
         island.speciateClado(SpeciesID(42), 4.0, maxSpeciesID);
         assert(island.findSpecies(SpeciesID(52)).getAncestralBT() == 4.0);
+        assert(island.findSpecies(SpeciesID(52)).getBirth()
+                == island.findSpecies(SpeciesID(52)).getAncestralBT());
     }
     {   // cladogenetic species are of status 'C'
         Island island(10);
@@ -453,28 +484,31 @@ void test_island()
         island.speciateAna(SpeciesID(42),maxSpeciesID);
         assert(island.findSpecies(maxSpeciesID).getBirth() == 6.28);
     }
-    {   // anagenetic species keeps ancestors clade birth
+    {   // anagenetic species saves ancestors birth time as ancestral BT
         Island island(10);
         SpeciesID maxSpeciesID(50);
-        island.immigrate(SpeciesID(42), 6.28);
-        island.speciateAna(SpeciesID(42),maxSpeciesID);
-        assert(island.findSpecies(maxSpeciesID).getAncestralBT() == 6.28);
+        Species sp1 = Species(1.0,SpeciesID(),SpeciesID(5),'I',false, 2.0,3.0,{'a'});
+        island.addSpecies(sp1);
+        island.speciateAna(SpeciesID(5),maxSpeciesID);
+        assert(island.findSpecies(maxSpeciesID).getAncestralBT() == sp1.getBirth());
     }
-    {   // anagenetic species keeps ancestors birth time
+    {   // anagenetic species keeps ancestors colonisation time
         Island island(10);
         SpeciesID maxSpeciesID(50);
-        island.immigrate(SpeciesID(42), 6.28);
-        island.speciateAna(SpeciesID(42),maxSpeciesID);
-        assert(island.findSpecies(maxSpeciesID).getColonisationT() == 6.28);
+        Species sp1 = Species(1.0,SpeciesID(),SpeciesID(5),'I',false, 2.0,3.0,{'a'});
+        island.addSpecies(sp1);
+        island.speciateAna(SpeciesID(5),maxSpeciesID);
+        assert(island.findSpecies(maxSpeciesID).getColonisationT() == sp1.getColonisationT());
     }
     {   // anagenetic species keeps ancestors cladogenesis states
         Island island(10);
         SpeciesID maxSpeciesID(50);
-        island.addSpecies(Species(1.0, SpeciesID(), SpeciesID(), '0', false, 1.0, 1.0,
-                { 'a' }));
+        Species sp1 = Species(1.0, SpeciesID(), SpeciesID(), '0', false, 1.0, 1.0,
+                { 'a','b','a' });
+        island.addSpecies(sp1);
         island.speciateAna(SpeciesID(),maxSpeciesID);
-        assert(island.findSpecies(maxSpeciesID).getCladoStates().size()==1);
-        assert(island.findSpecies(maxSpeciesID).getCladoStates()[0] == 'a');
+        assert(island.findSpecies(maxSpeciesID).getCladoStates().size() == 3);
+        assert(island.findSpecies(maxSpeciesID).getCladoStates() == sp1.getCladoStates());
     }
     {   // anagenetic species are of status 'A'
         Island island(10);
@@ -514,12 +548,13 @@ void test_island()
         island.migrate(Species(), 2.0);
         assert(island.findSpecies(SpeciesID()).getBirth() == 2.0);
     }
-    {   // migration of absent species saves clade birth
+    {   // migration of absent species saves old birthT as ancestral birthT
         Island island1(1);
         Island island2(1);
         island1.immigrate(SpeciesID(), 4.0);
         island2.migrate(island1.findSpecies(SpeciesID()), 2.0);
-        assert(island2.findSpecies(SpeciesID()).getAncestralBT() == 4.0);
+        assert(island2.findSpecies(SpeciesID()).getAncestralBT()
+                == island1.findSpecies(SpeciesID()).getBirth());
     }
     {   // re-migration of already present species doesn't overwrite clade birth
         Island island1(1);
@@ -1778,5 +1813,33 @@ void test_archi()
         Species sp = archi.getIslands()[0].findSpecies(SpeciesID(6));
         assert(archi.findMostRecentSisters(sp).size() == 1);
         assert(archi.findMostRecentSisters(sp)[0].getSpecID() == SpeciesID(7));
+    }
+    // testing correcting sisters after extinction
+    { //
+        int n_islands = 2;
+        int islCarryingCap = 5;
+        Archipelago archi = Archipelago(n_islands, islCarryingCap);
+        int n_mainlandSp = 5;
+        SpeciesID maxSpeciesID(n_mainlandSp);
+        mt19937_64 prng;
+        archi.doLocalEvent(event_type::local_immigration,
+                SpeciesID(1),
+                prng,
+                4.0,
+                maxSpeciesID,
+                0,
+                0.3);
+        archi.doLocalEvent(event_type::local_migration,
+                SpeciesID(1),
+                prng,
+                3.6,
+                maxSpeciesID,
+                0,
+                0.3);
+        archi.doGlobalEvent(event_type::global_cladogenesis,
+                SpeciesID(1),
+                prng,
+                maxSpeciesID);
+        archi.correctSisterTaxaLocal(SpeciesID(7),1);
     }
 }

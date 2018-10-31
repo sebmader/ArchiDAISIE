@@ -54,7 +54,7 @@ bool Species::hasMigrated() const noexcept
 
 bool Species::isCladogenetic() const noexcept
 {
-    return mStatus == 'C';
+    return !mCladoStates.empty();
 }
 
 bool Species::isSister(const Species& potentialSis) const

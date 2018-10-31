@@ -55,6 +55,8 @@ public:
                     // goes extinct on all islands it occures on
 
     void correctSisterTaxaLocal(const SpeciesID&, const int island);
+    void correctSisterTaxaGlobal(const SpeciesID& extinctSpID, const int island);
+
 
     void doGlobalEvent(const event_type globalEvent, const SpeciesID speciesID, std::mt19937_64& prng,
             SpeciesID& maxSpeciesID);
