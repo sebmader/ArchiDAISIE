@@ -59,7 +59,7 @@ bool Species::isCladogenetic() const noexcept
 
 bool Species::isSister(const Species& potentialSis) const
 {
-    if(*this == potentialSis)
+    if(this->getSpecID() == potentialSis.getSpecID())
         return false;
     return mMainParentID == potentialSis.mMainParentID &&
                 mColonisationT == potentialSis.mColonisationT;

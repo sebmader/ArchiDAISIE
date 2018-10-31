@@ -160,7 +160,9 @@ void Island::migrate(const Species& oldSpecies, const double& time)
                               " exceed carrying capacity.\n");
         addSpecies(newSpecies);
     }
-    else {  // else (if re-migration): re-set clock // TODO: correct?
+    else if (findSpecies(speciesID).getBirth() < oldSpecies.getBirth()) {
+            // else (if re-migration): re-set clock if resident is younger
+            // otherwise circular re-migration would make species younger and younger
         const int pos = findPos(speciesID);
         assert(pos >= 0 && pos < getNSpecies());
         mSpecies[pos] = newSpecies;
