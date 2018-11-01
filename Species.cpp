@@ -120,3 +120,8 @@ void Species::setMigrated(const bool migrated)
     mMigrated = migrated;
 }
 
+void Species::setCladoStates(const std::vector<char>& newCladoStates)
+{
+    mCladoStates = newCladoStates;
+}
+

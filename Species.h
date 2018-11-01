@@ -35,6 +35,7 @@ public:
     void setMigrated(bool);
     void setAncestralBT(double);
     void setColonisationT(const double&);
+    void setCladoStates(const std::vector<char>&);
     bool isImmigrant() const noexcept;
     bool hasMigrated() const noexcept;
     bool isCladogenetic() const noexcept;

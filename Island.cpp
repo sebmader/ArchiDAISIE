@@ -145,10 +145,12 @@ int Island::drawMigDestinationIsland(
 
 void Island::migrate(const Species& oldSpecies, const double& time)
 {
+    vector<char> newCladostates = oldSpecies.getCladoStates();
+    newCladostates.push_back('b');
     Species newSpecies = Species(time, oldSpecies.getParID(),
             oldSpecies.getSpecID(), oldSpecies.getStatus(), true,
             oldSpecies.getBirth(), oldSpecies.getColonisationT(),
-            oldSpecies.getCladoStates());
+            newCladostates);
     // inherit ancestral birthT of oldSpecies IF it has already migrated before
     if (oldSpecies.getBirth() != oldSpecies.getAncestralBT())
         newSpecies.setAncestralBT(oldSpecies.getAncestralBT());
@@ -165,7 +167,7 @@ void Island::migrate(const Species& oldSpecies, const double& time)
             // otherwise circular re-migration would make species younger and younger
         const int pos = findPos(speciesID);
         assert(pos >= 0 && pos < getNSpecies());
-        mSpecies[pos] = newSpecies;
+        mSpecies[pos].setBirth(time);
     }
 }
 
