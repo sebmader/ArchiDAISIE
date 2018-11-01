@@ -286,9 +286,9 @@ void Archipelago::doLocalEvent(const event_type localEvent,
         mIslands[island].speciateAna(speciesID, maxSpeciesID);
         break;
     case event_type::local_extinction:
-        // is the species present on other islands?
-        // do sisters exist on other islands?
         assert(getEventInt(localEvent) == 4);
+        // correct sister species
+        correctSisterTaxaLocal(speciesID);
         mIslands[island].goExtinct(speciesID);
         break;
     default:
@@ -452,7 +452,7 @@ bool Archipelago::isGlobal(const SpeciesID& speciesID) const
     return findIsl(speciesID).size() >= 2;
 }
 
-vector<Species> Archipelago::findMostRecentSisters(const Species& species) const
+vector<Species> Archipelago::findMostRecentSistersPops(const Species& species) const
 {
     vector<Species> sisters;  // maybe: vector<pairs> with island where it is on
     for(auto& isl : mIslands) {
@@ -467,14 +467,78 @@ vector<Species> Archipelago::findMostRecentSisters(const Species& species) const
 
 void Archipelago::correctSisterTaxaGlobal(const SpeciesID& extinctSpID)
 {
-    vector<Species> populations = findIslSpecies(extinctSpID);
-    const Species oldestExtinctPop = findOldestSpecies(populations);
+    assert(isGlobal(extinctSpID));
+    // find oldest population of extinct species
+    const vector<Species> extinctPops = findIslSpecies(extinctSpID);
+    Species oldestExtinctPop = extinctPops[0];
+    for (auto& pop : extinctPops) {
+        if (pop.getBirth() > oldestExtinctPop.getBirth())
+            oldestExtinctPop = pop;
+    }
+    // find real sister species (no other populations of extinct species
+    // while there are other populations of extinctSp in that vector
+    // delete the last daughter state of and redo
+    bool isSameSpec;
+    do {
+        const vector<Species> sistersSpecies = findMostRecentSistersPops(oldestExtinctPop);
+        isSameSpec = false;
+        for (auto& sis : sistersSpecies) {
+            if (sis.getSpecID()==oldestExtinctPop.getSpecID()) {
+                isSameSpec = true;
+                vector<char> newDaughterStates = oldestExtinctPop.getCladoStates();
+                newDaughterStates.pop_back();
+                oldestExtinctPop.setCladoStates(newDaughterStates);
+                break;
+            }
+        }
+    } while (isSameSpec);
 
-    if (oldestExtinctPop.isCladogenetic()) {
+    // now the local correctSisterTaxa does what's needed TODO: right??
+    correctSisterTaxaLocal(extinctSpID, whereIsSpecies(oldestExtinctPop));
+}
 
+void Archipelago::correctSisterTaxaLocal(const SpeciesID& extinctSpID, const int island)
+{
+    const Species extinctSp = mIslands[island].findSpecies(extinctSpID);
+    vector<char> extinctDaughterStates = extinctSp.getCladoStates();
+    if (!extinctDaughterStates.empty()) {
+        // if extinct species is daughter a
+        // -> daughter b (oldest sister/younger population) inherits birth time
+        const vector<Species> sistersPops = findMostRecentSistersPops(extinctSp);
+        Species oldestSisPop = findOldestSpecies(sistersPops);
+        const int posLastSpeciation = static_cast<int>(extinctSp.getCladoStates().size())-1;
+        for (auto& sis : sistersPops) {
+            const int isl = whereIsSpecies(sis);
+            Species& refSis = mIslands[isl].findRefSpecies(sis.getSpecID());
+            if (sis==oldestSisPop && extinctDaughterStates.back() == 'a') { // TODO: correct?
+                refSis.setBirth(extinctSp.getBirth());
+                assert(mIslands[isl].findSpecies(oldestSisPop.getSpecID()).getBirth()
+                        ==extinctSp.getBirth());
+            }
+            // and all most recent daughters loose resp. daughter state
+            vector<char> newDaughterStates = refSis.getCladoStates();
+            newDaughterStates.erase(newDaughterStates.begin() + posLastSpeciation);
+            refSis.setCladoStates(newDaughterStates);
+            assert(mIslands[isl].findSpecies(sis.getSpecID()).getCladoStates().size()
+                    == sis.getCladoStates().size()-1);
+        }
     }
 }
 
+int Archipelago::whereIsSpecies(const Species& species) const
+{
+    for (size_t i = 0; i < mIslands.size(); ++i) {
+        vector<Species> islSpecies = mIslands[i].getSpecies();
+        for (auto& sp : islSpecies) {
+            if (sp == species)
+                return static_cast<int>(i);
+        }
+    }
+    assert(!"Should not get here! Species is not present on archipelago.");
+    return -1;
+}
+
+/*
 void Archipelago::correctSisterTaxaLocal(const SpeciesID& extinctSpID, const int island)
 {
     assert(mIslands[island].hasSpecies(extinctSpID));
@@ -535,7 +599,7 @@ void Archipelago::correctSisterTaxaLocal(const SpeciesID& extinctSpID, const int
             }  // no correction if not oldest or not daughter 'a'
         }
         else {  // not present on other islands
-            const vector<Species> sisters = findMostRecentSisters(extinctSp);
+            const vector<Species> sisters = findMostRecentSistersPops(extinctSp);
             if (extinctSp.getCladoStates().back() == 'a') {
                 const Species oldestSisPop = findOldestSpecies(sisters);
                 vector<int> sisOnWhichIsls = findIsl(oldestSisPop.getSpecID());
@@ -567,3 +631,4 @@ void Archipelago::correctSisterTaxaLocal(const SpeciesID& extinctSpID, const int
         }
     }
 }
+*/

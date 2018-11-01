@@ -59,7 +59,7 @@ bool Species::isCladogenetic() const noexcept
 
 bool Species::isSister(const Species& potentialSis) const
 {
-    if(this->getSpecID() == potentialSis.getSpecID())
+    if(*this == potentialSis)
         return false;
     return mMainParentID == potentialSis.mMainParentID &&
                 mColonisationT == potentialSis.mColonisationT;
@@ -67,18 +67,22 @@ bool Species::isSister(const Species& potentialSis) const
 
 bool Species::isMostRecentSis(const Species& potentialSis) const
 {
+    if (!this->isSister(potentialSis) || mCladoStates.empty() ||
+            potentialSis.getCladoStates().empty())
+        return false;
+
     vector<char> formerSpeciations = mCladoStates;
     formerSpeciations.pop_back();
     vector<char> sisFormerSpeciations = potentialSis.getCladoStates();
     while(sisFormerSpeciations.size() > formerSpeciations.size())
         sisFormerSpeciations.pop_back();
 
-    if (!this->isSister(potentialSis) || formerSpeciations != sisFormerSpeciations)
+    if (formerSpeciations != sisFormerSpeciations)
         return false;
 
     const int posLastSpeciation = static_cast<int>(mCladoStates.size() - 1);
     char sisLastCladoState = 'a';
-    if (mCladoStates.back() == 'a')
+    if (mCladoStates[posLastSpeciation] == 'a')
         sisLastCladoState = 'b';
     return potentialSis.mCladoStates[posLastSpeciation] == sisLastCladoState;
 }
