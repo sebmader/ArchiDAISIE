@@ -7,7 +7,7 @@
 using namespace std;
 
 
-void other_functions()
+void test_other_functions()
 {
     // extractSumOfRates:
     { // extracting the sum of rates of empty island
@@ -18,18 +18,18 @@ void other_functions()
         Island island(10);
         const int n_mainlandSp = 5;
         vector<double> pars({ 0.1,0.1,0.1,0.2,0.1 });
-        island.calculateIslRates(pars,n_mainlandSp,2,0.1);
+        island.calculateIslRates(pars,n_mainlandSp,1,0.1);
         assert(extractSumOfRates(island)==n_mainlandSp*pars[0]);
     }
     // getLogGrowth
     { // empty island
         Island island(10);
-        assert(getLogGrowth(island)==0);
+        assert(getLogGrowth(island)==1);
     }
     { // colonised island
         Island island(10);
         island.immigrate(SpeciesID(),4.0);
-        assert(getLogGrowth(island)==0.1);
+        assert(getLogGrowth(island)==0.9);
     }
 }
 
