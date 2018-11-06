@@ -2504,4 +2504,35 @@ void test_archi()
         assert(spB.getCladoStates().size()==1);
         assert(spB.getCladoStates()[0] == 'b');
     }
+
+    { // getGlobalSpeciesIDs does not create duplicates if present on 2 islands
+        int n_islands = 2;
+        int islCarryingCap = 5;
+        Archipelago archi = Archipelago(n_islands, islCarryingCap);
+        archi.addSpecies(Species(4.0,SpeciesID(1),SpeciesID(1),'I',false,4.0,4.0,{'a'}),0);
+        archi.addSpecies(Species(3.9,SpeciesID(1),SpeciesID(1),'I',true,4.0,4.0,{'b','a'}),1);
+        assert(archi.getSpeciesIDs().size()==1);
+        assert(archi.getSpeciesIDs()[0]==SpeciesID(1));
+    }
+    { // getGlobalSpeciesIDs does not create duplicates if present on 3 islands
+        int n_islands = 3;
+        int islCarryingCap = 5;
+        Archipelago archi = Archipelago(n_islands, islCarryingCap);
+        archi.addSpecies(Species(4.0,SpeciesID(1),SpeciesID(1),'I',false,4.0,4.0,{'a'}),0);
+        archi.addSpecies(Species(3.9,SpeciesID(1),SpeciesID(1),'I',true,4.0,4.0,{'b','a'}),1);
+        archi.addSpecies(Species(3.8,SpeciesID(1),SpeciesID(1),'I',true,4.0,4.0,{'b','b'}),2);
+        assert(archi.getSpeciesIDs().size()==1);
+        assert(archi.getSpeciesIDs()[0]==SpeciesID(1));
+    }
+    { // getGlobalSpeciesIDs does not create duplicates if present on 4 islands
+        int n_islands = 4;
+        int islCarryingCap = 5;
+        Archipelago archi = Archipelago(n_islands, islCarryingCap);
+        archi.addSpecies(Species(4.0,SpeciesID(1),SpeciesID(1),'I',false,4.0,4.0,{'a'}),0);
+        archi.addSpecies(Species(3.9,SpeciesID(1),SpeciesID(1),'I',true,4.0,4.0,{'b','a'}),1);
+        archi.addSpecies(Species(3.8,SpeciesID(1),SpeciesID(1),'I',true,4.0,4.0,{'b','b','a'}),2);
+        archi.addSpecies(Species(3.5,SpeciesID(1),SpeciesID(1),'I',true,4.0,4.0,{'b','b','b'}),3);
+        assert(archi.getSpeciesIDs().size()==1);
+        assert(archi.getSpeciesIDs()[0]==SpeciesID(1));
+    }
 }
