@@ -81,10 +81,7 @@ bool Species::isMostRecentSis(const Species& potentialSis) const
         return false;
 
     const int posLastSpeciation = static_cast<int>(mCladoStates.size() - 1);
-    char sisLastCladoState = 'a';
-    if (mCladoStates[posLastSpeciation] == 'a')
-        sisLastCladoState = 'b';
-    return potentialSis.mCladoStates[posLastSpeciation] == sisLastCladoState;
+    return potentialSis.mCladoStates[posLastSpeciation] != mCladoStates[posLastSpeciation];
 }
 
 void Species::printSpec()

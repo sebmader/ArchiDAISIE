@@ -735,7 +735,7 @@ void test_archi()
         // 0 carrying cap and no species
         Archipelago archi = Archipelago();
         assert(archi.getNIslands() == 0);
-        assert(archi.getNSpecies() == 0);
+        assert(archi.getNSpeciesID() == 0);
         assert(archi.getCarryingCap() == 0);
     }
     {  // non-default constructor with carryingCap of 0 and 1 island creates that archipelago
@@ -743,7 +743,7 @@ void test_archi()
         int islCarryingCap = 0;
         Archipelago archi = Archipelago(n_islands, islCarryingCap);
         assert(archi.getNIslands() == 1);
-        assert(archi.getNSpecies() == 0);
+        assert(archi.getNSpeciesID() == 0);
         assert(archi.getCarryingCap() == n_islands*islCarryingCap);
     }
     {  // non-default constructor with 0 islands and a carryingcap creates that archipelago
@@ -751,7 +751,7 @@ void test_archi()
         int islCarryingCap = 1;
         Archipelago archi = Archipelago(n_islands, islCarryingCap);
         assert(archi.getNIslands() == 0);
-        assert(archi.getNSpecies() == 0);
+        assert(archi.getNSpeciesID() == 0);
         assert(archi.getCarryingCap() == n_islands*islCarryingCap);
     }
     {  // non-default constructor creates wanted archipelago
@@ -759,14 +759,14 @@ void test_archi()
         int islCarryingCap = 5;
         Archipelago archi = Archipelago(n_islands, islCarryingCap);
         assert(archi.getNIslands() == 2);
-        assert(archi.getNSpecies() == 0);
+        assert(archi.getNSpeciesID() == 0);
         assert(archi.getCarryingCap() == n_islands*islCarryingCap);
     }
     {  // immigration increases number of species
         int n_islands = 2;
         int islCarryingCap = 5;
         Archipelago archi = Archipelago(n_islands, islCarryingCap);
-        assert(archi.getNSpecies() == 0);
+        assert(archi.getNSpeciesID() == 0);
         int n_mainlandSp = 5;
         SpeciesID maxSpeciesID(n_mainlandSp);
         mt19937_64 prng;
@@ -777,13 +777,13 @@ void test_archi()
                 maxSpeciesID,
                 0,
                 0.3);
-        assert(archi.getNSpecies() == 1);
+        assert(archi.getNSpeciesID() == 1);
     }
     {  // immigration of same species to second islands doesn't increase number of species
         int n_islands = 2;
         int islCarryingCap = 5;
         Archipelago archi = Archipelago(n_islands, islCarryingCap);
-        assert(archi.getNSpecies() == 0);
+        assert(archi.getNSpeciesID() == 0);
         int n_mainlandSp = 5;
         SpeciesID maxSpeciesID(n_mainlandSp);
         mt19937_64 prng;
@@ -794,7 +794,7 @@ void test_archi()
                 maxSpeciesID,
                 0,
                 0.3);
-        assert(archi.getNSpecies() == 1);
+        assert(archi.getNSpeciesID() == 1);
         archi.doLocalEvent(event_type::local_immigration,
                 SpeciesID(1),
                 prng,
@@ -802,7 +802,7 @@ void test_archi()
                 maxSpeciesID,
                 1,
                 0.3);
-        assert(archi.getNSpecies() == 1);
+        assert(archi.getNSpeciesID() == 1);
     }
     {  // after immigration and migration of same species to 2 islands globalSpecies == 1
         int n_islands = 2;
@@ -861,7 +861,7 @@ void test_archi()
         int n_islands = 2;
         int islCarryingCap = 5;
         Archipelago archi = Archipelago(n_islands, islCarryingCap);
-        assert(archi.getNSpecies() == 0);
+        assert(archi.getNSpeciesID() == 0);
         int n_mainlandSp = 5;
         SpeciesID maxSpeciesID(n_mainlandSp);
         mt19937_64 prng;
@@ -872,7 +872,7 @@ void test_archi()
                 maxSpeciesID,
                 0,
                 0.3);
-        assert(archi.getNSpecies() == 1);
+        assert(archi.getNSpeciesID() == 1);
         archi.doLocalEvent(event_type::local_cladogenesis,
                 SpeciesID(1),
                 prng,
@@ -880,13 +880,13 @@ void test_archi()
                 maxSpeciesID,
                 0,
                 0.3);
-        assert(archi.getNSpecies() == 2);
+        assert(archi.getNSpeciesID() == 2);
     }
     {  // local anagenesis does not increase archi species
         int n_islands = 2;
         int islCarryingCap = 5;
         Archipelago archi = Archipelago(n_islands, islCarryingCap);
-        assert(archi.getNSpecies() == 0);
+        assert(archi.getNSpeciesID() == 0);
         int n_mainlandSp = 5;
         SpeciesID maxSpeciesID(n_mainlandSp);
         mt19937_64 prng;
@@ -897,7 +897,7 @@ void test_archi()
                 maxSpeciesID,
                 0,
                 0.3);
-        assert(archi.getNSpecies() == 1);
+        assert(archi.getNSpeciesID() == 1);
         archi.doLocalEvent(event_type::local_anagenesis,
                 SpeciesID(1),
                 prng,
@@ -905,13 +905,13 @@ void test_archi()
                 maxSpeciesID,
                 0,
                 0.3);
-        assert(archi.getNSpecies() == 1);
+        assert(archi.getNSpeciesID() == 1);
     }
     {  // local extinction decreases archi species
         int n_islands = 2;
         int islCarryingCap = 5;
         Archipelago archi = Archipelago(n_islands, islCarryingCap);
-        assert(archi.getNSpecies() == 0);
+        assert(archi.getNSpeciesID() == 0);
         int n_mainlandSp = 5;
         SpeciesID maxSpeciesID(n_mainlandSp);
         mt19937_64 prng;
@@ -922,7 +922,7 @@ void test_archi()
                 maxSpeciesID,
                 0,
                 0.3);
-        assert(archi.getNSpecies() == 1);
+        assert(archi.getNSpeciesID() == 1);
         archi.doLocalEvent(event_type::local_extinction,
                 SpeciesID(1),
                 prng,
@@ -930,14 +930,14 @@ void test_archi()
                 maxSpeciesID,
                 0,
                 0.3);
-        assert(archi.getNSpecies() == 0);
+        assert(archi.getNSpeciesID() == 0);
     }
     {  // doLocalEvent throws if event is not local
         try {
             int n_islands = 2;
             int islCarryingCap = 5;
             Archipelago archi = Archipelago(n_islands, islCarryingCap);
-            assert(archi.getNSpecies() == 0);
+            assert(archi.getNSpeciesID() == 0);
             int n_mainlandSp = 5;
             SpeciesID maxSpeciesID(n_mainlandSp);
             mt19937_64 prng;
@@ -959,7 +959,7 @@ void test_archi()
         int n_islands = 2;
         int islCarryingCap = 5;
         Archipelago archi = Archipelago(n_islands, islCarryingCap);
-        assert(archi.getNSpecies() == 0);
+        assert(archi.getNSpeciesID() == 0);
         int n_mainlandSp = 5;
         SpeciesID maxSpeciesID(n_mainlandSp);
         mt19937_64 prng;
@@ -971,7 +971,7 @@ void test_archi()
                 4.0,
                 maxSpeciesID,
                 n_mainlandSp);
-        assert(archi.getNSpecies() == 1);
+        assert(archi.getNSpeciesID() == 1);
         archi.calculateAllRates(iniPars, n_mainlandSp, n_islands);
         archi.doNextEvent(event_type::local_cladogenesis,
                 0.3,
@@ -979,13 +979,13 @@ void test_archi()
                 3.9,
                 maxSpeciesID,
                 n_mainlandSp);
-        assert(archi.getNSpecies() == 2);
+        assert(archi.getNSpeciesID() == 2);
     }
     {  // local anagenesis does not increase archi species
         int n_islands = 2;
         int islCarryingCap = 5;
         Archipelago archi = Archipelago(n_islands, islCarryingCap);
-        assert(archi.getNSpecies() == 0);
+        assert(archi.getNSpeciesID() == 0);
         int n_mainlandSp = 5;
         SpeciesID maxSpeciesID(n_mainlandSp);
         mt19937_64 prng;
@@ -997,7 +997,7 @@ void test_archi()
                 4.0,
                 maxSpeciesID,
                 n_mainlandSp);
-        assert(archi.getNSpecies() == 1);
+        assert(archi.getNSpeciesID() == 1);
         archi.calculateAllRates(iniPars,n_mainlandSp, n_islands);
         archi.doNextEvent(event_type::local_anagenesis,
                 0.3,
@@ -1005,13 +1005,13 @@ void test_archi()
                 3.9,
                 maxSpeciesID,
                 n_mainlandSp);
-        assert(archi.getNSpecies() == 1);
+        assert(archi.getNSpeciesID() == 1);
     }
     {  // local extinction decreases archi species
         int n_islands = 2;
         int islCarryingCap = 5;
         Archipelago archi = Archipelago(n_islands, islCarryingCap);
-        assert(archi.getNSpecies() == 0);
+        assert(archi.getNSpeciesID() == 0);
         int n_mainlandSp = 5;
         SpeciesID maxSpeciesID(n_mainlandSp);
         mt19937_64 prng;
@@ -1023,7 +1023,7 @@ void test_archi()
                 4.0,
                 maxSpeciesID,
                 n_mainlandSp);
-        assert(archi.getNSpecies() == 1);
+        assert(archi.getNSpeciesID() == 1);
         archi.calculateAllRates(iniPars, n_mainlandSp, n_islands);
         archi.doNextEvent(event_type::local_extinction,
                 0.3,
@@ -1031,9 +1031,8 @@ void test_archi()
                 3.9,
                 maxSpeciesID,
                 n_mainlandSp);
-        assert(archi.getNSpecies() == 0);
+        assert(archi.getNSpeciesID() == 0);
     }
-
     {  // calculating rates initialises rates vectors
         int n_islands = 2;
         int islCarryingCap = 5;
@@ -1122,7 +1121,7 @@ void test_archi()
         Archipelago archi = Archipelago(n_islands, islCarryingCap);
         int n_mainlandSp = 5;
         SpeciesID maxSpeciesID(n_mainlandSp);
-        assert(archi.getNSpecies() == 0);
+        assert(archi.getNSpeciesID() == 0);
         mt19937_64 prng;
         archi.doLocalEvent(event_type::local_immigration,
                 SpeciesID(1),
@@ -1131,7 +1130,7 @@ void test_archi()
                 maxSpeciesID,
                 0,
                 0.3);
-        assert(archi.getNSpecies() == 1);
+        assert(archi.getNSpeciesID() == 1);
         archi.doLocalEvent(event_type::local_migration,
                 SpeciesID(1),
                 prng,
@@ -1139,12 +1138,12 @@ void test_archi()
                 maxSpeciesID,
                 0,
                 0.3);
-        assert(archi.getNSpecies() == 1);
+        assert(archi.getNSpeciesID() == 1);
         archi.doGlobalEvent(event_type::global_cladogenesis,
                 SpeciesID(1),
                 prng,
                 maxSpeciesID);
-        assert(archi.getNSpecies() == 2);
+        assert(archi.getNSpeciesID() == 2);
     }
     {   // global cladogenesis doesn't increase the number of species on each island
         int n_islands = 2;
@@ -1239,7 +1238,7 @@ void test_archi()
         Archipelago archi = Archipelago(n_islands, islCarryingCap);
         int n_mainlandSp = 5;
         SpeciesID maxSpeciesID(n_mainlandSp);
-        assert(archi.getNSpecies() == 0);
+        assert(archi.getNSpeciesID() == 0);
         mt19937_64 prng;
         archi.doLocalEvent(event_type::local_immigration,
                 SpeciesID(1),
@@ -1248,7 +1247,7 @@ void test_archi()
                 maxSpeciesID,
                 0,
                 0.3);
-        assert(archi.getNSpecies() == 1);
+        assert(archi.getNSpeciesID() == 1);
         archi.doLocalEvent(event_type::local_migration,
                 SpeciesID(1),
                 prng,
@@ -1256,12 +1255,12 @@ void test_archi()
                 maxSpeciesID,
                 0,
                 0.3);
-        assert(archi.getNSpecies() == 1);
+        assert(archi.getNSpeciesID() == 1);
         archi.doGlobalEvent(event_type::global_anagenesis,
                 SpeciesID(1),
                 prng,
                 maxSpeciesID);
-        assert(archi.getNSpecies() == 1);
+        assert(archi.getNSpeciesID() == 1);
     }
     {   // global anagenesis creates one new species with status 'A'
         int n_islands = 2;
@@ -1321,7 +1320,7 @@ void test_archi()
         Archipelago archi = Archipelago(n_islands, islCarryingCap);
         int n_mainlandSp = 5;
         SpeciesID maxSpeciesID(n_mainlandSp);
-        assert(archi.getNSpecies() == 0);
+        assert(archi.getNSpeciesID() == 0);
         mt19937_64 prng;
         archi.doLocalEvent(event_type::local_immigration,
                 SpeciesID(1),
@@ -1330,7 +1329,7 @@ void test_archi()
                 maxSpeciesID,
                 0,
                 0.3);
-        assert(archi.getNSpecies() == 1);
+        assert(archi.getNSpeciesID() == 1);
         archi.doLocalEvent(event_type::local_migration,
                 SpeciesID(1),
                 prng,
@@ -1338,12 +1337,13 @@ void test_archi()
                 maxSpeciesID,
                 0,
                 0.3);
-        assert(archi.getNSpecies() == 1);
+        assert(archi.getNSpeciesID() == 1);
+        assert(archi.isGlobal(SpeciesID(1)));
         archi.doGlobalEvent(event_type::global_extinction,
                 SpeciesID(1),
                 prng,
                 maxSpeciesID);
-        assert(archi.getNSpecies() == 0);
+        assert(archi.getNSpeciesID() == 0);
     }
     {   // global extinction throws exception if species is not on at least 2 islands
         try {
@@ -1390,7 +1390,7 @@ void test_archi()
         Archipelago archi = Archipelago(n_islands, islCarryingCap);
         int n_mainlandSp = 5;
         SpeciesID maxSpeciesID(n_mainlandSp);
-        assert(archi.getNSpecies() == 0);
+        assert(archi.getNSpeciesID() == 0);
         mt19937_64 prng;
         archi.doLocalEvent(event_type::local_immigration,
                 SpeciesID(1),
@@ -1399,7 +1399,7 @@ void test_archi()
                 maxSpeciesID,
                 0,
                 0.3);
-        assert(archi.getNSpecies() == 1);
+        assert(archi.getNSpeciesID() == 1);
         archi.doLocalEvent(event_type::local_migration,
                 SpeciesID(1),
                 prng,
@@ -1407,13 +1407,13 @@ void test_archi()
                 maxSpeciesID,
                 0,
                 0.3);
-        assert(archi.getNSpecies() == 1);
+        assert(archi.getNSpeciesID() == 1);
         archi.doNextEvent(event_type::global_cladogenesis,
                 0.3,
                 prng,
                 3.8,
                 maxSpeciesID, n_mainlandSp);
-        assert(archi.getNSpecies() == 2);
+        assert(archi.getNSpeciesID() == 2);
     }
     {   // global cladogenesis doesn't increase the number of species on each island
         int n_islands = 2;
@@ -1510,7 +1510,7 @@ void test_archi()
         Archipelago archi = Archipelago(n_islands, islCarryingCap);
         int n_mainlandSp = 5;
         SpeciesID maxSpeciesID(n_mainlandSp);
-        assert(archi.getNSpecies() == 0);
+        assert(archi.getNSpeciesID() == 0);
         mt19937_64 prng;
         archi.doLocalEvent(event_type::local_immigration,
                 SpeciesID(1),
@@ -1519,7 +1519,7 @@ void test_archi()
                 maxSpeciesID,
                 0,
                 0.3);
-        assert(archi.getNSpecies() == 1);
+        assert(archi.getNSpeciesID() == 1);
         archi.doLocalEvent(event_type::local_migration,
                 SpeciesID(1),
                 prng,
@@ -1527,13 +1527,13 @@ void test_archi()
                 maxSpeciesID,
                 0,
                 0.3);
-        assert(archi.getNSpecies() == 1);
+        assert(archi.getNSpeciesID() == 1);
         archi.doNextEvent(event_type::global_anagenesis,
                 0.3,
                 prng,
                 3.8,
                 maxSpeciesID, n_mainlandSp);
-        assert(archi.getNSpecies() == 1);
+        assert(archi.getNSpeciesID() == 1);
     }
     {   // global anagenesis creates one new species with status 'A'
         int n_islands = 2;
@@ -1596,7 +1596,7 @@ void test_archi()
         int n_mainlandSp = 5;
         SpeciesID maxSpeciesID(n_mainlandSp);
         mt19937_64 prng;
-        assert(archi.getNSpecies() == 0);
+        assert(archi.getNSpeciesID() == 0);
         archi.doLocalEvent(event_type::local_immigration,
                 SpeciesID(1),
                 prng,
@@ -1604,7 +1604,7 @@ void test_archi()
                 maxSpeciesID,
                 0,
                 0.3);
-        assert(archi.getNSpecies() == 1);
+        assert(archi.getNSpeciesID() == 1);
         archi.doLocalEvent(event_type::local_migration,
                 SpeciesID(1),
                 prng,
@@ -1612,13 +1612,13 @@ void test_archi()
                 maxSpeciesID,
                 0,
                 0.3);
-        assert(archi.getNSpecies() == 1);
+        assert(archi.getNSpeciesID() == 1);
         archi.doNextEvent(event_type::global_extinction,
                 0.3,
                 prng,
                 3.8,
                 maxSpeciesID, n_mainlandSp);
-        assert(archi.getNSpecies() == 0);
+        assert(archi.getNSpeciesID() == 0);
     }
     {   // doNextEvent throws if there are no global species (global extinct)
         try {
@@ -1651,10 +1651,10 @@ void test_archi()
         mt19937_64 prng;
         archi.calculateAllRates(iniPars, n_mainlandSp, n_islands);
         event_type event = archi.sampleNextEvent(prng);
-        assert(archi.getNSpecies() == 0);
+        assert(archi.getNSpeciesID() == 0);
         archi.doNextEvent(event, iniPars[1], prng,
                 4.0, maxSpeciesID, n_mainlandSp);
-        assert(archi.getNSpecies() == 1);
+        assert(archi.getNSpeciesID() == 1);
     }
     {   // archipelago with 3 islands, species inhabiting all,
         // doesn't create duplicates in global species vector
@@ -1667,10 +1667,10 @@ void test_archi()
         mt19937_64 prng;
         archi.calculateAllRates(iniPars, n_mainlandSp, n_islands);
         event_type event = archi.sampleNextEvent(prng);
-        assert(archi.getNSpecies() == 0);
+        assert(archi.getNSpeciesID() == 0);
         archi.doNextEvent(event, iniPars[1], prng,
                 4.0, maxSpeciesID, n_mainlandSp);
-        assert(archi.getNSpecies() == 1);
+        assert(archi.getNSpeciesID() == 1);
         archi.calculateAllRates(iniPars, n_mainlandSp, n_islands);
         assert(archi.getGlobalSpeciesIDs().empty());
         archi.doNextEvent(event_type::local_migration,
@@ -1687,7 +1687,7 @@ void test_archi()
                 3.3,
                 maxSpeciesID,
                 n_mainlandSp);
-        assert(archi.getNSpecies() == 1);
+        assert(archi.getNSpeciesID() == 1);
         assert(archi.getGlobalSpeciesIDs().size() == 1);
         archi.calculateAllRates(iniPars, n_mainlandSp, n_islands);
         archi.doNextEvent(event_type::local_migration,
@@ -1697,7 +1697,56 @@ void test_archi()
                 maxSpeciesID,
                 n_mainlandSp);
     }
-    {  // after local cladogenesis most recent sister is found correctly
+    // most recent sister function
+    {  // after migration migrant is found as sister of ancestral population (and vice versa)
+        int n_islands = 2;
+        int islCarryingCap = 5;
+        Archipelago archi = Archipelago(n_islands, islCarryingCap);
+        int n_mainlandSp = 5;
+        SpeciesID maxSpeciesID(n_mainlandSp);
+        mt19937_64 prng;
+        archi.doLocalEvent(event_type::local_immigration,
+                SpeciesID(1),
+                prng,
+                4.0,
+                maxSpeciesID,
+                0,
+                0.3);
+        archi.doLocalEvent(event_type::local_migration,
+                SpeciesID(1),
+                prng,
+                3.9,
+                maxSpeciesID,
+                0,
+                0.3);
+        Species pop1 = archi.getIslands()[0].findSpecies(SpeciesID(1));
+        Species pop2 = archi.getIslands()[1].findSpecies(SpeciesID(1));
+        assert(archi.findMostRecentSistersPops(pop1).size() == 1);
+        assert(archi.findMostRecentSistersPops(pop1)[0] == pop2);
+        assert(archi.findMostRecentSistersPops(pop2).size() == 1);
+        assert(archi.findMostRecentSistersPops(pop2)[0] == pop1);
+    }
+    {  // after double migration (-> 3 islands) the younger ones still
+        // just find each other as most recent sisters, not the older one
+        // older finds both younger ones though
+        int n_islands = 3;
+        int islCarryingCap = 5;
+        Archipelago archi = Archipelago(n_islands, islCarryingCap);
+        archi.addSpecies(Species(4.0,SpeciesID(1),SpeciesID(1),'I',false,4.0,4.0,{'a'}),0);
+        archi.addSpecies(Species(3.9,SpeciesID(1),SpeciesID(1),'I',true,4.0,4.0,{'b','a'}),1);
+        archi.addSpecies(Species(3.8,SpeciesID(1),SpeciesID(1),'I',true,4.0,4.0,{'b','b'}),2);
+        Species pop1 = archi.getIslands()[0].getSpecies()[0];
+        Species pop2 = archi.getIslands()[1].getSpecies()[0];
+        Species pop3 = archi.getIslands()[2].getSpecies()[0];
+        assert(archi.findMostRecentSistersPops(pop1).size() == 2);
+        assert(archi.findMostRecentSistersPops(pop1)[0] == pop2);
+        assert(archi.findMostRecentSistersPops(pop1)[1] == pop3);
+        assert(archi.findMostRecentSistersPops(pop2).size() == 1);
+        assert(archi.findMostRecentSistersPops(pop2)[0] == pop3);
+        assert(archi.findMostRecentSistersPops(pop3).size() == 1);
+        assert(archi.findMostRecentSistersPops(pop3)[0] != pop1);
+    }
+    {  // after local cladogenesis daughters find each other as most recent sisters
         int n_islands = 2;
         int islCarryingCap = 5;
         Archipelago archi = Archipelago(n_islands, islCarryingCap);
@@ -1719,11 +1768,14 @@ void test_archi()
                 0,
                 0.3);
         Species sp = archi.getIslands()[0].findSpecies(SpeciesID(6));
+        Species sp1 = archi.getIslands()[0].findSpecies(SpeciesID(7));
         assert(archi.findMostRecentSistersPops(sp).size() == 1);
-        assert(archi.findMostRecentSistersPops(sp)[0].getSpecID() == SpeciesID(7));
+        assert(archi.findMostRecentSistersPops(sp)[0] == sp1);
+        assert(archi.findMostRecentSistersPops(sp1).size() == 1);
+        assert(archi.findMostRecentSistersPops(sp1)[0] == sp);
     }
-    {  // after local cladogenesis, migration of original sister
-        // most recent sister is found on both islands separately
+    {  // after local cladogenesis, migration of daughter 'b'
+        // most recent sister populations are found on both islands separately
         int n_islands = 2;
         int islCarryingCap = 5;
         Archipelago archi = Archipelago(n_islands, islCarryingCap);
@@ -1756,8 +1808,80 @@ void test_archi()
         assert(archi.findMostRecentSistersPops(sp)[0].getSpecID() == SpeciesID(7));
         assert(archi.findMostRecentSistersPops(sp)[1].getSpecID() == SpeciesID(7));
     }
-    {  // after local cladogenesis, migration & extinction of original sister
-        // most recent sister is found correctly
+    {  // after local cladogenesis, migration of daughter 'b'
+        // daughter 'b' populations just find each other as sisters, not daughter 'a'
+        int n_islands = 2;
+        int islCarryingCap = 5;
+        Archipelago archi = Archipelago(n_islands, islCarryingCap);
+        int n_mainlandSp = 5;
+        SpeciesID maxSpeciesID(n_mainlandSp);
+        mt19937_64 prng;
+        archi.doLocalEvent(event_type::local_immigration,
+                SpeciesID(1),
+                prng,
+                4.0,
+                maxSpeciesID,
+                0,
+                0.3);
+        archi.doLocalEvent(event_type::local_cladogenesis,
+                SpeciesID(1),
+                prng,
+                3.9,
+                maxSpeciesID,
+                0,
+                0.3);
+        archi.doLocalEvent(event_type::local_migration,
+                SpeciesID(7),
+                prng,
+                3.8,
+                maxSpeciesID,
+                0,
+                0.3);
+        const Species spB1 = archi.getIslands()[0].findSpecies(SpeciesID(7));
+        const Species spB2 = archi.getIslands()[1].findSpecies(SpeciesID(7));
+        assert(archi.findMostRecentSistersPops(spB1).size() == 1);
+        assert(archi.findMostRecentSistersPops(spB1)[0] == spB2);
+        assert(archi.findMostRecentSistersPops(spB2).size() == 1);
+        assert(archi.findMostRecentSistersPops(spB2)[0] == spB1);
+    }
+    {  // after local cladogenesis, migration of daughter 'b'
+        // daughter 'a' population finds both daughter 'b' populations as MRS
+        int n_islands = 2;
+        int islCarryingCap = 5;
+        Archipelago archi = Archipelago(n_islands, islCarryingCap);
+        int n_mainlandSp = 5;
+        SpeciesID maxSpeciesID(n_mainlandSp);
+        mt19937_64 prng;
+        archi.doLocalEvent(event_type::local_immigration,
+                SpeciesID(1),
+                prng,
+                4.0,
+                maxSpeciesID,
+                0,
+                0.3);
+        archi.doLocalEvent(event_type::local_cladogenesis,
+                SpeciesID(1),
+                prng,
+                3.9,
+                maxSpeciesID,
+                0,
+                0.3);
+        archi.doLocalEvent(event_type::local_migration,
+                SpeciesID(7),
+                prng,
+                3.8,
+                maxSpeciesID,
+                0,
+                0.3);
+        const Species spB1 = archi.getIslands()[0].findSpecies(SpeciesID(7));
+        const Species spB2 = archi.getIslands()[1].findSpecies(SpeciesID(7));
+        const Species spA = archi.getIslands()[0].findSpecies(SpeciesID(6));
+        assert(archi.findMostRecentSistersPops(spA).size() == 2);
+        assert(archi.findMostRecentSistersPops(spA)[0] == spB1);
+        assert(archi.findMostRecentSistersPops(spA)[1] == spB2);
+    }
+    {  // after local cladogenesis, migration & extinction of first daughter 'b'
+        // second daughter 'b' is found as most recent sister of daughter 'a' and vice versa
         int n_islands = 2;
         int islCarryingCap = 5;
         Archipelago archi = Archipelago(n_islands, islCarryingCap);
@@ -1792,11 +1916,14 @@ void test_archi()
                 maxSpeciesID,
                 0,
                 0.3);
-        Species sp = archi.getIslands()[0].findSpecies(SpeciesID(6));
-        assert(archi.findMostRecentSistersPops(sp).size() == 1);
-        assert(archi.findMostRecentSistersPops(sp)[0].getSpecID() == SpeciesID(7));
+        Species spA = archi.getIslands()[0].findSpecies(SpeciesID(6));
+        Species spB = archi.getIslands()[1].findSpecies(SpeciesID(7));
+        assert(archi.findMostRecentSistersPops(spA).size() == 1);
+        assert(archi.findMostRecentSistersPops(spA)[0] == spB);
+        assert(archi.findMostRecentSistersPops(spB).size() == 1);
+        assert(archi.findMostRecentSistersPops(spB)[0] == spA);
     }
-    {  // after global cladogenesis most recent sister is found correctly
+    {  // after global cladogenesis daughters find other as most recent sisters
         int n_islands = 2;
         int islCarryingCap = 5;
         Archipelago archi = Archipelago(n_islands, islCarryingCap);
@@ -1813,7 +1940,7 @@ void test_archi()
         archi.doLocalEvent(event_type::local_migration,
                 SpeciesID(1),
                 prng,
-                3.6,
+                3.8,
                 maxSpeciesID,
                 0,
                 0.3);
@@ -1821,12 +1948,74 @@ void test_archi()
                 SpeciesID(1),
                 prng,
                 maxSpeciesID);
-        Species sp = archi.getIslands()[0].findSpecies(SpeciesID(6));
-        assert(archi.findMostRecentSistersPops(sp).size() == 1);
-        assert(archi.findMostRecentSistersPops(sp)[0].getSpecID() == SpeciesID(7));
+        Species spA = archi.getIslands()[0].findSpecies(SpeciesID(6));
+        Species spB = archi.getIslands()[1].findSpecies(SpeciesID(7));
+        assert(archi.findMostRecentSistersPops(spA).size() == 1);
+        assert(archi.findMostRecentSistersPops(spA)[0] == spB);
+        assert(archi.findMostRecentSistersPops(spB).size() == 1);
+        assert(archi.findMostRecentSistersPops(spB)[0] == spA);
+    }
+    {  // after global cladogenesis of 3 daughters (-> 3 islands) the younger ones still
+        // just find each other as most recent sisters, not the older one
+        int n_islands = 3;
+        int islCarryingCap = 5;
+        Archipelago archi = Archipelago(n_islands, islCarryingCap);
+        int n_mainlandSp = 5;
+        SpeciesID maxSpeciesID(n_mainlandSp);
+        mt19937_64 prng;
+        archi.addSpecies(Species(4.0,SpeciesID(1),SpeciesID(1),'I',false,4.0,4.0,{'a'}),0);
+        archi.addSpecies(Species(3.9,SpeciesID(1),SpeciesID(1),'I',true,4.0,4.0,{'b','a'}),1);
+        archi.addSpecies(Species(3.8,SpeciesID(1),SpeciesID(1),'I',true,4.0,4.0,{'b','b'}),2);
+        archi.doGlobalEvent(event_type::global_cladogenesis,
+                SpeciesID(1),
+                prng,
+                maxSpeciesID);
+        Species spA = archi.getIslands()[0].getSpecies()[0];
+        Species spAB = archi.getIslands()[1].getSpecies()[0];
+        Species spB = archi.getIslands()[2].getSpecies()[0];
+        assert(archi.findMostRecentSistersPops(spA).size() == 2);
+        assert(archi.findMostRecentSistersPops(spA)[0] == spAB);
+        assert(archi.findMostRecentSistersPops(spA)[1] == spB);
+        assert(archi.findMostRecentSistersPops(spAB).size() == 1);
+        assert(archi.findMostRecentSistersPops(spAB)[0] == spB);
+        assert(archi.findMostRecentSistersPops(spB).size() == 1);
+        assert(archi.findMostRecentSistersPops(spB)[0] == spAB);
     }
     // testing correcting sisters after extinction
-    { //
+    { // if older pop of a species dies, the younger one inherits the birth time (BT)
+        int n_islands = 2;
+        int islCarryingCap = 5;
+        Archipelago archi = Archipelago(n_islands, islCarryingCap);
+        int n_mainlandSp = 5;
+        SpeciesID maxSpeciesID(n_mainlandSp);
+        mt19937_64 prng;
+        archi.doLocalEvent(event_type::local_immigration,
+                SpeciesID(1),
+                prng,
+                4.0,
+                maxSpeciesID,
+                0,
+                0.3);
+        assert(archi.getIslands()[0].findSpecies(SpeciesID(1)).getBirth() == 4.0);
+        archi.doLocalEvent(event_type::local_migration,
+                SpeciesID(1),
+                prng,
+                3.6,
+                maxSpeciesID,
+                0,
+                0.3);
+        assert(archi.getIslands()[1].findSpecies(SpeciesID(1)).getBirth() == 3.6);
+        archi.doLocalEvent(event_type::local_extinction,
+                SpeciesID(1),
+                prng,
+                3.2,
+                maxSpeciesID,
+                0,
+                0.3);
+        assert(!archi.getIslands()[0].hasSpecies(SpeciesID(1)));
+        assert(archi.getIslands()[1].findSpecies(SpeciesID(1)).getBirth() == 4.0);
+    }
+    { // if older pop of a species dies, younger one looses resp. daughter state
         int n_islands = 2;
         int islCarryingCap = 5;
         Archipelago archi = Archipelago(n_islands, islCarryingCap);
@@ -1847,10 +2036,428 @@ void test_archi()
                 maxSpeciesID,
                 0,
                 0.3);
+        assert(archi.getIslands()[0].findSpecies(SpeciesID(1)).getCladoStates().size()==1);
+        assert(archi.getIslands()[0].findSpecies(SpeciesID(1)).getCladoStates()[0]=='a');
+        assert(archi.getIslands()[1].findSpecies(SpeciesID(1)).getCladoStates().size()==1);
+        assert(archi.getIslands()[1].findSpecies(SpeciesID(1)).getCladoStates()[0]=='b');
+        archi.doLocalEvent(event_type::local_extinction,
+                SpeciesID(1),
+                prng,
+                3.2,
+                maxSpeciesID,
+                0,
+                0.3);
+        assert(!archi.getIslands()[0].hasSpecies(SpeciesID(1)));
+        assert(archi.getIslands()[1].findSpecies(SpeciesID(1)).getCladoStates().empty());
+    }
+    { // if younger pop of a species dies, BT stays the same
+        int n_islands = 2;
+        int islCarryingCap = 5;
+        Archipelago archi = Archipelago(n_islands, islCarryingCap);
+        int n_mainlandSp = 5;
+        SpeciesID maxSpeciesID(n_mainlandSp);
+        mt19937_64 prng;
+        archi.doLocalEvent(event_type::local_immigration,
+                SpeciesID(1),
+                prng,
+                4.0,
+                maxSpeciesID,
+                0,
+                0.3);
+        assert(archi.getIslands()[0].findSpecies(SpeciesID(1)).getBirth() == 4.0);
+        archi.doLocalEvent(event_type::local_migration,
+                SpeciesID(1),
+                prng,
+                3.6,
+                maxSpeciesID,
+                0,
+                0.3);
+        assert(archi.getIslands()[1].findSpecies(SpeciesID(1)).getBirth() == 3.6);
+        archi.doLocalEvent(event_type::local_extinction,
+                SpeciesID(1),
+                prng,
+                3.2,
+                maxSpeciesID,
+                1,
+                0.3);
+        assert(!archi.getIslands()[1].hasSpecies(SpeciesID(1)));
+        assert(archi.getIslands()[0].findSpecies(SpeciesID(1)).getBirth() == 4.0);
+    }
+    { // if younger pop of a species dies, older looses daughter state
+        int n_islands = 2;
+        int islCarryingCap = 5;
+        Archipelago archi = Archipelago(n_islands, islCarryingCap);
+        int n_mainlandSp = 5;
+        SpeciesID maxSpeciesID(n_mainlandSp);
+        mt19937_64 prng;
+        archi.doLocalEvent(event_type::local_immigration,
+                SpeciesID(1),
+                prng,
+                4.0,
+                maxSpeciesID,
+                0,
+                0.3);
+        archi.doLocalEvent(event_type::local_migration,
+                SpeciesID(1),
+                prng,
+                3.6,
+                maxSpeciesID,
+                0,
+                0.3);
+        assert(archi.getIslands()[0].findSpecies(SpeciesID(1)).getCladoStates().size()==1);
+        assert(archi.getIslands()[0].findSpecies(SpeciesID(1)).getCladoStates()[0]=='a');
+        assert(archi.getIslands()[1].findSpecies(SpeciesID(1)).getCladoStates().size()==1);
+        assert(archi.getIslands()[1].findSpecies(SpeciesID(1)).getCladoStates()[0]=='b');
+        archi.doLocalEvent(event_type::local_extinction,
+                SpeciesID(1),
+                prng,
+                3.2,
+                maxSpeciesID,
+                1,
+                0.3);
+        assert(!archi.getIslands()[1].hasSpecies(SpeciesID(1)));
+        assert(archi.getIslands()[0].findSpecies(SpeciesID(1)).getCladoStates().empty());
+    }
+    { // if older sister species goes extinct, the younger one inherits the birth time (BT)
+        int n_islands = 2;
+        int islCarryingCap = 5;
+        Archipelago archi = Archipelago(n_islands, islCarryingCap);
+        int n_mainlandSp = 5;
+        SpeciesID maxSpeciesID(n_mainlandSp);
+        mt19937_64 prng;
+        archi.doLocalEvent(event_type::local_immigration,
+                SpeciesID(1),
+                prng,
+                4.0,
+                maxSpeciesID,
+                0,
+                0.3);
+        archi.doLocalEvent(event_type::local_cladogenesis,
+                SpeciesID(1),
+                prng,
+                3.6,
+                maxSpeciesID,
+                0,
+                0.3);
+        assert(archi.getIslands()[0].findSpecies(SpeciesID(6)).getBirth()==4.0);
+        assert(archi.getIslands()[0].findSpecies(SpeciesID(7)).getBirth()==3.6);
+        archi.doLocalEvent(event_type::local_extinction,
+                SpeciesID(6),
+                prng,
+                3.6,
+                maxSpeciesID,
+                0,
+                0.3);
+        assert(archi.getIslands()[0].findSpecies(SpeciesID(7)).getBirth()==4.0);
+    }
+    { // if older sister species goes extinct, the younger one looses daughter state
+        int n_islands = 2;
+        int islCarryingCap = 5;
+        Archipelago archi = Archipelago(n_islands, islCarryingCap);
+        int n_mainlandSp = 5;
+        SpeciesID maxSpeciesID(n_mainlandSp);
+        mt19937_64 prng;
+        archi.doLocalEvent(event_type::local_immigration,
+                SpeciesID(1),
+                prng,
+                4.0,
+                maxSpeciesID,
+                0,
+                0.3);
+        archi.doLocalEvent(event_type::local_cladogenesis,
+                SpeciesID(1),
+                prng,
+                3.6,
+                maxSpeciesID,
+                0,
+                0.3);
+        assert(archi.getIslands()[0].findSpecies(SpeciesID(6)).getCladoStates().size()==1);
+        assert(archi.getIslands()[0].findSpecies(SpeciesID(6)).getCladoStates()[0]=='a');
+        assert(archi.getIslands()[0].findSpecies(SpeciesID(7)).getCladoStates().size()==1);
+        assert(archi.getIslands()[0].findSpecies(SpeciesID(7)).getCladoStates()[0]=='b');
+        archi.doLocalEvent(event_type::local_extinction,
+                SpeciesID(6),
+                prng,
+                3.6,
+                maxSpeciesID,
+                0,
+                0.3);
+        assert(archi.getIslands()[0].findSpecies(SpeciesID(7)).getCladoStates().empty());
+    }
+    { // if younger sister species goes extinct, the older one keeps its BT
+        int n_islands = 2;
+        int islCarryingCap = 5;
+        Archipelago archi = Archipelago(n_islands, islCarryingCap);
+        int n_mainlandSp = 5;
+        SpeciesID maxSpeciesID(n_mainlandSp);
+        mt19937_64 prng;
+        archi.doLocalEvent(event_type::local_immigration,
+                SpeciesID(1),
+                prng,
+                4.0,
+                maxSpeciesID,
+                0,
+                0.3);
+        archi.doLocalEvent(event_type::local_cladogenesis,
+                SpeciesID(1),
+                prng,
+                3.6,
+                maxSpeciesID,
+                0,
+                0.3);
+        assert(archi.getIslands()[0].findSpecies(SpeciesID(6)).getBirth()==4.0);
+        assert(archi.getIslands()[0].findSpecies(SpeciesID(7)).getBirth()==3.6);
+        archi.doLocalEvent(event_type::local_extinction,
+                SpeciesID(7),
+                prng,
+                3.6,
+                maxSpeciesID,
+                0,
+                0.3);
+        assert(archi.getIslands()[0].findSpecies(SpeciesID(6)).getBirth()==4.0);
+    }
+    { // if younger sister species goes extinct, the older one looses daughter state
+        int n_islands = 2;
+        int islCarryingCap = 5;
+        Archipelago archi = Archipelago(n_islands, islCarryingCap);
+        int n_mainlandSp = 5;
+        SpeciesID maxSpeciesID(n_mainlandSp);
+        mt19937_64 prng;
+        archi.doLocalEvent(event_type::local_immigration,
+                SpeciesID(1),
+                prng,
+                4.0,
+                maxSpeciesID,
+                0,
+                0.3);
+        archi.doLocalEvent(event_type::local_cladogenesis,
+                SpeciesID(1),
+                prng,
+                3.6,
+                maxSpeciesID,
+                0,
+                0.3);
+        assert(archi.getIslands()[0].findSpecies(SpeciesID(6)).getCladoStates().size()==1);
+        assert(archi.getIslands()[0].findSpecies(SpeciesID(6)).getCladoStates()[0]=='a');
+        assert(archi.getIslands()[0].findSpecies(SpeciesID(7)).getCladoStates().size()==1);
+        assert(archi.getIslands()[0].findSpecies(SpeciesID(7)).getCladoStates()[0]=='b');
+        archi.doLocalEvent(event_type::local_extinction,
+                SpeciesID(7),
+                prng,
+                3.6,
+                maxSpeciesID,
+                0,
+                0.3);
+        assert(archi.getIslands()[0].findSpecies(SpeciesID(6)).getCladoStates().empty());
+    }
+    { // global cladogenesis
+        // if older sister of a species dies, the younger one inherits the birth time (BT)
+        int n_islands = 2;
+        int islCarryingCap = 5;
+        Archipelago archi = Archipelago(n_islands, islCarryingCap);
+        int n_mainlandSp = 5;
+        SpeciesID maxSpeciesID(n_mainlandSp);
+        mt19937_64 prng;
+        archi.doLocalEvent(event_type::local_immigration,
+                SpeciesID(1),
+                prng,
+                4.0,
+                maxSpeciesID,
+                0,
+                0.3);
+        assert(archi.getIslands()[0].findSpecies(SpeciesID(1)).getBirth() == 4.0);
+        archi.doLocalEvent(event_type::local_migration,
+                SpeciesID(1),
+                prng,
+                3.6,
+                maxSpeciesID,
+                0,
+                0.3);
+        assert(archi.getIslands()[1].findSpecies(SpeciesID(1)).getBirth() == 3.6);
         archi.doGlobalEvent(event_type::global_cladogenesis,
                 SpeciesID(1),
                 prng,
                 maxSpeciesID);
-        archi.correctSisterTaxaLocal(SpeciesID(7),1);
+        assert(archi.getIslands()[0].findSpecies(SpeciesID(6)).getBirth() == 4.0);
+        assert(archi.getIslands()[1].findSpecies(SpeciesID(7)).getBirth() == 3.6);
+        archi.doLocalEvent(event_type::local_extinction,
+                SpeciesID(6),
+                prng,
+                3.2,
+                maxSpeciesID,
+                0,
+                0.3);
+        assert(!archi.getIslands()[0].hasSpecies(SpeciesID(6)));
+        assert(archi.getIslands()[1].findSpecies(SpeciesID(7)).getBirth() == 4.0);
+    }
+    { // global cladogenesis
+        // if older sister of a species dies, the younger one looses daughter state
+        int n_islands = 2;
+        int islCarryingCap = 5;
+        Archipelago archi = Archipelago(n_islands, islCarryingCap);
+        int n_mainlandSp = 5;
+        SpeciesID maxSpeciesID(n_mainlandSp);
+        mt19937_64 prng;
+        archi.doLocalEvent(event_type::local_immigration,
+                SpeciesID(1),
+                prng,
+                4.0,
+                maxSpeciesID,
+                0,
+                0.3);
+        assert(archi.getIslands()[0].findSpecies(SpeciesID(1)).getCladoStates().empty());
+        archi.doLocalEvent(event_type::local_migration,
+                SpeciesID(1),
+                prng,
+                3.6,
+                maxSpeciesID,
+                0,
+                0.3);
+        assert(archi.getIslands()[0].findSpecies(SpeciesID(1)).getCladoStates().size()==1);
+        assert(archi.getIslands()[0].findSpecies(SpeciesID(1)).getCladoStates()[0]=='a');
+        assert(archi.getIslands()[1].findSpecies(SpeciesID(1)).getCladoStates().size()==1);
+        assert(archi.getIslands()[1].findSpecies(SpeciesID(1)).getCladoStates()[0]=='b');
+        archi.doGlobalEvent(event_type::global_cladogenesis,
+                SpeciesID(1),
+                prng,
+                maxSpeciesID);
+        assert(archi.getIslands()[0].findSpecies(SpeciesID(6)).getCladoStates().size()==1);
+        assert(archi.getIslands()[0].findSpecies(SpeciesID(6)).getCladoStates()[0]=='a');
+        assert(archi.getIslands()[1].findSpecies(SpeciesID(7)).getCladoStates().size()==1);
+        assert(archi.getIslands()[1].findSpecies(SpeciesID(7)).getCladoStates()[0]=='b');
+        archi.doLocalEvent(event_type::local_extinction,
+                SpeciesID(6),
+                prng,
+                3.2,
+                maxSpeciesID,
+                0,
+                0.3);
+        assert(archi.getIslands()[1].findSpecies(SpeciesID(7)).getCladoStates().empty());
+    }
+    { // global cladogenesis
+        // if younger sister of a species dies, the older keeps its birth time (BT)
+        int n_islands = 2;
+        int islCarryingCap = 5;
+        Archipelago archi = Archipelago(n_islands, islCarryingCap);
+        int n_mainlandSp = 5;
+        SpeciesID maxSpeciesID(n_mainlandSp);
+        mt19937_64 prng;
+        archi.doLocalEvent(event_type::local_immigration,
+                SpeciesID(1),
+                prng,
+                4.0,
+                maxSpeciesID,
+                0,
+                0.3);
+        assert(archi.getIslands()[0].findSpecies(SpeciesID(1)).getBirth() == 4.0);
+        archi.doLocalEvent(event_type::local_migration,
+                SpeciesID(1),
+                prng,
+                3.6,
+                maxSpeciesID,
+                0,
+                0.3);
+        assert(archi.getIslands()[1].findSpecies(SpeciesID(1)).getBirth() == 3.6);
+        archi.doGlobalEvent(event_type::global_cladogenesis,
+                SpeciesID(1),
+                prng,
+                maxSpeciesID);
+        assert(archi.getIslands()[0].findSpecies(SpeciesID(6)).getBirth() == 4.0);
+        assert(archi.getIslands()[1].findSpecies(SpeciesID(7)).getBirth() == 3.6);
+        archi.doLocalEvent(event_type::local_extinction,
+                SpeciesID(7),
+                prng,
+                3.2,
+                maxSpeciesID,
+                1,
+                0.3);
+        assert(!archi.getIslands()[1].hasSpecies(SpeciesID(7)));
+        assert(archi.getIslands()[0].findSpecies(SpeciesID(6)).getBirth() == 4.0);
+    }
+    { // global cladogenesis
+        // if yougner sister of a species dies, the older one looses daughter state
+        int n_islands = 2;
+        int islCarryingCap = 5;
+        Archipelago archi = Archipelago(n_islands, islCarryingCap);
+        int n_mainlandSp = 5;
+        SpeciesID maxSpeciesID(n_mainlandSp);
+        mt19937_64 prng;
+        archi.doLocalEvent(event_type::local_immigration,
+                SpeciesID(1),
+                prng,
+                4.0,
+                maxSpeciesID,
+                0,
+                0.3);
+        assert(archi.getIslands()[0].findSpecies(SpeciesID(1)).getCladoStates().empty());
+        archi.doLocalEvent(event_type::local_migration,
+                SpeciesID(1),
+                prng,
+                3.6,
+                maxSpeciesID,
+                0,
+                0.3);
+        assert(archi.getIslands()[0].findSpecies(SpeciesID(1)).getCladoStates().size()==1);
+        assert(archi.getIslands()[0].findSpecies(SpeciesID(1)).getCladoStates()[0]=='a');
+        assert(archi.getIslands()[1].findSpecies(SpeciesID(1)).getCladoStates().size()==1);
+        assert(archi.getIslands()[1].findSpecies(SpeciesID(1)).getCladoStates()[0]=='b');
+        archi.doGlobalEvent(event_type::global_cladogenesis,
+                SpeciesID(1),
+                prng,
+                maxSpeciesID);
+        assert(archi.getIslands()[0].findSpecies(SpeciesID(6)).getCladoStates().size()==1);
+        assert(archi.getIslands()[0].findSpecies(SpeciesID(6)).getCladoStates()[0]=='a');
+        assert(archi.getIslands()[1].findSpecies(SpeciesID(7)).getCladoStates().size()==1);
+        assert(archi.getIslands()[1].findSpecies(SpeciesID(7)).getCladoStates()[0]=='b');
+        archi.doLocalEvent(event_type::local_extinction,
+                SpeciesID(7),
+                prng,
+                3.2,
+                maxSpeciesID,
+                1,
+                0.3);
+        assert(archi.getIslands()[0].findSpecies(SpeciesID(6)).getCladoStates().empty());
+    }
+    {  // after local cladogenesis, migration & extinction of first daughter 'b'
+        // second daughter 'b' inherits BT of first daughter 'b'
+        int n_islands = 2;
+        int islCarryingCap = 5;
+        Archipelago archi = Archipelago(n_islands, islCarryingCap);
+        int n_mainlandSp = 5;
+        SpeciesID maxSpeciesID(n_mainlandSp);
+        mt19937_64 prng;
+        archi.doLocalEvent(event_type::local_immigration,
+                SpeciesID(1),
+                prng,
+                4.0,
+                maxSpeciesID,
+                0,
+                0.3);
+        archi.doLocalEvent(event_type::local_cladogenesis,
+                SpeciesID(1),
+                prng,
+                3.9,
+                maxSpeciesID,
+                0,
+                0.3);
+        archi.doLocalEvent(event_type::local_migration,
+                SpeciesID(7),
+                prng,
+                3.8,
+                maxSpeciesID,
+                0,
+                0.3);
+        assert(archi.getIslands()[0].findSpecies(SpeciesID(7)).getBirth()==3.9);
+        assert(archi.getIslands()[1].findSpecies(SpeciesID(7)).getBirth()==3.8);
+        archi.doLocalEvent(event_type::local_extinction,
+                SpeciesID(7),
+                prng,
+                3.7,
+                maxSpeciesID,
+                0,
+                0.3);
+        Species spA = archi.getIslands()[0].findSpecies(SpeciesID(6));
+        Species spB = archi.getIslands()[1].findSpecies(SpeciesID(7));
+        assert(spB.getBirth()==3.9);
     }
 }

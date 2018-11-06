@@ -149,11 +149,10 @@ void Island::migrate(const Species& oldSpecies, const double& time)
     newCladostates.push_back('b');
     Species newSpecies = Species(time, oldSpecies.getParID(),
             oldSpecies.getSpecID(), oldSpecies.getStatus(), true,
-            oldSpecies.getBirth(), oldSpecies.getColonisationT(),
+            oldSpecies.getAncestralBT(), oldSpecies.getColonisationT(),
             newCladostates);
     // inherit ancestral birthT of oldSpecies IF it has already migrated before
-    if (oldSpecies.getBirth() != oldSpecies.getAncestralBT())
-        newSpecies.setAncestralBT(oldSpecies.getAncestralBT());
+    // -> if it hasn't migrated before ancBT == BT; so, just use ancBT instead
 
     const SpeciesID speciesID = oldSpecies.getSpecID();
     if(!hasSpecies(speciesID)) {  // if first migration: add species to island

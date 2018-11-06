@@ -22,7 +22,8 @@ public:
 //    void updateAliveSpec();    // updating the archipelago-wide vector of extant species
 
     int getNIslands() const noexcept;
-    int getNSpecies();
+    int getNSpecies() const;
+    int getNSpeciesID();
     std::vector<SpeciesID> getSpeciesIDs();
     std::vector<SpeciesID> getGlobalSpeciesIDs() const;
     const std::vector<Island> & getIslands() const { return mIslands; }
@@ -74,6 +75,7 @@ public:
             const int& n_mainlandSp); // switch-statement
                     // that calls event functions to update the island vector
 
+    void addSpecies(const Species&, const int);  // adds species to island
     void addArchi(const Archipelago&);  // add an island vector to this one / consolidate them
 
     std::vector<Species> makeArchiTo1Island() const;   // aggregate all islands in
