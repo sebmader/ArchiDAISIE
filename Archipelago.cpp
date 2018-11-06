@@ -549,9 +549,7 @@ int Archipelago::getNSpecies() const
     int n_species = 0;
     for (auto& isl : mIslands) {
         const vector<Species>& islSpecies = isl.getSpecies();
-        for (auto& sp : islSpecies) {
-            ++n_species;
-        }
+        n_species += islSpecies.size();
     }
     return n_species;
 }
