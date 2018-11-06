@@ -59,8 +59,8 @@ Species& Island::findRefSpecies(const SpeciesID& speciesID)
 
 void Island::calculateIslRates(
         const std::vector<double>& islandParameters,
-        const int& n_mainlandSpecies,
-        const int& n_islands,
+        const int n_mainlandSpecies,
+        const int n_islands,
         const double& sumLogGrowthWOThis)
 {   // calculates the per-island rates of events, outputs them (for immediate use)
     // and saves them within the island-class; input -> initial parameters

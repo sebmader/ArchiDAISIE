@@ -16,6 +16,8 @@
 #include "Archipelago.h"
 #include "free_functions.h"
 
+void other_functions();
+
 void test_speciesID();
 
 void test_species();

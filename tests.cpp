@@ -6,6 +6,33 @@
 
 using namespace std;
 
+
+void other_functions()
+{
+    // extractSumOfRates:
+    { // extracting the sum of rates of empty island
+        Island island(10);
+        assert(extractSumOfRates(island)==0);
+    }
+    { // extracting the sum of rates of island with calculated rates
+        Island island(10);
+        const int n_mainlandSp = 5;
+        vector<double> pars({ 0.1,0.1,0.1,0.2,0.1 });
+        island.calculateIslRates(pars,n_mainlandSp,2,0.1);
+        assert(extractSumOfRates(island)==n_mainlandSp*pars[0]);
+    }
+    // getLogGrowth
+    { // empty island
+        Island island(10);
+        assert(getLogGrowth(island)==0);
+    }
+    { // colonised island
+        Island island(10);
+        island.immigrate(SpeciesID(),4.0);
+        assert(getLogGrowth(island)==0.1);
+    }
+}
+
 void test_speciesID()
 {
     { // default constructor creates speciesID of 0
@@ -1982,7 +2009,8 @@ void test_archi()
         assert(archi.findMostRecentSistersPops(spB)[0] == spAB);
     }
     // testing correcting sisters after extinction
-    { // if older pop of a species dies, the younger one inherits the birth time (BT)
+    { // local migration
+        // if older pop of a species dies, the younger one inherits the birth time (BT)
         int n_islands = 2;
         int islCarryingCap = 5;
         Archipelago archi = Archipelago(n_islands, islCarryingCap);
@@ -2015,7 +2043,8 @@ void test_archi()
         assert(!archi.getIslands()[0].hasSpecies(SpeciesID(1)));
         assert(archi.getIslands()[1].findSpecies(SpeciesID(1)).getBirth() == 4.0);
     }
-    { // if older pop of a species dies, younger one looses resp. daughter state
+    { // local migration
+        // if older pop of a species dies, younger one looses resp. daughter state
         int n_islands = 2;
         int islCarryingCap = 5;
         Archipelago archi = Archipelago(n_islands, islCarryingCap);
@@ -2050,7 +2079,8 @@ void test_archi()
         assert(!archi.getIslands()[0].hasSpecies(SpeciesID(1)));
         assert(archi.getIslands()[1].findSpecies(SpeciesID(1)).getCladoStates().empty());
     }
-    { // if younger pop of a species dies, BT stays the same
+    { // local migration
+        // if younger pop of a species dies, BT stays the same
         int n_islands = 2;
         int islCarryingCap = 5;
         Archipelago archi = Archipelago(n_islands, islCarryingCap);
@@ -2083,7 +2113,8 @@ void test_archi()
         assert(!archi.getIslands()[1].hasSpecies(SpeciesID(1)));
         assert(archi.getIslands()[0].findSpecies(SpeciesID(1)).getBirth() == 4.0);
     }
-    { // if younger pop of a species dies, older looses daughter state
+    { // local migration
+        // if younger pop of a species dies, older looses daughter state
         int n_islands = 2;
         int islCarryingCap = 5;
         Archipelago archi = Archipelago(n_islands, islCarryingCap);
@@ -2118,7 +2149,8 @@ void test_archi()
         assert(!archi.getIslands()[1].hasSpecies(SpeciesID(1)));
         assert(archi.getIslands()[0].findSpecies(SpeciesID(1)).getCladoStates().empty());
     }
-    { // if older sister species goes extinct, the younger one inherits the birth time (BT)
+    { // local cladogenesis
+        // if older sister species goes extinct, the younger one inherits the birth time (BT)
         int n_islands = 2;
         int islCarryingCap = 5;
         Archipelago archi = Archipelago(n_islands, islCarryingCap);
@@ -2150,7 +2182,8 @@ void test_archi()
                 0.3);
         assert(archi.getIslands()[0].findSpecies(SpeciesID(7)).getBirth()==4.0);
     }
-    { // if older sister species goes extinct, the younger one looses daughter state
+    { // local cladogenesis
+        // if older sister species goes extinct, the younger one looses daughter state
         int n_islands = 2;
         int islCarryingCap = 5;
         Archipelago archi = Archipelago(n_islands, islCarryingCap);
@@ -2184,7 +2217,8 @@ void test_archi()
                 0.3);
         assert(archi.getIslands()[0].findSpecies(SpeciesID(7)).getCladoStates().empty());
     }
-    { // if younger sister species goes extinct, the older one keeps its BT
+    { // local cladogenesis
+        // if younger sister species goes extinct, the older one keeps its BT
         int n_islands = 2;
         int islCarryingCap = 5;
         Archipelago archi = Archipelago(n_islands, islCarryingCap);
@@ -2216,7 +2250,8 @@ void test_archi()
                 0.3);
         assert(archi.getIslands()[0].findSpecies(SpeciesID(6)).getBirth()==4.0);
     }
-    { // if younger sister species goes extinct, the older one looses daughter state
+    { // local cladogenesis
+        // if younger sister species goes extinct, the older one looses daughter state
         int n_islands = 2;
         int islCarryingCap = 5;
         Archipelago archi = Archipelago(n_islands, islCarryingCap);
@@ -2419,7 +2454,7 @@ void test_archi()
         assert(archi.getIslands()[0].findSpecies(SpeciesID(6)).getCladoStates().empty());
     }
     {  // after local cladogenesis, migration & extinction of first daughter 'b'
-        // second daughter 'b' inherits BT of first daughter 'b'
+        // second daughter 'b' looses daughter state
         int n_islands = 2;
         int islCarryingCap = 5;
         Archipelago archi = Archipelago(n_islands, islCarryingCap);
@@ -2447,8 +2482,14 @@ void test_archi()
                 maxSpeciesID,
                 0,
                 0.3);
-        assert(archi.getIslands()[0].findSpecies(SpeciesID(7)).getBirth()==3.9);
-        assert(archi.getIslands()[1].findSpecies(SpeciesID(7)).getBirth()==3.8);
+        assert(archi.getIslands()[0].findSpecies(SpeciesID(6)).getCladoStates().size()==1);
+        assert(archi.getIslands()[0].findSpecies(SpeciesID(6)).getCladoStates()[0]=='a');
+        assert(archi.getIslands()[0].findSpecies(SpeciesID(7)).getCladoStates().size()==2);
+        assert(archi.getIslands()[0].findSpecies(SpeciesID(7)).getCladoStates()
+                ==vector<char>({'b','a'}));
+        assert(archi.getIslands()[1].findSpecies(SpeciesID(7)).getCladoStates().size()==2);
+        assert(archi.getIslands()[1].findSpecies(SpeciesID(7)).getCladoStates()
+                ==vector<char>({'b','b'}));
         archi.doLocalEvent(event_type::local_extinction,
                 SpeciesID(7),
                 prng,
@@ -2458,6 +2499,9 @@ void test_archi()
                 0.3);
         Species spA = archi.getIslands()[0].findSpecies(SpeciesID(6));
         Species spB = archi.getIslands()[1].findSpecies(SpeciesID(7));
-        assert(spB.getBirth()==3.9);
+        assert(spA.getCladoStates().size()==1);
+        assert(spA.getCladoStates()[0] == 'a');
+        assert(spB.getCladoStates().size()==1);
+        assert(spB.getCladoStates()[0] == 'b');
     }
 }
