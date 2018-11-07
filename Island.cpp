@@ -249,7 +249,7 @@ void Island::addIsland(const Island& islNew)
                         mSpecies[k].getSpecID()) {
                     if (mSpecies[j].isImmigrant() && !mSpecies[j].hasMigrated()) {
                         if (mSpecies[k].isImmigrant() && !mSpecies[k].hasMigrated()) {
-                                // if both immigrants
+                                // if both "pure" immigrants (= not migrated)
                                 // take the most recent -> re-immigration
                             if (mSpecies[j].getBirth() <= mSpecies[k].getBirth()) {
                                 deleteSpecies(k);
@@ -260,17 +260,18 @@ void Island::addIsland(const Island& islNew)
                                 --j;
                             }
                         }
-                        else {  // if j is immigrant but k is not
+                        else {  // if j is pure immigrant but k is not
                                     // delete the non-immigrant (= migrant)
                             assert(mSpecies[k].hasMigrated());
+                            assert(mSpecies[k].getStatus()=='I');
                             deleteSpecies(k);
                             --k;
                         }
                     }
-                    else {  // if j is not immigrant
+                    else {  // if j is not immigrant OR has migrated!
+                        assert(!mSpecies[j].isImmigrant() || mSpecies[j].hasMigrated());
                                 // but k is -> k stays
                         if (mSpecies[k].isImmigrant() && !mSpecies[k].hasMigrated()) {
-                            assert(mSpecies[j].hasMigrated());
                             deleteSpecies(j);
                             --j;
                         }

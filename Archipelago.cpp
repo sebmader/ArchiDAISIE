@@ -25,6 +25,102 @@ Archipelago::Archipelago(const int &n_islands, const int &islCarryingCap)
     }
 }
 
+int Archipelago::getNSpeciesID()
+{
+    return static_cast<int>(getSpeciesIDs().size());
+}
+
+vector<SpeciesID> Archipelago::getSpeciesIDs()
+{
+    vector<SpeciesID> aliveSpecies;
+    for(auto& island : mIslands) {
+        vector<SpeciesID> tmpIDs = island.getSpeciesIDs();
+        aliveSpecies.reserve(aliveSpecies.size() + tmpIDs.size());
+        aliveSpecies.insert(aliveSpecies.end(), tmpIDs.begin(), tmpIDs.end());
+    }
+    // remove duplicates:
+    for (int j = 0; j < static_cast<int>(aliveSpecies.size() - 1); ++j) {
+        for (int k = j + 1; k < static_cast<int>(aliveSpecies.size()); ++k)
+            if (aliveSpecies[j] ==
+                    aliveSpecies[k]) {
+                aliveSpecies[k] = aliveSpecies.back();
+                aliveSpecies.pop_back();
+                --k;
+            }
+    }
+    return aliveSpecies;
+}
+
+vector<SpeciesID> Archipelago::getGlobalSpeciesIDs() const
+{
+    vector<SpeciesID> aliveSpecies;
+    for(auto& island : mIslands) {
+        vector<SpeciesID> tmpIDs = island.getSpeciesIDs();
+        if (tmpIDs.empty())
+            continue;
+        aliveSpecies.reserve(aliveSpecies.size() + tmpIDs.size());
+        aliveSpecies.insert(aliveSpecies.end(), tmpIDs.begin(), tmpIDs.end());
+    }
+    // save duplicate species (= global species):
+    vector<SpeciesID> aliveGlobalSpecies;
+    const int vecSize = static_cast<int>(aliveSpecies.size());
+    for (int j = 0; j < vecSize - 1; ++j) {
+        for (int k = j + 1; k < vecSize; ++k)
+            if (aliveSpecies[j] ==
+                    aliveSpecies[k]) {
+                aliveGlobalSpecies.push_back(aliveSpecies[j]);
+                ++j;
+            }
+    }
+    // if on more than 2 islands -> creates duplicates
+    // remove duplicates:
+    for (int j = 0; j < static_cast<int>(aliveGlobalSpecies.size()) - 1; ++j) {
+        for (int k = j + 1; k < static_cast<int>(aliveGlobalSpecies.size()); ++k) {
+            cout << aliveGlobalSpecies.size() << '\n';
+            assert(k > j);
+            if (aliveGlobalSpecies[j] == aliveGlobalSpecies[k]) {
+                aliveGlobalSpecies[k] = aliveGlobalSpecies.back();
+                aliveGlobalSpecies.pop_back();
+                --k;
+            }
+        }
+    }
+    return aliveGlobalSpecies;
+}
+
+int Archipelago::getNIslands() const noexcept
+{
+    return static_cast<int>(mIslands.size());
+}
+
+bool Archipelago::isGlobal(const SpeciesID& speciesID) const
+{
+    return findIsl(speciesID).size() >= 2;
+}
+
+int Archipelago::whereIsSpecies(const Species& species) const
+{
+    for (size_t i = 0; i < mIslands.size(); ++i) {
+        vector<Species> islSpecies = mIslands[i].getSpecies();
+        for (auto& sp : islSpecies) {
+            if (sp == species)
+                return static_cast<int>(i);
+        }
+    }
+    assert(!"Should not get here! Species is not present on archipelago.");
+    return -1;
+}
+
+int Archipelago::getNSpecies() const
+{
+    int n_species = 0;
+    for (auto& isl : mIslands) {
+        const vector<Species>& islSpecies = isl.getSpecies();
+        n_species += islSpecies.size();
+    }
+    return n_species;
+}
+
 vector<int> Archipelago::findIsl(const SpeciesID& speciesID) const
 // find the island(s) where certain species (input) is within archipelago
 // returns vector with island IDs (position in mIslands vector)
@@ -335,7 +431,7 @@ void Archipelago::doNextEvent(const event_type nextEvent,
 void Archipelago::addArchi(const Archipelago &newArchi)
 {   // adds one archipelago data frame (mIslands) to this one
     // important for putting together the 1-coloniser-archipelagos
-        // -> means, there are no duplicates ?!
+        // -> TODO: means, there are no duplicates, right?!
 
     const vector<Island> &addArch = newArchi.getIslands();
     if(addArch.size() != mIslands.size())
@@ -375,79 +471,6 @@ void Archipelago::printArchi()
              << "ColoT" << '\t' << "CladoStac" << '\n';
         z.printIsland();
     }
-}
-
-int Archipelago::getNSpeciesID()
-{
-    return static_cast<int>(getSpeciesIDs().size());
-}
-
-vector<SpeciesID> Archipelago::getSpeciesIDs()
-{
-    vector<SpeciesID> aliveSpecies;
-    for(auto& island : mIslands) {
-        vector<SpeciesID> tmpIDs = island.getSpeciesIDs();
-        aliveSpecies.reserve(aliveSpecies.size() + tmpIDs.size());
-        aliveSpecies.insert(aliveSpecies.end(), tmpIDs.begin(), tmpIDs.end());
-    }
-    // remove duplicates:
-    for (int j = 0; j < static_cast<int>(aliveSpecies.size() - 1); ++j) {
-        for (int k = j + 1; k < static_cast<int>(aliveSpecies.size()); ++k)
-            if (aliveSpecies[j] ==
-                    aliveSpecies[k]) {
-                aliveSpecies[k] = aliveSpecies.back();
-                aliveSpecies.pop_back();
-                --k;
-            }
-    }
-    return aliveSpecies;
-}
-
-vector<SpeciesID> Archipelago::getGlobalSpeciesIDs() const
-{
-    vector<SpeciesID> aliveSpecies;
-    for(auto& island : mIslands) {
-        vector<SpeciesID> tmpIDs = island.getSpeciesIDs();
-        if (tmpIDs.empty())
-            continue;
-        aliveSpecies.reserve(aliveSpecies.size() + tmpIDs.size());
-        aliveSpecies.insert(aliveSpecies.end(), tmpIDs.begin(), tmpIDs.end());
-    }
-    // save duplicate species (= global species):
-    vector<SpeciesID> aliveGlobalSpecies;
-    const int vecSize = static_cast<int>(aliveSpecies.size());
-    for (int j = 0; j < vecSize - 1; ++j) {
-        for (int k = j + 1; k < vecSize; ++k)
-            if (aliveSpecies[j] ==
-                    aliveSpecies[k]) {
-                aliveGlobalSpecies.push_back(aliveSpecies[j]);
-                ++j;
-            }
-    }
-    // if on more than 2 islands -> creates duplicates
-    // remove duplicates:
-    for (int j = 0; j < static_cast<int>(aliveGlobalSpecies.size()) - 1; ++j) {
-        for (int k = j + 1; k < static_cast<int>(aliveGlobalSpecies.size()); ++k) {
-            cout << aliveGlobalSpecies.size() << '\n';
-            assert(k > j);
-            if (aliveGlobalSpecies[j] == aliveGlobalSpecies[k]) {
-                aliveGlobalSpecies[k] = aliveGlobalSpecies.back();
-                aliveGlobalSpecies.pop_back();
-                --k;
-            }
-        }
-    }
-    return aliveGlobalSpecies;
-}
-
-int Archipelago::getNIslands() const noexcept
-{
-    return static_cast<int>(mIslands.size());
-}
-
-bool Archipelago::isGlobal(const SpeciesID& speciesID) const
-{
-    return findIsl(speciesID).size() >= 2;
 }
 
 vector<Species> Archipelago::findMostRecentSistersPops(const Species& species) const
@@ -516,10 +539,12 @@ void Archipelago::correctSisterTaxaLocal(const SpeciesID& extinctSpID, const int
             Species& refSis = mIslands[isl].findRefSpecies(sis.getSpecID());
             if (sis==oldestSisPop && extinctDaughterStates.back() == 'a') { // TODO: correct?
                   // if daughter 'a' goes extinct, respective sister/population 'b' inherits
-                  // its birth time
+                  // its birth time and has not migrated
                 refSis.setBirth(extinctSp.getBirth());
                 assert(mIslands[isl].findSpecies(oldestSisPop.getSpecID()).getBirth()
                         ==extinctSp.getBirth());
+                refSis.setMigrated(false);
+                assert(!mIslands[isl].findSpecies(oldestSisPop.getSpecID()).hasMigrated());
             }
             // and all most recent daughters loose resp. daughter state
             vector<char> newDaughterStates = refSis.getCladoStates();
@@ -529,29 +554,6 @@ void Archipelago::correctSisterTaxaLocal(const SpeciesID& extinctSpID, const int
                     == sis.getCladoStates().size()-1);
         }
     }
-}
-
-int Archipelago::whereIsSpecies(const Species& species) const
-{
-    for (size_t i = 0; i < mIslands.size(); ++i) {
-        vector<Species> islSpecies = mIslands[i].getSpecies();
-        for (auto& sp : islSpecies) {
-            if (sp == species)
-                return static_cast<int>(i);
-        }
-    }
-    assert(!"Should not get here! Species is not present on archipelago.");
-    return -1;
-}
-
-int Archipelago::getNSpecies() const
-{
-    int n_species = 0;
-    for (auto& isl : mIslands) {
-        const vector<Species>& islSpecies = isl.getSpecies();
-        n_species += islSpecies.size();
-    }
-    return n_species;
 }
 
 void Archipelago::addSpecies(const Species& species, const int island)
