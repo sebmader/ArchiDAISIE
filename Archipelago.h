@@ -32,6 +32,7 @@ public:
 
     bool isGlobal(const SpeciesID& speciesID) const;
     int whereIsSpecies(const Species& species) const;
+    bool hasSpecies(const SpeciesID& speciesID) const;
     std::vector<int> findIsl(const SpeciesID&) const;    // find the island(s) where
                                     // species (input) is within archipelago
     std::vector<Species> findIslSpecies(const SpeciesID& speciesID) const;
@@ -78,7 +79,7 @@ public:
     void addSpecies(const Species&, const int);  // adds species to island
     void addArchi(const Archipelago&);  // add an island vector to this one / consolidate them
 
-    std::vector<Species> makeArchiTo1Island() const;   // aggregate all islands in
+    Island makeArchiTo1Island() const;   // aggregate all islands in
                     // archipelago as it would be one and return it
     void printArchi();  // print archipelago islands to screen
 

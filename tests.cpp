@@ -2535,4 +2535,74 @@ void test_archi()
         assert(archi.getGlobalSpeciesIDs().size()==1);
         assert(archi.getGlobalSpeciesIDs()[0]==SpeciesID(1));
     }
+    // adding/consolidating archipelagos
+    { // summed archipelago has species that both archipelagos had
+        int n_islands = 2;
+        int islCarryingCap = 5;
+        Archipelago archi1 = Archipelago(n_islands, islCarryingCap);
+        archi1.addSpecies(Species(4.0,SpeciesID(1),SpeciesID(1),'I',false,4.0,4.0,{}),0);
+        Archipelago archi2 = Archipelago(n_islands, islCarryingCap);
+        archi2.addSpecies(Species(4.0,SpeciesID(2),SpeciesID(2),'I',false,4.0,4.0,{}),1);
+        archi1.addArchi(archi2);
+        assert(archi1.getNSpeciesID() == 2);
+        assert(archi1.hasSpecies(SpeciesID(1)));
+        assert(archi1.hasSpecies(SpeciesID(2)));
+    }
+    { // summed archipelago has just one species present when same species is
+        // present on the same island on respective archipelago
+        int n_islands = 2;
+        int islCarryingCap = 5;
+        Archipelago archi1 = Archipelago(n_islands, islCarryingCap);
+        archi1.addSpecies(Species(4.0,SpeciesID(1),SpeciesID(1),'I',false,4.0,4.0,{}),0);
+        Archipelago archi2 = Archipelago(n_islands, islCarryingCap);
+        archi2.addSpecies(Species(3.4,SpeciesID(1),SpeciesID(1),'I',false,4.0,4.0,{}),0);
+        archi1.addArchi(archi2);
+        assert(archi1.getNSpeciesID() == 1);
+        assert(archi1.getNSpecies() == 1);
+        assert(archi1.hasSpecies(SpeciesID(1)));
+    }
+    { // summed archipelago has both species when same species is present
+        // on different islands on respective archipelagos
+        int n_islands = 2;
+        int islCarryingCap = 5;
+        Archipelago archi1 = Archipelago(n_islands, islCarryingCap);
+        archi1.addSpecies(Species(4.0,SpeciesID(1),SpeciesID(1),'I',false,4.0,4.0,{}),0);
+        Archipelago archi2 = Archipelago(n_islands, islCarryingCap);
+        archi2.addSpecies(Species(3.4,SpeciesID(1),SpeciesID(1),'I',false,4.0,4.0,{}),1);
+        archi1.addArchi(archi2);
+        assert(archi1.getNSpeciesID() == 1);
+        assert(archi1.getNSpecies() == 2);
+        assert(archi1.hasSpecies(SpeciesID(1)));
+    }
+    { // consolidated archipelago has species present on single islands
+        int n_islands = 2;
+        int islCarryingCap = 5;
+        Archipelago archi = Archipelago(n_islands, islCarryingCap);
+        archi.addSpecies(Species(4.0,SpeciesID(1),SpeciesID(1),'I',false,4.0,4.0,{}),0);
+        archi.addSpecies(Species(3.5,SpeciesID(2),SpeciesID(2),'I',false,4.0,4.0,{}),1);
+        Island consolidatedArchi = archi.makeArchiTo1Island();
+        assert(consolidatedArchi.getNSpecies()==2);
+        assert(consolidatedArchi.hasSpecies(SpeciesID(1)));
+        assert(consolidatedArchi.hasSpecies(SpeciesID(2)));
+    }
+    { // consolidated archipelago deletes duplicates
+        int n_islands = 2;
+        int islCarryingCap = 5;
+        Archipelago archi = Archipelago(n_islands, islCarryingCap);
+        archi.addSpecies(Species(4.0,SpeciesID(1),SpeciesID(1),'I',false,4.0,4.0,{}),0);
+        archi.addSpecies(Species(3.5,SpeciesID(1),SpeciesID(1),'I',false,4.0,4.0,{}),1);
+        Island consolidatedArchi = archi.makeArchiTo1Island();
+        assert(consolidatedArchi.getNSpecies()==1);
+        assert(consolidatedArchi.hasSpecies(SpeciesID(1)));
+    }
+    { // consolidated archipelago deletes duplicates
+        int n_islands = 2;
+        int islCarryingCap = 5;
+        Archipelago archi = Archipelago(n_islands, islCarryingCap);
+        archi.addSpecies(Species(4.0,SpeciesID(1),SpeciesID(1),'I',false,4.0,4.0,{}),0);
+        archi.addSpecies(Species(3.5,SpeciesID(1),SpeciesID(1),'I',false,4.0,4.0,{}),1);
+        Island consolidatedArchi = archi.makeArchiTo1Island();
+        assert(consolidatedArchi.getNSpecies()==1);
+        assert(consolidatedArchi.hasSpecies(SpeciesID(1)));
+    }
 }

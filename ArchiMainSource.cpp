@@ -84,10 +84,10 @@ Archipelago ArchiDAISIE_core(const double islandAge,
     }
 }
 
-vector<vector<Species> > ArchiDAISIE(const double &islandAge,
+vector<Island> ArchiDAISIE(const double& islandAge,
         const int n_mainlandSpecies,
-        vector<double> &initialParameters,
-        const unsigned int &n_islands,
+        vector<double>& initialParameters,
+        const unsigned int& n_islands,
         const int replicates)
 {   // ### CAUTION ### : output unclear !!
     try {
@@ -121,7 +121,7 @@ vector<vector<Species> > ArchiDAISIE(const double &islandAge,
         initialParameters.pop_back();
 
         // initialise main data frame
-        vector< vector<Species> > islandReplicates(replicates);
+        vector<Island> islandReplicates(replicates);
         // ### CAUTION ### : need to implement the exact same output as DAISIE_sim
         // how to combine the multiple data types? and which types btw?
 

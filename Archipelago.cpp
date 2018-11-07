@@ -76,7 +76,6 @@ vector<SpeciesID> Archipelago::getGlobalSpeciesIDs() const
     // remove duplicates:
     for (int j = 0; j < static_cast<int>(aliveGlobalSpecies.size()) - 1; ++j) {
         for (int k = j + 1; k < static_cast<int>(aliveGlobalSpecies.size()); ++k) {
-            cout << aliveGlobalSpecies.size() << '\n';
             assert(k > j);
             if (aliveGlobalSpecies[j] == aliveGlobalSpecies[k]) {
                 aliveGlobalSpecies[k] = aliveGlobalSpecies.back();
@@ -109,6 +108,12 @@ int Archipelago::whereIsSpecies(const Species& species) const
     }
     assert(!"Should not get here! Species is not present on archipelago.");
     return -1;
+}
+
+bool Archipelago::hasSpecies(const SpeciesID& speciesID) const
+{
+    vector<int> onWhichIsls = findIsl(speciesID);
+    return !onWhichIsls.empty();
 }
 
 int Archipelago::getNSpecies() const
@@ -446,7 +451,7 @@ void Archipelago::addArchi(const Archipelago &newArchi)
     }
 }
 
-vector<Species> Archipelago::makeArchiTo1Island() const
+Island Archipelago::makeArchiTo1Island() const
 {   // put islands of archipelago together in one Island vector,
         // delete duplicates, sort by time of birth/immigration
 
@@ -456,7 +461,7 @@ vector<Species> Archipelago::makeArchiTo1Island() const
         archiToIsland.addIsland(island);
     }
 
-    return archiToIsland.getSpecies();
+    return archiToIsland;
 }
 
 void Archipelago::printArchi()
