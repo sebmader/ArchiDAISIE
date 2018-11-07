@@ -34,7 +34,6 @@ public:
     void setStatus(char);
     void setMigrated(bool);
     void setAncestralBT(double);
-    void setColonisationT(const double&);
     void setCladoStates(const std::vector<char>&);
     bool isImmigrant() const noexcept;
     bool hasMigrated() const noexcept;
@@ -46,7 +45,7 @@ public:
     bool operator==(const Species& rhs) const;
     bool operator!=(const Species& rhs) const;
 
-    void printSpec();
+    void printSpec() const;
 
 private:
     double mBirthT;     // birth time of species

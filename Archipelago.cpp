@@ -106,7 +106,7 @@ int Archipelago::whereIsSpecies(const Species& species) const
                 return static_cast<int>(i);
         }
     }
-    assert(!"Should not get here! Species is not present on archipelago.");
+    assert(!"Should not get here! Species is not present on archipelago."); //!OCLINT
     return -1;
 }
 
@@ -153,10 +153,9 @@ vector<Species> Archipelago::findIslSpecies(const SpeciesID& speciesID) const
 
 void Archipelago::calculateAllRates(
         const vector<double>& initialParameters,
-        const int& n_mainlandSpecies,
-        const int& n_islands)
-{   // the rates for each event (local/global) are calculated and saved
-    // order of output (vector.size()=2): first -> global, second -> local
+        const int n_mainlandSpecies,
+        const int n_islands)
+{   // the rates for each event (local/global) are calculated and saved in class object
     // order of parameters (input): gam_i (0), gam_m (1), lamb_cl (2),
         // lamb_al (3), mu_l (4), lamb_cg (5), lamb_ag (6), mu_g (7)
 
@@ -169,7 +168,6 @@ void Archipelago::calculateAllRates(
                initialParameters[1], initialParameters[2],
                initialParameters[3], initialParameters[4] };
     // order of island parameter vector: gam_i, gam_m, lamb_cl, lamb_al, mu_l
-        // for giving it to the island rates calculation function
 
     // count extant GLOBAL species on archipelago, for global rates
     vector<SpeciesID> globalSpeciesIDs = getGlobalSpeciesIDs();
@@ -186,7 +184,7 @@ void Archipelago::calculateAllRates(
     // calculate global rates:
     // global cladogenesis: carrying capacity of all species, not only global species
     const double globalCladoRate = max(0.0, initialGlobalClado * n_globalSpecies *
-            (1 - (static_cast<double>(aliveSpecies)/mK)));
+            (1.0 - (static_cast<double>(aliveSpecies)/mK)));
     // global anagenesis:
     const double globalAnaRate = max(0.0, initialGlobalAna * n_globalImmigrants);
     // global extinction:
@@ -196,13 +194,13 @@ void Archipelago::calculateAllRates(
 
     // calculate local rates:
     double sumLogGrowth = 0.0;  // sum of logistic growth term for migration
-    for (auto &j : mIslands) {
+    for (auto& j : mIslands) {
         sumLogGrowth += getLogGrowth(j);
     }
     // calculate and save local rates per island:
     for (auto &i : mIslands) {
-        double sumLogGrowthWOThis = sumLogGrowth - getLogGrowth(i); // sum
-                    // of log-growth of all except THIS island (i)
+        const double sumLogGrowthWOThis = sumLogGrowth - getLogGrowth(i); // sum
+                    // of log-growth of all islands except THIS (i)
         i.calculateIslRates(initialIslandPars,
                 n_mainlandSpecies, n_islands, sumLogGrowthWOThis);
     }
@@ -411,7 +409,7 @@ void Archipelago::doNextEvent(const event_type nextEvent,
             throw logic_error("No global species exist on archipelago "
                               "but drawn event is global.\n");
         // sample global species
-        const SpeciesID speciesID = drawUniEvent(getGlobalSpeciesIDs(),prng);
+        const SpeciesID speciesID = drawUniSpeciesID(getGlobalSpeciesIDs(), prng);
         doGlobalEvent(nextEvent, speciesID, prng, maxSpeciesID);
     }
     else if (is_local(nextEvent)) {
@@ -427,7 +425,7 @@ void Archipelago::doNextEvent(const event_type nextEvent,
         SpeciesID speciesID = SpeciesID(drawUniEvent(1, n_mainlandSp, prng));
         if (getEventInt(nextEvent)) { // -> if not immigration
             const vector<SpeciesID> aliveSpecies = mIslands[isl].getSpeciesIDs();
-            speciesID = drawUniEvent(aliveSpecies, prng);
+            speciesID = drawUniSpeciesID(aliveSpecies, prng);
         }
         doLocalEvent(nextEvent, speciesID, prng, time, maxSpeciesID, isl, initialMigrationRate);
     }

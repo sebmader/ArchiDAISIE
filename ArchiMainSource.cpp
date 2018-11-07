@@ -22,6 +22,7 @@ using namespace std;
 // ------------ CLASS/FUNCTION DEFINITIONS ------------ //
 
 #include "event_type.h"
+#include "SpeciesID.h"
 #include "Species.h"
 #include "Island.h"
 #include "Archipelago.h"
@@ -30,7 +31,7 @@ using namespace std;
 
 // ------------ ArchiDAISIE FUNCTIONS ------------ //
 
-Archipelago ArchiDAISIE_core(const double islandAge,
+Archipelago ArchiDAISIE_core(const double& islandAge,
         const int n_mainlandSpecies,
         const vector<double>& initialParameters,
         const int archiCarryingCap,
@@ -51,8 +52,7 @@ Archipelago ArchiDAISIE_core(const double islandAge,
             aArchi.calculateAllRates(initialParameters, n_mainlandSpecies, n_islands);
 
             // draw time interval to next event
-            vector<double> globalRates = aArchi.getGlobalRates();
-            assert(globalRates.size() == 3);
+            const vector<double> globalRates = aArchi.getGlobalRates();
             double sumOfRates = globalRates[0] + globalRates[1] + globalRates[2];
             for (auto& island : aArchi.getIslands()) {
                 sumOfRates += extractSumOfRates(island);
@@ -86,17 +86,17 @@ Archipelago ArchiDAISIE_core(const double islandAge,
 
 vector<Island> ArchiDAISIE(const double& islandAge,
         const int n_mainlandSpecies,
-        vector<double>& initialParameters,
-        const unsigned int& n_islands,
+        vector<double> initialParameters,
+        const int n_islands,
         const int replicates)
 {   // ### CAUTION ### : output unclear !!
     try {
         // check given parameters
-        if (islandAge <= 0)
+        if (islandAge < 0)
             throw logic_error("Age has to be higher than zero.");
-        if (n_mainlandSpecies <= 0)
+        if (n_mainlandSpecies < 0)
             throw logic_error("Simulation needs at least one mainland species.");
-        if(n_islands <= 0)
+        if(n_islands < 0)
             throw logic_error("Simulation needs at least one island.");
         if(initialParameters.size() != 9)
             throw logic_error("Provide 9 parameter values.");
@@ -106,7 +106,6 @@ vector<Island> ArchiDAISIE(const double& islandAge,
 
         // declare and seed PRNG with system clock
         mt19937_64 prng;
-
         chrono::high_resolution_clock::time_point tp =
                 chrono::high_resolution_clock::now();
         const unsigned seed = static_cast<unsigned>(
@@ -126,10 +125,10 @@ vector<Island> ArchiDAISIE(const double& islandAge,
         // how to combine the multiple data types? and which types btw?
 
         // loop through replicates
-        for (int i = 1; i <= replicates; ++i) {
+        for (int i = 0; i < replicates; ++i) {
 
             // initialise intermediate archipelago data frame
-            Archipelago aAggregArchi(n_islands, archiCarryingCap);
+            Archipelago fullArchi(n_islands, archiCarryingCap);
 
             // initialise max species ID
             SpeciesID maxSpeciesID(n_mainlandSpecies);
@@ -137,10 +136,10 @@ vector<Island> ArchiDAISIE(const double& islandAge,
             // run simulation for each mainland sp. separately -> clade-specific carrying capacity
             for (int j = 0; j < n_mainlandSpecies; ++j) {
 
-                aAggregArchi.addArchi(ArchiDAISIE_core(islandAge, 1, initialParameters,
+                fullArchi.addArchi(ArchiDAISIE_core(islandAge, 1, initialParameters,
                         archiCarryingCap, n_islands, prng, maxSpeciesID));
             }
-            islandReplicates[i] = aAggregArchi.makeArchiTo1Island();
+            islandReplicates[i] = fullArchi.makeArchiTo1Island();
         }
         return islandReplicates;
     }
@@ -157,15 +156,24 @@ int main() {
     test_species();
     test_island();
     test_archi();
-    /*
-    vector<double> vPars( {0.1, 0.1, 0.2, 0.12, 0.3, 0.2, 0.1, 0.12, 50} );
-    ArchiDAISIE(5, 50, vPars, 2, 100);
-    mt19937_64 prng;
-    vector<double> vIni = vPars;
-    vIni.pop_back();
-    SpeciesID speciesID(0);
-    Archipelago arch = ArchiDAISIE_core(2, 50, vIni, static_cast<int>(vPars[8]),
-            3, prng, speciesID);
-    */
+
+    const int islandAge = 4;
+    const int n_mainlandSp = 100;
+    const int n_islands = 2;
+    const int replicates = 1;
+    const vector<double> vPars( {0.1, 0.1, 0.2, 0.12, 0.3, 0.2, 0.1, 0.12, 50} );
+    const vector<Island> archipelago = ArchiDAISIE(islandAge,n_mainlandSp,vPars,n_islands,replicates);
+
+    int i = 0;
+    for (auto& z : archipelago) {
+        ++i;
+        cout << "Island " << i << '\n';
+        cout << "BirT" << '\t' << "ParID" << '\t'
+             << "SpID" << '\t' << "Status" << '\t'
+             << "Mig" << '\t'  << "AncesT" << '\t'
+             << "ColoT" << '\t' << "CladoStac" << '\n';
+        z.printIsland();
+    }
+
     return 0;
 }

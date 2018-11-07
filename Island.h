@@ -20,7 +20,6 @@ public:
     explicit Island(int k = 0);
 
     const std::vector<Species>& getSpecies() const { return mSpecies; }
-    std::vector<Species>& getRefSpecies() { return mSpecies; }
     int getCarryingCap() const noexcept;
     std::vector<SpeciesID> getSpeciesIDs() const;
     int getNSpecies() const noexcept;
@@ -68,7 +67,7 @@ public:
                     // island species anagenetically speciates
     void goExtinct(const SpeciesID&);  // island species goes extinct
 
-    void printIsland();  // prints island vector of species to the screen
+    void printIsland() const;  // prints island vector of species to the screen
             // RJCB: use operator<< instead
 
     void addIsland(const Island&);     // add island to THIS island

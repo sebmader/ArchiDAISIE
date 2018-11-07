@@ -42,6 +42,16 @@ void Species::setAncestralBT(const double time)
     mAncestralBT = time;
 }
 
+void Species::setMigrated(const bool migrated)
+{
+    mMigrated = migrated;
+}
+
+void Species::setCladoStates(const std::vector<char>& newCladoStates)
+{
+    mCladoStates = newCladoStates;
+}
+
 bool Species::isImmigrant() const noexcept
 {
     return mStatus == 'I';
@@ -84,7 +94,7 @@ bool Species::isMostRecentSis(const Species& potentialSis) const
     return potentialSis.mCladoStates[posLastSpeciation] != mCladoStates[posLastSpeciation];
 }
 
-void Species::printSpec()
+void Species::printSpec() const
 {
     std::cout << mBirthT << '\t' << mMainParentID.getSpeciesID() << '\t'
               << mSpeciesID.getSpeciesID() << '\t' << mStatus << '\t' << mMigrated << '\t'
@@ -110,19 +120,3 @@ bool Species::operator!=(const Species& rhs) const
 {
     return !(rhs==*this);
 }
-
-void Species::setColonisationT(const double& time)
-{
-    mColonisationT = time;
-}
-
-void Species::setMigrated(const bool migrated)
-{
-    mMigrated = migrated;
-}
-
-void Species::setCladoStates(const std::vector<char>& newCladoStates)
-{
-    mCladoStates = newCladoStates;
-}
-

@@ -26,7 +26,7 @@ int Island::getNSpecies() const noexcept
 }
 
 
-void Island::printIsland()
+void Island::printIsland() const
 {
     for (auto &i : mSpecies)
         i.printSpec();
@@ -155,18 +155,20 @@ void Island::migrate(const Species& oldSpecies, const double& time)
     // -> if it hasn't migrated before ancBT == BT; so, just use ancBT instead
 
     const SpeciesID speciesID = oldSpecies.getSpecID();
-    if(!hasSpecies(speciesID)) {  // if first migration: add species to island
-        if (getNSpecies() + 1 > mK)
+    if(hasSpecies(speciesID)) {
+        if (findSpecies(speciesID).getBirth() < oldSpecies.getBirth()) {
+            // if re-migration: re-set clock if resident is younger
+            // otherwise circular re-migration would make species younger and younger
+            const int pos = findPos(speciesID);
+            assert(pos >= 0 && pos < getNSpecies());
+            mSpecies[pos].setBirth(time);
+        }
+    }
+    else {  // if first migration: add species to island
+        if (getNSpecies()+1 > mK)
             throw logic_error("Migration would make number of species"
                               " exceed carrying capacity.\n");
         addSpecies(newSpecies);
-    }
-    else if (findSpecies(speciesID).getBirth() < oldSpecies.getBirth()) {
-            // else (if re-migration): re-set clock if resident is younger
-            // otherwise circular re-migration would make species younger and younger
-        const int pos = findPos(speciesID);
-        assert(pos >= 0 && pos < getNSpecies());
-        mSpecies[pos].setBirth(time);
     }
 }
 
@@ -223,12 +225,11 @@ void Island::goExtinct(const SpeciesID& speciesID)
     if(!hasSpecies(speciesID))
         throw logic_error("Species does not exist on island.\n");
 
-    // find species
-    const Species oldSpecies = findSpecies(speciesID);
-        const int pos = findPos(speciesID);
-        assert(pos >= 0);
-        // remove species
-        mSpecies.erase(mSpecies.begin() + pos);
+    // find position of species
+    const int pos = findPos(speciesID);
+    assert(pos >= 0);
+    // remove species
+    mSpecies.erase(mSpecies.begin() + pos);
 }
 
 void Island::addIsland(const Island& islNew)

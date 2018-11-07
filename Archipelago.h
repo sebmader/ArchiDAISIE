@@ -39,7 +39,7 @@ public:
     std::vector<Species> findMostRecentSistersPops(const Species& species) const;
 
     void calculateAllRates(const std::vector<double>&,
-            const int& n_mainlandSpecies, const int& n_islands);
+            const int n_mainlandSpecies, const int n_islands);
                     // calculate per-island rates and global rates
                     // and save them in LocalRates and GlobalRates vector, resp.
                     // Also, output of sum of both global (.first) and local (.second) rates
@@ -47,8 +47,8 @@ public:
                                     // output -> {event(0-7), species(ID)(,island(0-i))}
                                     // if global event -> vector.size() = 2, if local -> size = 3
 
-    void speciateGlobalClado(const SpeciesID&, std::mt19937_64&, SpeciesID& maxSpeciesID);  // island species
-                    // cladogenetically speciates over all islands
+    void speciateGlobalClado(const SpeciesID&, std::mt19937_64&, SpeciesID& maxSpeciesID);
+                    // island species cladogenetically speciates over all islands
                     // (one population gets replaced by two new species populations)
                     // with random separation of archipelago into two groups/populations
     void speciateGlobalAna(const SpeciesID&, SpeciesID& maxSpeciesID);
@@ -61,7 +61,9 @@ public:
     void correctSisterTaxaGlobal(const SpeciesID& extinctSpID);
 
 
-    void doGlobalEvent(const event_type globalEvent, const SpeciesID speciesID, std::mt19937_64& prng,
+    void doGlobalEvent(const event_type globalEvent,
+            const SpeciesID speciesID,
+            std::mt19937_64& prng,
             SpeciesID& maxSpeciesID);
 
     void doLocalEvent(const event_type localEvent,
@@ -72,7 +74,11 @@ public:
             const int island,
             const double& iniMigrationRate);
 
-    void doNextEvent(const event_type, const double&, std::mt19937_64&, const double, SpeciesID& maxSpeciesID,
+    void doNextEvent(const event_type,
+            const double&,
+            std::mt19937_64&,
+            const double,
+            SpeciesID& maxSpeciesID,
             const int& n_mainlandSp); // switch-statement
                     // that calls event functions to update the island vector
 
