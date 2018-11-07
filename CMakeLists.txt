@@ -12,12 +12,13 @@ endif()
 include_directories(.)
 
 add_executable(ArchiDAISIE
+        free_functions.cpp
         DrawEvents.cpp
         event_type.cpp
         SpeciesID.cpp
         Species.cpp
         Island.cpp
         Archipelago.cpp
+        ArchiDAISIE.cpp
         ArchiMainSource.cpp
-        tests.cpp
-        free_functions.cpp)
+        tests.cpp)

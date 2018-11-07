@@ -1,5 +1,5 @@
 //
-// Created by Bastophiles on 29.09.2018.
+// Created by Sebastian Mader on 29.09.2018.
 //
 
 #include "free_functions.h"
