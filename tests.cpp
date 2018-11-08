@@ -2643,4 +2643,46 @@ void test_STTtable()
         assert(sttTable.getSTTtable()[0].getNAnagenetic() == 1);
         assert(sttTable.getSTTtable()[0].getNCladogenetic() == 3);
     }
+    { // update function identifies and saves immigrant species on archipelago correctly
+        int n_islands = 2;
+        int islCarryingCap = 5;
+        Archipelago archi = Archipelago(n_islands, islCarryingCap);
+        archi.addSpecies(Species(4.0,SpeciesID(1),SpeciesID(1),'I',false,4.0,4.0,{}),0);
+        STTtable sttTable = STTtable();
+        assert(sttTable.size()==1);
+        sttTable.updateSTTtable(archi,4.0);
+        assert(sttTable.size()==2);
+        assert(sttTable.getSTTtable()[1].getTime() == 4.0);
+        assert(sttTable.getSTTtable()[1].getNImmigrants() == 1);
+        assert(sttTable.getSTTtable()[1].getNAnagenetic() == 0);
+        assert(sttTable.getSTTtable()[1].getNCladogenetic() == 0);
+    }
+    { // update function identifies and saves anagenetic species on archipelago correctly
+        int n_islands = 2;
+        int islCarryingCap = 5;
+        Archipelago archi = Archipelago(n_islands, islCarryingCap);
+        archi.addSpecies(Species(4.0,SpeciesID(1),SpeciesID(1),'A',false,4.0,4.0,{}),0);
+        STTtable sttTable = STTtable();
+        assert(sttTable.size()==1);
+        sttTable.updateSTTtable(archi,4.0);
+        assert(sttTable.size()==2);
+        assert(sttTable.getSTTtable()[1].getTime() == 4.0);
+        assert(sttTable.getSTTtable()[1].getNImmigrants() == 0);
+        assert(sttTable.getSTTtable()[1].getNAnagenetic() == 1);
+        assert(sttTable.getSTTtable()[1].getNCladogenetic() == 0);
+    }
+    { // update function identifies and saves cladogenetic species on archipelago correctly
+        int n_islands = 2;
+        int islCarryingCap = 5;
+        Archipelago archi = Archipelago(n_islands, islCarryingCap);
+        archi.addSpecies(Species(4.0,SpeciesID(1),SpeciesID(1),'C',false,4.0,4.0,{}),0);
+        STTtable sttTable = STTtable();
+        assert(sttTable.size()==1);
+        sttTable.updateSTTtable(archi,4.0);
+        assert(sttTable.size()==2);
+        assert(sttTable.getSTTtable()[1].getTime() == 4.0);
+        assert(sttTable.getSTTtable()[1].getNImmigrants() == 0);
+        assert(sttTable.getSTTtable()[1].getNAnagenetic() == 0);
+        assert(sttTable.getSTTtable()[1].getNCladogenetic() == 1);
+    }
 }
