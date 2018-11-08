@@ -49,3 +49,13 @@ const vector<STT>& STTtable::getSTTtable() const
     return mSTTtable;
 }
 
+ostream& operator<<(ostream& os, const STTtable& table)
+{
+    os << "time" << ',' << "nI" << ',' << "nA" << ',' << "nC" << '\n';
+    for (auto& stt : table.getSTTtable()) {
+        os << stt.getTime() << ',' << stt.getNImmigrants() << ','
+           << stt.getNAnagenetic() << ',' << stt.getNCladogenetic() << '\n';
+    }
+    return os;
+}
+
