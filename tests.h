@@ -15,8 +15,13 @@
 #include "Island.h"
 #include "Archipelago.h"
 #include "free_functions.h"
+#include "STT.h"
+#include "STTtable.h"
 
 void test_other_functions();
+
+void test_STT();
+void test_STTtable();
 
 void test_speciesID();
 

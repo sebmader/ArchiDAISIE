@@ -39,3 +39,13 @@ void STTtable::updateSTTtable(const Archipelago& archi, const double& time)
     mSTTtable.emplace_back(time,nImmigrants,nAnagenetic,nCladogenetic);
 }
 
+unsigned long STTtable::size()
+{
+    return mSTTtable.size();
+}
+
+const vector<STT>& STTtable::getSTTtable() const
+{
+    return mSTTtable;
+}
+

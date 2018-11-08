@@ -33,6 +33,8 @@ using namespace std;
 int main() {
 
     test_other_functions();
+    test_STT();
+    test_STTtable();
     test_speciesID();
     test_species();
     test_island();

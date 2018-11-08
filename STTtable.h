@@ -14,7 +14,11 @@
 
 class STTtable {
 public:
-    explicit STTtable(const STT& firstRow = STT(0.0,0,0,0));
+    explicit STTtable(const STT& firstRow = STT());
+
+    const std::vector<STT>& getSTTtable() const;
+
+    unsigned long size();
     void updateSTTtable(const Archipelago& archi, const double& time);
 
 private:

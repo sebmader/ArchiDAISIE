@@ -9,7 +9,19 @@
 
 class STT {
 public:
-    STT(const double& time, int nImmigrants, int nAnagenetic, int nCladogenetic);
+    explicit STT(const double& time = 0.0,
+            int nImmigrants = 0,
+            int nAnagenetic = 0,
+            int nCladogenetic = 0);
+
+    double getTime() const;
+
+    int getNImmigrants() const;
+
+    int getNAnagenetic() const;
+
+    int getNCladogenetic() const;
+
 private:
     const double mTime;
     const int mNImmigrants;
