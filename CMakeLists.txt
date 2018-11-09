@@ -21,4 +21,5 @@ add_executable(ArchiDAISIE
         Archipelago.cpp
         ArchiDAISIE.cpp
         ArchiMainSource.cpp
+        STTtable.cpp
         tests.cpp)
