@@ -2686,6 +2686,5 @@ void test_STTtable()
         assert(sttTable.getSTTtable()[1].getNImmigrants() == 0);
         assert(sttTable.getSTTtable()[1].getNAnagenetic() == 0);
         assert(sttTable.getSTTtable()[1].getNCladogenetic() == 1);
-        cout << sttTable;
     }
 }

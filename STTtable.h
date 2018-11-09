@@ -1,5 +1,5 @@
 //
-// Created by Sebastian Mader on 08.11.2018.
+// Created by Bastophiles on 08.11.2018.
 //
 
 #ifndef ARCHIDAISIE_STTTABLE_H
@@ -7,24 +7,19 @@
 
 #include <vector>
 #include <cassert>
-#include <ostream>
 #include "STT.h"
-#include "SpeciesID.h"
-#include "Species.h"
-#include "Island.h"
 #include "Archipelago.h"
-
+#include "Island.h"
+#include "Species.h"
 
 class STTtable {
 public:
-    explicit STTtable(const int size = 0);
+    explicit STTtable(const STT& firstRow = STT());
 
-    const std::vector<STT>& getSTTtable() const noexcept;
+    const std::vector<STT>& getSTTtable() const;
 
     unsigned long size();
     void updateSTTtable(const Archipelago& archi, const double& time);
-
-    friend std::ostream& operator<<(std::ostream& os, const STTtable& table);
 
 private:
     std::vector<STT> mSTTtable;
