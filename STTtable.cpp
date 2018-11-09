@@ -6,11 +6,10 @@
 
 using namespace std;
 
-STTtable::STTtable(const int size, const STT& firstRow)
+STTtable::STTtable(const int size)
 {
     assert(size >= 0);
     mSTTtable = vector<STT>(static_cast<unsigned>(size));
-    mSTTtable[0] = firstRow;
 }
 
 void STTtable::updateSTTtable(const Archipelago& archi, const double& time)

@@ -7,12 +7,12 @@
 
 #include <vector>
 #include <cassert>
-#include "STT.h"
-#include "STTtable.h"
 #include "event_type.h"
 #include "SpeciesID.h"
 #include "Species.h"
 #include "Island.h"
+#include "STT.h"
+#include "STTtable.h"}
 
 double getLogGrowth(const Island& island) noexcept;
 

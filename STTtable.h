@@ -17,7 +17,7 @@
 
 class STTtable {
 public:
-    explicit STTtable(const int size, const STT& firstRow = STT());
+    explicit STTtable(const int size = 0);
 
     const std::vector<STT>& getSTTtable() const noexcept;
 

@@ -2610,25 +2610,27 @@ void test_archi()
 void test_STT()
 {
     { // empty constructor creates emtpy STT
-        STT stt = STT(<#initializer#>, 0, 0, 0, 0);
+        STT stt = STT(0.0, 0, 0, 0, 0);
         assert(stt.getTime() == 0.0);
         assert(stt.getNImmigrants() == 0);
         assert(stt.getNAnagenetic() == 0);
         assert(stt.getNCladogenetic() == 0);
+        assert(stt.getNColonisations() == 0);
     }
     { // constructor assigns values correctly
-        STT stt(2.0, 2, 1, 3, 0);
+        STT stt(2.0, 2, 1, 3, 3);
         assert(stt.getTime() == 2.0);
         assert(stt.getNImmigrants() == 2);
         assert(stt.getNAnagenetic() == 1);
         assert(stt.getNCladogenetic() == 3);
+        assert(stt.getNColonisations() == 3);
     }
 }
 
 void test_STTtable()
 {
     { // empty constructor creates STTtable with first row of zeros
-        STTtable sttTable = STTtable(0, <#initializer#>);
+        STTtable sttTable = STTtable(0);
         assert(sttTable.size() == 1);
         assert(sttTable.getSTTtable()[0].getTime() == 0.0);
         assert(sttTable.getSTTtable()[0].getNImmigrants() == 0);
@@ -2636,7 +2638,7 @@ void test_STTtable()
         assert(sttTable.getSTTtable()[0].getNCladogenetic() == 0);
     }
     { // constructor creates STTtable with input at first row
-        STTtable sttTable = STTtable(0, STT(2.0, 2, 1, 3, 0));
+        STTtable sttTable = STTtable(0);
         assert(sttTable.size() == 1);
         assert(sttTable.getSTTtable()[0].getTime() == 2.0);
         assert(sttTable.getSTTtable()[0].getNImmigrants() == 2);
@@ -2648,7 +2650,7 @@ void test_STTtable()
         int islCarryingCap = 5;
         Archipelago archi = Archipelago(n_islands, islCarryingCap);
         archi.addSpecies(Species(4.0,SpeciesID(1),SpeciesID(1),'I',false,4.0,4.0,{}),0);
-        STTtable sttTable = STTtable(0, <#initializer#>);
+        STTtable sttTable = STTtable(0);
         assert(sttTable.size()==1);
         sttTable.updateSTTtable(archi,4.0);
         assert(sttTable.size()==2);
@@ -2662,7 +2664,7 @@ void test_STTtable()
         int islCarryingCap = 5;
         Archipelago archi = Archipelago(n_islands, islCarryingCap);
         archi.addSpecies(Species(4.0,SpeciesID(1),SpeciesID(1),'A',false,4.0,4.0,{}),0);
-        STTtable sttTable = STTtable(0, <#initializer#>);
+        STTtable sttTable = STTtable(0);
         assert(sttTable.size()==1);
         sttTable.updateSTTtable(archi,4.0);
         assert(sttTable.size()==2);
@@ -2676,7 +2678,7 @@ void test_STTtable()
         int islCarryingCap = 5;
         Archipelago archi = Archipelago(n_islands, islCarryingCap);
         archi.addSpecies(Species(4.0,SpeciesID(1),SpeciesID(1),'C',false,4.0,4.0,{}),0);
-        STTtable sttTable = STTtable(0, <#initializer#>);
+        STTtable sttTable = STTtable(0);
         assert(sttTable.size()==1);
         sttTable.updateSTTtable(archi,4.0);
         assert(sttTable.size()==2);
