@@ -26,7 +26,7 @@ public:
     int getNSpeciesID();
     std::vector<SpeciesID> getSpeciesIDs();
     std::vector<SpeciesID> getGlobalSpeciesIDs() const;
-    const std::vector<Island>& getIslands() const { return mIslands; }
+    const std::vector<Island> & getIslands() const { return mIslands; }
     int getCarryingCap() const noexcept { return mK; }
     std::vector<double> getGlobalRates() const noexcept { return mGlobalRates; }
 
