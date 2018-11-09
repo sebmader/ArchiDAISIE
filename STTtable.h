@@ -7,6 +7,7 @@
 
 #include <vector>
 #include <cassert>
+#include <ostream>
 #include "STT.h"
 #include "Archipelago.h"
 #include "Island.h"
@@ -20,6 +21,8 @@ public:
 
     unsigned long size();
     void updateSTTtable(const Archipelago& archi, const double& time);
+
+    friend std::ostream& operator<<(std::ostream& os, const STTtable& ttable);
 
 private:
     std::vector<STT> mSTTtable;

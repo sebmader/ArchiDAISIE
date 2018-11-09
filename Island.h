@@ -43,8 +43,8 @@ public:
             const std::vector<double>& islandParameters,
             int n_mainlandSpecies,
             int n_islands,
-            const double& sumLogGrowthWOThis);
-                    // initialise/calculate rates and store them in EventRates vector
+            const double& sumLogGrowthWOThis
+    );              // initialise/calculate rates and store them in EventRates vector
                     // gam_i, gam_m, lamb_cl, lamb_al, mu_l
                     // per island -> doesn't include global rates !!!
 

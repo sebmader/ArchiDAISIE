@@ -31,13 +31,3 @@ Species findOldestSpecies(const std::vector<Species> speciesVec)
     return oldest;
 }
 
-STTtable mergeSTTtables(const vector<STTtable>& STTvec, const int n_samples)
-{
-    double oldest = STTvec[0].getSTTtable()[0].getTime();
-    for (auto& stt : STTvec) {
-        assert(stt.getSTTtable()[0].getTime()==oldest);
-    }
-    STTtable fullSTT = STTtable(STT());
-    return fullSTT;
-}
-

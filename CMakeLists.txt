@@ -15,11 +15,12 @@ add_executable(ArchiDAISIE
         free_functions.cpp
         DrawEvents.cpp
         event_type.cpp
+        STT.cpp
+        STTtable.cpp
         SpeciesID.cpp
         Species.cpp
         Island.cpp
         Archipelago.cpp
         ArchiDAISIE.cpp
         ArchiMainSource.cpp
-        STTtable.cpp
         tests.cpp)
