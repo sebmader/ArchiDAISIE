@@ -6,7 +6,6 @@
 #define ARCHIDAISIE_DRAWEVENTS_H
 
 #include <vector>
-#include <iostream>
 #include <random>
 #include "SpeciesID.h"
 

@@ -6,30 +6,25 @@
 
 using namespace std;
 
-Archipelago ArchiDAISIE_core(const double& islandAge,
-        const int n_mainlandSpecies,
-        const std::vector<double>& initialParameters,
-        const int archiCarryingCap,
-        const int n_islands,
-        mt19937_64& prng,
-        SpeciesID& maxSpeciesID)
+Archipelago ArchiDAISIE_core(const double& islandAge, const int n_mainlandSpecies, const std::vector<double>& initialParameters,
+        const int archiCarryingCap, const int n_islands, mt19937_64& prng, SpeciesID& maxSpeciesID, STTtable& stt)
 {
     try {
         // initialise Archipelago data frame and
         // set time to island age (= emergence time of island)
-        Archipelago aArchi(n_islands, archiCarryingCap);
+        Archipelago archi(n_islands, archiCarryingCap);
         double timeNow = islandAge;
 
         // start looping through time
         for (;;) {
 
             // calculate the rates of events
-            aArchi.calculateAllRates(initialParameters, n_mainlandSpecies, n_islands);
+            archi.calculateAllRates(initialParameters, n_mainlandSpecies, n_islands);
 
             // draw time interval to next event
-            const std::vector<double> globalRates = aArchi.getGlobalRates();
+            const std::vector<double> globalRates = archi.getGlobalRates();
             double sumOfRates = globalRates[0] + globalRates[1] + globalRates[2];
-            for (auto& island : aArchi.getIslands()) {
+            for (auto& island : archi.getIslands()) {
                 sumOfRates += extractSumOfRates(island);
             }
             if (sumOfRates <= 0)
@@ -44,13 +39,16 @@ Archipelago ArchiDAISIE_core(const double& islandAge,
                 break;
 
             // sample which event happens
-            event_type nextEvent = aArchi.sampleNextEvent(prng);
+            event_type nextEvent = archi.sampleNextEvent(prng);
 
             // update the phylogeny
-            aArchi.doNextEvent(nextEvent, initialParameters[1], prng, timeNow,
+            archi.doNextEvent(nextEvent, initialParameters[1], prng, timeNow,
                     maxSpeciesID, n_mainlandSpecies);
+
+            // update STT
+            stt.updateSTTtable(archi,timeNow);
         }
-        return aArchi;
+        return archi;
     }
     catch (std::string &str) {
         std::cerr << "Warning: " << str;
@@ -94,27 +92,32 @@ std::vector<Island> ArchiDAISIE(const double& islandAge,
         const int archiCarryingCap = static_cast<int>(initialParameters[8]);
         initialParameters.pop_back();
 
-        // initialise main data frame
+        // initialise main data frame: complete species data for archipelago of each replicate
         std::vector<Island> islandReplicates(replicates);
-        // ### CAUTION ### : need to implement the exact same output as DAISIE_sim
-        // how to combine the multiple data types? and which types btw?
+        // output == input of DAISIE_data_prep
 
         // loop through replicates
-        for (int i = 0; i < replicates; ++i) {
+        for (int rep = 0; rep < replicates; ++rep) {
 
             // initialise intermediate archipelago data frame
             Archipelago fullArchi(n_islands, archiCarryingCap);
+            // initialise intermediate STT data frame
+            vector<STTtable> STTperColoniser(n_mainlandSpecies);
 
             // initialise max species ID
             SpeciesID maxSpeciesID(n_mainlandSpecies);
 
             // run simulation for each mainland sp. separately -> clade-specific carrying capacity
-            for (int j = 0; j < n_mainlandSpecies; ++j) {
+            for (int mainSp = 0; mainSp < n_mainlandSpecies; ++mainSp) {
 
                 fullArchi.addArchi(ArchiDAISIE_core(islandAge, 1, initialParameters,
-                        archiCarryingCap, n_islands, prng, maxSpeciesID));
+                        archiCarryingCap, n_islands, prng, maxSpeciesID, STTperColoniser[mainSp]));
             }
-            islandReplicates[i] = fullArchi.makeArchiTo1Island();
+
+            // merge all perColoniser STT tables
+            // output of replicates STT table
+            // ofstream ofs("rep_"+to_string(rep)+"_STT.txt");
+            islandReplicates[rep] = fullArchi.makeArchiTo1Island();
         }
         return islandReplicates;
     }

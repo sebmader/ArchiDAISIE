@@ -1,5 +1,5 @@
 //
-// Created by Bastophiles on 06.09.2018.
+// Created by Sebastian Mader on 06.09.2018.
 //
 
 #ifndef ARCHIDAISIE_ARCHIPELAGO_H
@@ -9,17 +9,17 @@
 #include <vector>
 #include <iostream>
 #include "DrawEvents.h"
-#include "SpeciesID.h"
 #include "event_type.h"
+#include "SpeciesID.h"
 #include "Species.h"
 #include "Island.h"
 #include "free_functions.h"
+
 
 class Archipelago {         // class for the whole archipelago
 public:
     explicit Archipelago(const int & = 0, const int & = 0);
         // constructor of archipelago based on number of islands and archipelago-wide K
-//    void updateAliveSpec();    // updating the archipelago-wide vector of extant species
 
     int getNIslands() const noexcept;
     int getNSpecies() const;

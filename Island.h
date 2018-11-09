@@ -7,11 +7,12 @@
 
 #include <vector>
 #include <cassert>
+#include "event_type.h"
 #include "DrawEvents.h"
 #include "event_type.h"
 #include "SpeciesID.h"
 #include "Species.h"
-#include "event_type.h"
+#include "free_functions.h"
 
 //RJCB: indent comments correctly
 
@@ -43,8 +44,8 @@ public:
             const std::vector<double>& islandParameters,
             int n_mainlandSpecies,
             int n_islands,
-            const double& sumLogGrowthWOThis
-    );              // initialise/calculate rates and store them in EventRates vector
+            const double& sumLogGrowthWOThis);
+                    // initialise/calculate rates and store them in EventRates vector
                     // gam_i, gam_m, lamb_cl, lamb_al, mu_l
                     // per island -> doesn't include global rates !!!
 
