@@ -37,6 +37,8 @@ int main() {
     test_species();
     test_island();
     test_archi();
+    test_STT();
+    test_STTtable();
 
     const int islandAge = 4;
     const int n_mainlandSp = 100;

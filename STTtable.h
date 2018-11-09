@@ -22,7 +22,7 @@ public:
     unsigned long size();
     void updateSTTtable(const Archipelago& archi, const double& time);
 
-    friend std::ostream& operator<<(std::ostream& os, const STTtable& ttable);
+    friend std::ostream& operator<<(std::ostream& os, const STTtable& table);
 
 private:
     std::vector<STT> mSTTtable;
