@@ -7,12 +7,11 @@
 
 #include <vector>
 #include <cassert>
-#include "event_type.h"
 #include "DrawEvents.h"
 #include "event_type.h"
 #include "SpeciesID.h"
 #include "Species.h"
-#include "free_functions.h"
+#include "event_type.h"
 
 //RJCB: indent comments correctly
 

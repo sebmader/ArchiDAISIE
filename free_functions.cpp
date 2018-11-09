@@ -37,7 +37,7 @@ STTtable mergeSTTtables(const vector<STTtable>& STTvec, const int n_samples)
     for (auto& stt : STTvec) {
         assert(stt.getSTTtable()[0].getTime()==oldest);
     }
-    STTtable fullSTT = STTtable(n_samples);
+    STTtable fullSTT = STTtable(STT());
     return fullSTT;
 }
 

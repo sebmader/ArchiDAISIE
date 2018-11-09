@@ -3,6 +3,7 @@
 //
 
 #include "Island.h"
+#include "Archipelago.h"
 
 using namespace std;
 
