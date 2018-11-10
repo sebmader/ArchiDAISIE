@@ -2652,7 +2652,7 @@ void test_STTtable()
         assert(sttTable.getSTTtable()[0].getNCladogenetic() == 3);
         assert(sttTable.getSTTtable()[0].getNColonisations() == 1);
     }
-    { // update function identifies present species as colonisation
+    { // update function: present species increases num of colonisations
         int n_islands = 2;
         int islCarryingCap = 5;
         Archipelago archi = Archipelago(n_islands, islCarryingCap);
@@ -2663,6 +2663,21 @@ void test_STTtable()
         assert(sttTable.size()==2);
         assert(sttTable.getSTTtable()[1].getTime()==4.0);
         assert(sttTable.getSTTtable()[1].getNColonisations()==1);
+    }
+    { // update function: sister species are identified as one colonisation
+        int n_islands = 2;
+        int islCarryingCap = 5;
+        Archipelago archi = Archipelago(n_islands, islCarryingCap);
+        archi.addSpecies(Species(5.0,SpeciesID(),SpeciesID(1),'I',false,5.0,5.0),0);
+        archi.addSpecies(Species(4.9,SpeciesID(),SpeciesID(2),'I',false,5.0,5.0),1);
+        STTtable sttTable = STTtable(1);
+        assert(sttTable.size()==1);
+        sttTable.updateSTTtable(archi,4.0);
+        assert(sttTable.size()==2);
+        assert(sttTable.getSTTtable()[1].getTime()==4.0);
+        assert(sttTable.getSTTtable()[1].getNColonisations()==1);
+        // output:
+        cout << sttTable << '\n';
     }
     { // update function identifies and saves immigrant species on archipelago correctly
         int n_islands = 2;

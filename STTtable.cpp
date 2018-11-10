@@ -64,10 +64,11 @@ void STTtable::updateSTTtable(const Archipelago& archi, const double& time)
 
 ostream& operator<<(ostream& os, const STTtable& table)
 {
-    os << "time" << ',' << "nI" << ',' << "nA" << ',' << "nC" << '\n';
+    os << "time" << ',' << "nI" << ',' << "nA" << ',' << "nC" << ',' << "nColo" << '\n';
     for (auto& stt : table.getSTTtable()) {
         os << stt.getTime() << ',' << stt.getNImmigrants() << ','
-           << stt.getNAnagenetic() << ',' << stt.getNCladogenetic() << '\n';
+           << stt.getNAnagenetic() << ',' << stt.getNCladogenetic() << ','
+           << stt.getNColonisations() << '\n';
     }
     return os;
 }
