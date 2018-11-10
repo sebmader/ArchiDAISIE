@@ -6,9 +6,24 @@
 
 using namespace std;
 
-STTtable::STTtable(const STT& firstRow)
+STTtable::STTtable(const unsigned int& size, const STT& rowContent)
 {
-    mSTTtable = vector<STT>(1,firstRow);
+    mSTTtable = vector<STT>(size, rowContent);
+}
+
+void STTtable::push_back(const STT& newRow)
+{
+    mSTTtable.push_back(newRow);
+}
+
+unsigned long STTtable::size() const
+{
+    return mSTTtable.size();
+}
+
+const vector<STT>& STTtable::getSTTtable() const noexcept
+{
+    return mSTTtable;
 }
 
 void STTtable::updateSTTtable(const Archipelago& archi, const double& time)
@@ -37,16 +52,6 @@ void STTtable::updateSTTtable(const Archipelago& archi, const double& time)
         }
     }
     mSTTtable.emplace_back(time,nImmigrants,nAnagenetic,nCladogenetic);
-}
-
-unsigned long STTtable::size()
-{
-    return mSTTtable.size();
-}
-
-const vector<STT>& STTtable::getSTTtable() const
-{
-    return mSTTtable;
 }
 
 ostream& operator<<(ostream& os, const STTtable& table)

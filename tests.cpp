@@ -2615,40 +2615,49 @@ void test_STT()
         assert(stt.getNImmigrants() == 0);
         assert(stt.getNAnagenetic() == 0);
         assert(stt.getNCladogenetic() == 0);
+        assert(stt.getNColonisations() == 0);
     }
     { // constructor assigns values correctly
-        STT stt(2.0, 2, 1, 3);
+        STT stt(2.0, 2, 1, 3, 1);
         assert(stt.getTime() == 2.0);
         assert(stt.getNImmigrants() == 2);
         assert(stt.getNAnagenetic() == 1);
         assert(stt.getNCladogenetic() == 3);
+        assert(stt.getNColonisations() == 1);
     }
 }
 
 void test_STTtable()
 {
-    { // empty constructor creates STTtable with first row of zeros
+    { // empty constructor creates empty STTtable
         STTtable sttTable = STTtable();
+        assert(sttTable.size() == 0);
+    }
+    { // constructor creates STTtable with input as size and those rows being 0s
+        STTtable sttTable = STTtable(1);
         assert(sttTable.size() == 1);
         assert(sttTable.getSTTtable()[0].getTime() == 0.0);
         assert(sttTable.getSTTtable()[0].getNImmigrants() == 0);
         assert(sttTable.getSTTtable()[0].getNAnagenetic() == 0);
         assert(sttTable.getSTTtable()[0].getNCladogenetic() == 0);
+        assert(sttTable.getSTTtable()[0].getNColonisations() == 0);
     }
-    { // constructor creates STTtable with input at first row
-        STTtable sttTable = STTtable(STT(2.0, 2, 1, 3));
+    { // constructor creates STTtable with input as size
+        // and those rows being second input
+        STTtable sttTable = STTtable(1, STT(2.0, 2, 1, 3, 1));
         assert(sttTable.size() == 1);
         assert(sttTable.getSTTtable()[0].getTime() == 2.0);
         assert(sttTable.getSTTtable()[0].getNImmigrants() == 2);
         assert(sttTable.getSTTtable()[0].getNAnagenetic() == 1);
         assert(sttTable.getSTTtable()[0].getNCladogenetic() == 3);
+        assert(sttTable.getSTTtable()[0].getNColonisations() == 1);
     }
     { // update function identifies and saves immigrant species on archipelago correctly
         int n_islands = 2;
         int islCarryingCap = 5;
         Archipelago archi = Archipelago(n_islands, islCarryingCap);
         archi.addSpecies(Species(4.0,SpeciesID(1),SpeciesID(1),'I',false,4.0,4.0,{}),0);
-        STTtable sttTable = STTtable();
+        STTtable sttTable = STTtable(1);
         assert(sttTable.size()==1);
         sttTable.updateSTTtable(archi,4.0);
         assert(sttTable.size()==2);
@@ -2662,7 +2671,7 @@ void test_STTtable()
         int islCarryingCap = 5;
         Archipelago archi = Archipelago(n_islands, islCarryingCap);
         archi.addSpecies(Species(4.0,SpeciesID(1),SpeciesID(1),'A',false,4.0,4.0,{}),0);
-        STTtable sttTable = STTtable();
+        STTtable sttTable = STTtable(1);
         assert(sttTable.size()==1);
         sttTable.updateSTTtable(archi,4.0);
         assert(sttTable.size()==2);
@@ -2676,7 +2685,7 @@ void test_STTtable()
         int islCarryingCap = 5;
         Archipelago archi = Archipelago(n_islands, islCarryingCap);
         archi.addSpecies(Species(4.0,SpeciesID(1),SpeciesID(1),'C',false,4.0,4.0,{}),0);
-        STTtable sttTable = STTtable();
+        STTtable sttTable = STTtable(1);
         assert(sttTable.size()==1);
         sttTable.updateSTTtable(archi,4.0);
         assert(sttTable.size()==2);

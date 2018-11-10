@@ -15,11 +15,13 @@
 
 class STTtable {
 public:
-    explicit STTtable(const STT& firstRow = STT());
+    explicit STTtable(const unsigned int& size = 0,
+            const STT& rowContent = STT());
 
-    const std::vector<STT>& getSTTtable() const;
+    const std::vector<STT>& getSTTtable() const noexcept;
+    unsigned long size() const;
 
-    unsigned long size();
+    void push_back(const STT& newRow);
     void updateSTTtable(const Archipelago& archi, const double& time);
 
     friend std::ostream& operator<<(std::ostream& os, const STTtable& table);

@@ -21,7 +21,7 @@ double extractSumOfRates(const Island& island)
     return sumRates;
 }
 
-Species findOldestSpecies(const std::vector<Species> speciesVec)
+Species findOldestSpecies(const vector<Species>& speciesVec)
 {
     Species oldest = Species();
     for (auto& species : speciesVec) {

@@ -11,12 +11,11 @@
 #include "SpeciesID.h"
 #include "Species.h"
 #include "Island.h"
-#include "Archipelago.h"
 
 double getLogGrowth(const Island& island) noexcept;
 
 double extractSumOfRates(const Island& island);
 
-Species findOldestSpecies(const std::vector<Species> speciesVec);
+Species findOldestSpecies(const std::vector<Species>& speciesVec);
 
 #endif //ARCHIDAISIE_FREE_FUNCTIONS_H
