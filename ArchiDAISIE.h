@@ -18,6 +18,7 @@
 #include "Island.h"
 #include "Archipelago.h"
 #include "free_functions.h"
+#include "STTtable.h"
 
 Archipelago ArchiDAISIE_core(const double& islandAge,
         int n_mainlandSpecies,

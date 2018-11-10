@@ -10,7 +10,6 @@
 #include <ostream>
 #include "STT.h"
 #include "Archipelago.h"
-#include "Island.h"
 #include "Species.h"
 
 class STTtable {
