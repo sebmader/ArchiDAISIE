@@ -7,7 +7,7 @@
 using namespace std;
 
 Archipelago ArchiDAISIE_core(const double& islandAge,
-        const int n_mainlandSpecies,
+        const vector<SpeciesID>& mainSpeciesIDs,
         const std::vector<double>& initialParameters,
         const int archiCarryingCap,
         const int n_islands,
@@ -19,12 +19,13 @@ Archipelago ArchiDAISIE_core(const double& islandAge,
         // set time to island age (= emergence time of island)
         Archipelago archi(n_islands, archiCarryingCap);
         double timeNow = islandAge;
+        const int n_mainland = static_cast<int>(mainSpeciesIDs.size());
 
         // start looping through time
         for (;;) {
 
             // calculate the rates of events
-            archi.calculateAllRates(initialParameters, n_mainlandSpecies, n_islands);
+            archi.calculateAllRates(initialParameters, n_mainland, n_islands);
 
             // draw time interval to next event
             const std::vector<double> globalRates = archi.getGlobalRates();
@@ -48,7 +49,7 @@ Archipelago ArchiDAISIE_core(const double& islandAge,
 
             // update the phylogeny
             archi.doNextEvent(nextEvent, initialParameters[1], prng, timeNow,
-                    maxSpeciesID, n_mainlandSpecies);
+                    maxSpeciesID, mainSpeciesIDs);
         }
         return archi;
     }
@@ -111,8 +112,10 @@ std::vector<Island> ArchiDAISIE(const double& islandAge,
             // run simulation for each mainland sp. separately -> clade-specific carrying capacity
             for (int mainSp = 0; mainSp < n_mainlandSpecies; ++mainSp) {
 
-                fullArchi.addArchi(ArchiDAISIE_core(islandAge, 1, initialParameters,
-                        archiCarryingCap, n_islands, prng, maxSpeciesID));
+                const vector<SpeciesID> mainlandSpecies(1,SpeciesID(mainSp));
+                fullArchi.addArchi(ArchiDAISIE_core(islandAge, mainlandSpecies,
+                        initialParameters, archiCarryingCap,
+                        n_islands, prng, maxSpeciesID));
             }
             islandReplicates[rep] = fullArchi.makeArchiTo1Island();
         }

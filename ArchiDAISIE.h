@@ -21,10 +21,10 @@
 #include "STTtable.h"
 
 Archipelago ArchiDAISIE_core(const double& islandAge,
-        int n_mainlandSpecies,
+        const std::vector<SpeciesID>& mainSpeciesIDs,
         const std::vector<double>& initialParameters,
-        int archiCarryingCap,
-        int n_islands,
+        const int archiCarryingCap,
+        const int n_islands,
         std::mt19937_64& prng,
         SpeciesID& maxSpeciesID);
 

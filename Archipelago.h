@@ -79,7 +79,7 @@ public:
             std::mt19937_64&,
             const double,
             SpeciesID& maxSpeciesID,
-            const int& n_mainlandSp); // switch-statement
+            const std::vector<SpeciesID>& mainSpeciesIDs); // switch-statement
                     // that calls event functions to update the island vector
 
     void addSpecies(const Species&, const int);  // adds species to island

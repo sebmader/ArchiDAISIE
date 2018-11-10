@@ -997,7 +997,7 @@ void test_archi()
                 prng,
                 4.0,
                 maxSpeciesID,
-                n_mainlandSp);
+                vector<SpeciesID>( { SpeciesID(n_mainlandSp) } ));
         assert(archi.getNSpeciesID() == 1);
         archi.calculateAllRates(iniPars, n_mainlandSp, n_islands);
         archi.doNextEvent(event_type::local_cladogenesis,
@@ -1005,7 +1005,7 @@ void test_archi()
                 prng,
                 3.9,
                 maxSpeciesID,
-                n_mainlandSp);
+                vector<SpeciesID>( { SpeciesID(n_mainlandSp) } ));
         assert(archi.getNSpeciesID() == 2);
     }
     {  // local anagenesis does not increase archi species
@@ -1023,7 +1023,7 @@ void test_archi()
                 prng,
                 4.0,
                 maxSpeciesID,
-                n_mainlandSp);
+                vector<SpeciesID>( { SpeciesID(n_mainlandSp) } ));
         assert(archi.getNSpeciesID() == 1);
         archi.calculateAllRates(iniPars,n_mainlandSp, n_islands);
         archi.doNextEvent(event_type::local_anagenesis,
@@ -1031,7 +1031,7 @@ void test_archi()
                 prng,
                 3.9,
                 maxSpeciesID,
-                n_mainlandSp);
+                vector<SpeciesID>( { SpeciesID(n_mainlandSp) } ));
         assert(archi.getNSpeciesID() == 1);
     }
     {  // local extinction decreases archi species
@@ -1049,7 +1049,7 @@ void test_archi()
                 prng,
                 4.0,
                 maxSpeciesID,
-                n_mainlandSp);
+                vector<SpeciesID>( { SpeciesID(n_mainlandSp) } ));
         assert(archi.getNSpeciesID() == 1);
         archi.calculateAllRates(iniPars, n_mainlandSp, n_islands);
         archi.doNextEvent(event_type::local_extinction,
@@ -1057,7 +1057,7 @@ void test_archi()
                 prng,
                 3.9,
                 maxSpeciesID,
-                n_mainlandSp);
+                vector<SpeciesID>( { SpeciesID(n_mainlandSp) } ));
         assert(archi.getNSpeciesID() == 0);
     }
     {  // calculating rates initialises rates vectors
@@ -1439,7 +1439,8 @@ void test_archi()
                 0.3,
                 prng,
                 3.8,
-                maxSpeciesID, n_mainlandSp);
+                maxSpeciesID,
+                vector<SpeciesID>( { SpeciesID(n_mainlandSp) } ));
         assert(archi.getNSpeciesID() == 2);
     }
     {   // global cladogenesis doesn't increase the number of species on each island
@@ -1473,7 +1474,8 @@ void test_archi()
                 0.3,
                 prng,
                 3.8,
-                maxSpeciesID, n_mainlandSp);
+                maxSpeciesID,
+                vector<SpeciesID>( { SpeciesID(n_mainlandSp) } ));
         assert(archi.getIslands()[0].getNSpecies() == 1);
         assert(archi.getIslands()[1].getNSpecies() == 1);
     }
@@ -1504,7 +1506,8 @@ void test_archi()
                 0.3,
                 prng,
                 3.8,
-                maxSpeciesID, n_mainlandSp);
+                maxSpeciesID,
+                vector<SpeciesID>( { SpeciesID(n_mainlandSp) } ));
         assert(archi.getIslands()[0].getSpecies()[0].isCladogenetic());
         assert(archi.getIslands()[1].getSpecies()[0].isCladogenetic());
         assert(archi.getIslands()[0].getSpecies()[0].getSpecID() !=
@@ -1522,7 +1525,8 @@ void test_archi()
                     0.3,
                     prng,
                     3.8,
-                    maxSpeciesID, n_mainlandSp);
+                    maxSpeciesID,
+                    vector<SpeciesID>( { SpeciesID(n_mainlandSp) } ));
             assert(!"should not get here!\n"); //!OCLINT
         }
         catch (const std::exception& e)
@@ -1559,7 +1563,8 @@ void test_archi()
                 0.3,
                 prng,
                 3.8,
-                maxSpeciesID, n_mainlandSp);
+                maxSpeciesID,
+                vector<SpeciesID>( { SpeciesID(n_mainlandSp) } ));
         assert(archi.getNSpeciesID() == 1);
     }
     {   // global anagenesis creates one new species with status 'A'
@@ -1589,7 +1594,8 @@ void test_archi()
                 0.3,
                 prng,
                 3.8,
-                maxSpeciesID, n_mainlandSp);
+                maxSpeciesID,
+                vector<SpeciesID>( { SpeciesID(n_mainlandSp) } ));
         assert(archi.getIslands()[0].getSpecies()[0].getStatus() == 'A');
         assert(archi.getIslands()[1].getSpecies()[0].getStatus() == 'A');
         assert(archi.getIslands()[0].getSpecies()[0].getSpecID()
@@ -1607,7 +1613,8 @@ void test_archi()
                     0.3,
                     prng,
                     3.8,
-                    maxSpeciesID, n_mainlandSp);
+                    maxSpeciesID,
+                    vector<SpeciesID>( { SpeciesID(n_mainlandSp) } ));
             assert(!"should not get here!\n"); //!OCLINT
         }
         catch (const std::exception& e)
@@ -1644,7 +1651,8 @@ void test_archi()
                 0.3,
                 prng,
                 3.8,
-                maxSpeciesID, n_mainlandSp);
+                maxSpeciesID,
+                vector<SpeciesID>( { SpeciesID(n_mainlandSp) } ));
         assert(archi.getNSpeciesID() == 0);
     }
     {   // doNextEvent throws if there are no global species (global extinct)
@@ -1659,7 +1667,8 @@ void test_archi()
                     0.3,
                     prng,
                     3.8,
-                    maxSpeciesID, n_mainlandSp);
+                    maxSpeciesID,
+                    vector<SpeciesID>( { SpeciesID(n_mainlandSp) } ));
         }
         catch (const exception &e)
         {
@@ -1680,7 +1689,8 @@ void test_archi()
         event_type event = archi.sampleNextEvent(prng);
         assert(archi.getNSpeciesID() == 0);
         archi.doNextEvent(event, iniPars[1], prng,
-                4.0, maxSpeciesID, n_mainlandSp);
+                4.0, maxSpeciesID,
+                vector<SpeciesID>( { SpeciesID(n_mainlandSp) } ));
         assert(archi.getNSpeciesID() == 1);
     }
     {   // archipelago with 3 islands, species inhabiting all,
@@ -1696,7 +1706,8 @@ void test_archi()
         event_type event = archi.sampleNextEvent(prng);
         assert(archi.getNSpeciesID() == 0);
         archi.doNextEvent(event, iniPars[1], prng,
-                4.0, maxSpeciesID, n_mainlandSp);
+                4.0, maxSpeciesID,
+                vector<SpeciesID>( { SpeciesID(n_mainlandSp) } ));
         assert(archi.getNSpeciesID() == 1);
         archi.calculateAllRates(iniPars, n_mainlandSp, n_islands);
         assert(archi.getGlobalSpeciesIDs().empty());
@@ -1705,7 +1716,7 @@ void test_archi()
                 prng,
                 3.5,
                 maxSpeciesID,
-                n_mainlandSp);
+                vector<SpeciesID>( { SpeciesID(n_mainlandSp) } ));
         assert(archi.getGlobalSpeciesIDs().size() == 1);
         archi.calculateAllRates(iniPars, n_mainlandSp, n_islands);
         archi.doNextEvent(event_type::local_migration,
@@ -1713,7 +1724,7 @@ void test_archi()
                 prng,
                 3.3,
                 maxSpeciesID,
-                n_mainlandSp);
+                vector<SpeciesID>( { SpeciesID(n_mainlandSp) } ));
         assert(archi.getNSpeciesID() == 1);
         assert(archi.getGlobalSpeciesIDs().size() == 1);
         archi.calculateAllRates(iniPars, n_mainlandSp, n_islands);
@@ -1722,7 +1733,7 @@ void test_archi()
                 prng,
                 3.2,
                 maxSpeciesID,
-                n_mainlandSp);
+                vector<SpeciesID>( { SpeciesID(n_mainlandSp) } ));
     }
     // most recent sister function
     {  // after migration migrant is found as sister of ancestral population (and vice versa)
