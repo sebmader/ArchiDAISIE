@@ -1,5 +1,5 @@
 //
-// Created by Bastophiles on 08.11.2018.
+// Created by Sebastian Mader on 08.11.2018.
 //
 
 #ifndef ARCHIDAISIE_STTTABLE_H

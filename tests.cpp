@@ -2652,6 +2652,18 @@ void test_STTtable()
         assert(sttTable.getSTTtable()[0].getNCladogenetic() == 3);
         assert(sttTable.getSTTtable()[0].getNColonisations() == 1);
     }
+    { // update function identifies present species as colonisation
+        int n_islands = 2;
+        int islCarryingCap = 5;
+        Archipelago archi = Archipelago(n_islands, islCarryingCap);
+        archi.addSpecies(Species(5.0,SpeciesID(),SpeciesID(),'I'),0);
+        STTtable sttTable = STTtable(1);
+        assert(sttTable.size()==1);
+        sttTable.updateSTTtable(archi,4.0);
+        assert(sttTable.size()==2);
+        assert(sttTable.getSTTtable()[1].getTime()==4.0);
+        assert(sttTable.getSTTtable()[1].getNColonisations()==1);
+    }
     { // update function identifies and saves immigrant species on archipelago correctly
         int n_islands = 2;
         int islCarryingCap = 5;
@@ -2665,6 +2677,7 @@ void test_STTtable()
         assert(sttTable.getSTTtable()[1].getNImmigrants() == 1);
         assert(sttTable.getSTTtable()[1].getNAnagenetic() == 0);
         assert(sttTable.getSTTtable()[1].getNCladogenetic() == 0);
+        assert(sttTable.getSTTtable()[1].getNColonisations()==1);
     }
     { // update function identifies and saves anagenetic species on archipelago correctly
         int n_islands = 2;
@@ -2679,6 +2692,7 @@ void test_STTtable()
         assert(sttTable.getSTTtable()[1].getNImmigrants() == 0);
         assert(sttTable.getSTTtable()[1].getNAnagenetic() == 1);
         assert(sttTable.getSTTtable()[1].getNCladogenetic() == 0);
+        assert(sttTable.getSTTtable()[1].getNColonisations()==1);
     }
     { // update function identifies and saves cladogenetic species on archipelago correctly
         int n_islands = 2;
@@ -2693,5 +2707,20 @@ void test_STTtable()
         assert(sttTable.getSTTtable()[1].getNImmigrants() == 0);
         assert(sttTable.getSTTtable()[1].getNAnagenetic() == 0);
         assert(sttTable.getSTTtable()[1].getNCladogenetic() == 1);
+        assert(sttTable.getSTTtable()[1].getNColonisations()==1);
+    }
+    { // update function throws if status of species is default ('0')
+        try {
+            int n_islands = 2;
+            int islCarryingCap = 5;
+            Archipelago archi = Archipelago(n_islands, islCarryingCap);
+            archi.addSpecies(Species(),0);
+            STTtable sttTable = STTtable(1);
+            assert(sttTable.size()==1);
+            sttTable.updateSTTtable(archi,4.0);
+        }
+        catch (exception& ex) {
+            assert(string(ex.what()) == "Status of species is unknown.\n");
+        }
     }
 }

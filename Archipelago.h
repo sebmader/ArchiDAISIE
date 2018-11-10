@@ -1,5 +1,5 @@
 //
-// Created by Bastophiles on 06.09.2018.
+// Created by Sebastian Mader on 06.09.2018.
 //
 
 #ifndef ARCHIDAISIE_ARCHIPELAGO_H

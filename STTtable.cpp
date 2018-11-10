@@ -1,5 +1,5 @@
 //
-// Created by Bastophiles on 08.11.2018.
+// Created by Sebastian Mader on 08.11.2018.
 //
 
 #include "STTtable.h"
@@ -31,6 +31,7 @@ void STTtable::updateSTTtable(const Archipelago& archi, const double& time)
     int nImmigrants = 0;
     int nAnagenetic = 0;
     int nCladogenetic = 0;
+    vector<Species> lineages;
     vector<Island> islands = archi.getIslands();
     for (auto& isl : islands) {
         vector<Species> species = isl.getSpecies();
@@ -46,12 +47,19 @@ void STTtable::updateSTTtable(const Archipelago& archi, const double& time)
                 ++nCladogenetic;
                 break;
             default:
-                assert(!"Shouldn't get here!\n"); //!OCLINT
                 throw logic_error("Status of species is unknown.\n");
             }
+            bool lineagePresent = false;
+            for (auto& lineage : lineages) {
+                if (lineage.isSister(sp))
+                    lineagePresent = true;
+            }
+            if(!lineagePresent)
+                lineages.push_back(sp);
         }
     }
-    mSTTtable.emplace_back(time,nImmigrants,nAnagenetic,nCladogenetic);
+    const int nColonisations = static_cast<int>(lineages.size());
+    mSTTtable.emplace_back(time,nImmigrants,nAnagenetic,nCladogenetic,nColonisations);
 }
 
 ostream& operator<<(ostream& os, const STTtable& table)
