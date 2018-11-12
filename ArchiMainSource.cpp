@@ -45,7 +45,7 @@ int main() {
     const int n_islands = 2;
     const int replicates = 1;
     const vector<double> vPars( {0.1, 0.1, 0.2, 0.12, 0.3, 0.2, 0.1, 0.12, 50} );
-    const vector<Island> archipelago = ArchiDAISIE(islandAge,n_mainlandSp,vPars,n_islands,replicates);
+    const vector<Island> archipelago = ArchiDAISIE(islandAge, n_mainlandSp, vPars, n_islands, replicates, 0);
 
     int i = 0;
     for (auto& z : archipelago) {

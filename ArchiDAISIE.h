@@ -1,5 +1,5 @@
 //
-// Created by Bastophiles on 07.11.2018.
+// Created by Sebastian Mader on 07.11.2018.
 //
 
 #ifndef ARCHIDAISIE_ARCHIDAISIE_H
@@ -23,15 +23,13 @@
 Archipelago ArchiDAISIE_core(const double& islandAge,
         const std::vector<SpeciesID>& mainSpeciesIDs,
         const std::vector<double>& initialParameters,
-        const int archiCarryingCap,
-        const int n_islands,
-        std::mt19937_64& prng,
-        SpeciesID& maxSpeciesID);
-
-std::vector<Island> ArchiDAISIE(const double& islandAge,
-        int n_mainlandSpecies,
-        std::vector<double> initialParameters,
+        int archiCarryingCap,
         int n_islands,
-        int replicates);
+        std::mt19937_64& prng,
+        SpeciesID& maxSpeciesID,
+        STTtable& STT);
+
+std::vector<Island> ArchiDAISIE(const double& islandAge, const int n_mainlandSpecies, std::vector<double> initialParameters,
+        const int n_islands, const int replicates, const int n_timeSlicesSTT);
 
 #endif //ARCHIDAISIE_ARCHIDAISIE_H

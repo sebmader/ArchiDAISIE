@@ -8,11 +8,9 @@ using namespace std;
 
 Archipelago ArchiDAISIE_core(const double& islandAge,
         const vector<SpeciesID>& mainSpeciesIDs,
-        const std::vector<double>& initialParameters,
-        const int archiCarryingCap,
-        const int n_islands,
-        mt19937_64& prng,
-        SpeciesID& maxSpeciesID)
+        const vector<double>& initialParameters,
+        const int archiCarryingCap, const int n_islands,
+        mt19937_64& prng, SpeciesID& maxSpeciesID, STTtable& STT)
 {
     try {
         // initialise Archipelago data frame and
@@ -50,6 +48,9 @@ Archipelago ArchiDAISIE_core(const double& islandAge,
             // update the phylogeny
             archi.doNextEvent(nextEvent, initialParameters[1], prng, timeNow,
                     maxSpeciesID, mainSpeciesIDs);
+
+            // update STT
+            STT.updateSTTtable(archi,timeNow);
         }
         return archi;
     }
@@ -62,9 +63,9 @@ Archipelago ArchiDAISIE_core(const double& islandAge,
 
 std::vector<Island> ArchiDAISIE(const double& islandAge,
         const int n_mainlandSpecies,
-        std::vector<double> initialParameters,
-        const int n_islands,
-        const int replicates)
+        vector<double> initialParameters,
+        const int n_islands, const int replicates,
+        const int n_timeSlicesSTT)
 {   // ### CAUTION ### : output unclear !!
     try {
         // check given parameters
@@ -96,12 +97,16 @@ std::vector<Island> ArchiDAISIE(const double& islandAge,
         initialParameters.pop_back();
 
         // initialise main data frame
-        std::vector<Island> islandReplicates(replicates);
+        std::vector<Island> islandReplicates((unsigned)replicates);
         // ### CAUTION ### : need to implement the exact same output as DAISIE_sim
         // how to combine the multiple data types? and which types btw?
 
         // loop through replicates
         for (int rep = 0; rep < replicates; ++rep) {
+
+            // initialise intermediate STT data frame
+            vector<STTtable> sttPerColoniser((unsigned)n_mainlandSpecies,
+                    STTtable(1,STT(islandAge)));
 
             // initialise intermediate archipelago data frame
             Archipelago fullArchi(n_islands, archiCarryingCap);
@@ -115,14 +120,19 @@ std::vector<Island> ArchiDAISIE(const double& islandAge,
                 const vector<SpeciesID> mainlandSpecies(1,SpeciesID(mainSp));
                 fullArchi.addArchi(ArchiDAISIE_core(islandAge, mainlandSpecies,
                         initialParameters, archiCarryingCap,
-                        n_islands, prng, maxSpeciesID));
+                        n_islands, prng, maxSpeciesID,
+                        sttPerColoniser[mainSp]));
             }
             islandReplicates[rep] = fullArchi.makeArchiTo1Island();
+
+            const STTtable fullSTT = mergeSTTtables(sttPerColoniser, n_timeSlicesSTT);
+            // TODO: output of merge STT per replicate to file
+            cout << fullSTT << '\n';
         }
         return islandReplicates;
     }
     catch (std::exception &error) {
-        std::cerr << "Error: " << error.what();
+        std::cerr << "Error: " << error.what() << '\n';
         exit(1);
     }
 }
