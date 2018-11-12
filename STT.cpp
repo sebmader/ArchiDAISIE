@@ -40,3 +40,17 @@ int STT::getNColonisations() const noexcept
 {
     return mNColonisations;
 }
+
+bool STT::operator==(const STT& rhs) const
+{
+    return mTime==rhs.mTime &&
+            mNImmigrants==rhs.mNImmigrants &&
+            mNAnagenetic==rhs.mNAnagenetic &&
+            mNCladogenetic==rhs.mNCladogenetic &&
+            mNColonisations==rhs.mNColonisations;
+}
+
+bool STT::operator!=(const STT& rhs) const
+{
+    return !(rhs==*this);
+}

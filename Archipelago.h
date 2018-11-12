@@ -13,7 +13,6 @@
 #include "event_type.h"
 #include "Species.h"
 #include "Island.h"
-#include "free_functions.h"
 
 class Archipelago {         // class for the whole archipelago
 public:

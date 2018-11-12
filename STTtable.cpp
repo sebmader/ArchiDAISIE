@@ -73,3 +73,12 @@ ostream& operator<<(ostream& os, const STTtable& table)
     return os;
 }
 
+STT& STTtable::operator[](size_t n)
+{
+    return mSTTtable[n];
+}
+
+const STT& STTtable::operator[](size_t n) const
+{
+    return mSTTtable[n];
+}

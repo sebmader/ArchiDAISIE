@@ -7,10 +7,8 @@
 
 #include <vector>
 #include <cassert>
-#include "event_type.h"
-#include "SpeciesID.h"
-#include "Species.h"
 #include "Island.h"
+#include "STTtable.h"
 
 double getLogGrowth(const Island& island) noexcept;
 
@@ -18,6 +16,6 @@ double extractSumOfRates(const Island& island);
 
 Species findOldestSpecies(const std::vector<Species>& speciesVec);
 
-// TODO: merging STTtables
+STTtable mergeSTTtables(const std::vector<STTtable>& STTvec, const int& n_samples);
 
 #endif //ARCHIDAISIE_FREE_FUNCTIONS_H

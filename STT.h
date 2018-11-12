@@ -21,6 +21,9 @@ public:
     int getNCladogenetic() const noexcept;
     int getNColonisations() const noexcept;
 
+    bool operator==(const STT& rhs) const;
+    bool operator!=(const STT& rhs) const;
+
 private:
     double mTime;
     int mNImmigrants;

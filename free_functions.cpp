@@ -31,3 +31,35 @@ Species findOldestSpecies(const vector<Species>& speciesVec)
     return oldest;
 }
 
+STTtable mergeSTTtables(const std::vector<STTtable>& STTvec, const int& n_samples)
+{
+    double oldestAge = STTvec[0].getSTTtable()[0].getTime();
+    for (auto& stt : STTvec) {
+        assert(stt.getSTTtable()[0].getTime()==oldestAge);
+    }
+    STTtable fullSTT = STTtable((unsigned) n_samples+1, STT(oldestAge, 0, 0, 0, 0));
+
+    // count species states per predefined time slice (island age / sample freq)
+    for(size_t i = 1; i < fullSTT.size(); ++i) {
+        double time = oldestAge - (oldestAge/n_samples) * i;
+        assert(time >= 0.0);
+        int nImmi = 0;
+        int nAna = 0;
+        int nClado = 0;
+        int nColo = 0;
+        for (auto& sttTab : STTvec) {
+            for (int j = (int)sttTab.size()-1; j >= 0; --j) {
+                if (sttTab[j].getTime() >= time) {
+                    nImmi += sttTab[j].getNImmigrants();
+                    nAna += sttTab[j].getNAnagenetic();
+                    nClado += sttTab[j].getNCladogenetic();
+                    nColo += sttTab[j].getNColonisations();
+                    break;
+                }
+            }
+        }
+        fullSTT[i] = STT(time,nImmi,nAna,nClado,nColo);
+    }
+    return fullSTT;
+}
+

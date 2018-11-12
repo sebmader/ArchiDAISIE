@@ -4,6 +4,7 @@
 
 
 #include "Archipelago.h"
+#include "free_functions.h"
 
 using namespace std;
 

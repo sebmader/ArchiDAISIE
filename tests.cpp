@@ -2762,4 +2762,66 @@ void test_STTtable()
             assert(string(ex.what()) == "Status of species is unknown.\n");
         }
     }
+    { // operator "[]" works for STT class
+        STT firstRow = STT(3.4,1,6,3,3);
+        STTtable stt = STTtable(1,firstRow);
+        assert(stt[0] == firstRow);
+    }
+    { // const operator "[]" works for STT class
+        const STT firstRow = STT(3.4,1,6,3,3);
+        const STTtable stt = STTtable(1,firstRow);
+        assert(stt[0] == firstRow);
+    }
+    { // merging of STTtables has size == sample size input + 1
+        const STT secondRow = STT(3.4,1,6,3,3);
+        STTtable stt = STTtable(2,STT(4.0));
+        stt[1] = secondRow;
+        const STT secondRow2 = STT(3.0,1,1,2,3);
+        STTtable stt2 = STTtable(2,STT(4.0));
+        stt2[1] = secondRow2;
+        const int n_slices = 8;
+        STTtable merge = mergeSTTtables({ stt,stt2 },n_slices);
+        assert(merge[0].getTime() == 4.0);
+        assert(merge[1].getTime() == 4.0 - (4.0/n_slices));
+        assert(merge.getSTTtable().back().getTime()== 0.0);
+        assert(merge.size()==n_slices+1);
+    }
+    { // merging of STTtables results in time steps of islandAge/n_slices
+        // and ends at zero (last elements time)
+        const STT secondRow = STT(3.4,1,6,3,3);
+        STTtable stt = STTtable(2,STT(4.0));
+        stt[1] = secondRow;
+        const STT secondRow2 = STT(3.0,1,1,2,3);
+        STTtable stt2 = STTtable(2,STT(4.0));
+        stt2[1] = secondRow2;
+        const int n_slices = 8;
+        STTtable merge = mergeSTTtables({ stt,stt2 },n_slices);
+        assert(merge[0].getTime() == 4.0);
+        assert(merge[1].getTime() == 4.0 - (4.0/n_slices));
+        assert(merge.getSTTtable().back().getTime()== 0.0);
+    }
+    { // merging of STTtables results in sums of single STT inputs at specific sample times
+        const STT secondRow = STT(3.6,1,6,3,3);
+        STTtable stt = STTtable(2,STT(4.0));
+        stt[1] = secondRow;
+        const STT secondRow2 = STT(3.1,1,1,2,3);
+        STTtable stt2 = STTtable(2,STT(4.0));
+        stt2[1] = secondRow2;
+        const int n_slices = 8;
+        STTtable merge = mergeSTTtables({ stt,stt2 },n_slices);
+        assert(merge[1].getTime()==3.5);
+        assert(merge[1].getNImmigrants() == secondRow.getNImmigrants());
+        assert(merge[1].getNAnagenetic() == secondRow.getNAnagenetic());
+        assert(merge[1].getNCladogenetic() == secondRow.getNCladogenetic());
+        assert(merge[1].getNColonisations() == secondRow.getNColonisations());
+        assert(merge[2].getTime()==3.0);
+        assert(merge[2].getNImmigrants() == secondRow.getNImmigrants()
+                + secondRow2.getNImmigrants());
+        assert(merge[2].getNAnagenetic() == secondRow.getNAnagenetic()
+                + secondRow2.getNAnagenetic());
+        assert(merge[2].getNCladogenetic() == secondRow.getNCladogenetic()
+                + secondRow2.getNCladogenetic());
+        assert(merge[2].getNColonisations() == secondRow.getNColonisations()
+                + secondRow2.getNColonisations());
+    }
 }
