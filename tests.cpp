@@ -2675,6 +2675,19 @@ void test_STTtable()
         assert(sttTable.getSTTtable()[1].getTime()==4.0);
         assert(sttTable.getSTTtable()[1].getNColonisations()==1);
     }
+    { // update function: 2 present species increases num of colonisations to 2
+        int n_islands = 2;
+        int islCarryingCap = 5;
+        Archipelago archi = Archipelago(n_islands, islCarryingCap);
+        archi.addSpecies(Species(5.0,SpeciesID(6),SpeciesID(6),'I',false,6.0,6.0),0);
+        archi.addSpecies(Species(5.0,SpeciesID(7),SpeciesID(7),'I',false,5.5,5.5),0);
+        STTtable sttTable = STTtable(1);
+        assert(sttTable.size()==1);
+        sttTable.updateSTTtable(archi,5.0);
+        assert(sttTable.size()==2);
+        assert(sttTable.getSTTtable()[1].getTime()==5.0);
+        assert(sttTable.getSTTtable()[1].getNColonisations()==2);
+    }
     { // update function: sister species are identified as one colonisation
         int n_islands = 2;
         int islCarryingCap = 5;
