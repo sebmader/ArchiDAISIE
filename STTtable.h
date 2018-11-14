@@ -23,6 +23,8 @@ public:
     void push_back(const STT& newRow);
     void updateSTTtable(const Archipelago& archi, const double& time);
 
+    void updateFullSTTtable(const Archipelago& archi, const double& time);
+
     friend std::ostream& operator<<(std::ostream& os, const STTtable& table);
     STT& operator[](size_t n);
     const STT& operator[](size_t n) const;

@@ -82,3 +82,37 @@ const STT& STTtable::operator[](size_t n) const
 {
     return mSTTtable[n];
 }
+
+void STTtable::updateFullSTTtable(const Archipelago& archi, const double& time)
+{
+    int nImmigrants = 0;
+    int nAnagenetic = 0;
+    int nCladogenetic = 0;
+    vector<Species> lineages;
+    Island mergedIsland = archi.makeArchiTo1Island();
+    vector<Species> species = mergedIsland.getSpecies();
+    for (auto& sp : species) {
+        switch(sp.getStatus()) {
+        case 'I':
+            ++nImmigrants;
+            break;
+        case 'A':
+            ++nAnagenetic;
+            break;
+        case 'C':
+            ++nCladogenetic;
+            break;
+        default:
+            throw logic_error("Status of species is unknown.\n");
+        }
+        bool lineagePresent = false;
+        for (auto& lineage : lineages) {
+            if (lineage.isSister(sp))
+                lineagePresent = true;
+        }
+        if(!lineagePresent)
+            lineages.push_back(sp);
+    }
+    const int nColonisations = static_cast<int>(lineages.size());
+    mSTTtable.emplace_back(time,nImmigrants,nAnagenetic,nCladogenetic,nColonisations);
+}

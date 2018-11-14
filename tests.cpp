@@ -33,7 +33,7 @@ void test_other_functions() //!OCLINT indeed long function, don't care it is a t
     }
 }
 
-void test_speciesID()
+void test_speciesID() //!OCLINT indeed long function, don't care it is a test
 {
     { // default constructor creates speciesID of 0
         SpeciesID spID = SpeciesID();
@@ -87,7 +87,7 @@ void test_speciesID()
     }
 }
 
-void test_species()
+void test_species() //!OCLINT indeed long function, don't care it is a test
 {
     { // defauft constructor creates empty species
         Species sp1 = Species();
@@ -2823,5 +2823,71 @@ void test_STTtable() //!OCLINT indeed long function, don't care it is a test
                 + secondRow2.getNCladogenetic());
         assert(merge[2].getNColonisations() == secondRow.getNColonisations()
                 + secondRow2.getNColonisations());
+    }
+    // problem: merging of island STT tables counts each island population as a single species
+      // no way of identifying duplicate species on basis of STT tables or on final L table
+    // possible solution: STT table updated during run-time is archipelago-wide
+      // -> use mergingArchi function in update function
+
+    {  // STT update does not delete 'A' duplicates
+        int n_islands = 2;
+        int islCarryingCap = 5;
+        Archipelago archi = Archipelago(n_islands, islCarryingCap);
+        archi.addSpecies(Species(3.9,SpeciesID(1),SpeciesID(1),'A',false,4.0,4.0,{}),0);
+        archi.addSpecies(Species(3.0,SpeciesID(1),SpeciesID(1),'A',true,4.0,4.0,{}),1);
+        STTtable sttTable = STTtable(1);
+        assert(sttTable.size()==1);
+        sttTable.updateSTTtable(archi,3.0);
+        assert(sttTable.getSTTtable().back().getNAnagenetic()==2);
+        assert(sttTable.getSTTtable().back().getNColonisations()==1);
+    }
+    {  // STT update after merging archipelago does delete 'A' duplicates
+        int n_islands = 2;
+        int islCarryingCap = 5;
+        Archipelago archi = Archipelago(n_islands, islCarryingCap);
+        archi.addSpecies(Species(3.9,SpeciesID(1),SpeciesID(1),'A',false,4.0,4.0,{}),0);
+        archi.addSpecies(Species(3.0,SpeciesID(1),SpeciesID(1),'A',true,4.0,4.0,{}),1);
+        STTtable sttTable = STTtable(1);
+        assert(sttTable.size()==1);
+        sttTable.updateFullSTTtable(archi,3.0);
+        assert(sttTable.getSTTtable().back().getNAnagenetic()==1);
+        assert(sttTable.getSTTtable().back().getNColonisations()==1);
+    }
+    {  // STT update after merging archipelago does delete 'C' duplicates
+        int n_islands = 2;
+        int islCarryingCap = 5;
+        Archipelago archi = Archipelago(n_islands, islCarryingCap);
+        archi.addSpecies(Species(3.9,SpeciesID(1),SpeciesID(1),'C',false,4.0,4.0,{}),0);
+        archi.addSpecies(Species(3.0,SpeciesID(1),SpeciesID(1),'C',true,4.0,4.0,{}),1);
+        STTtable sttTable = STTtable(1);
+        assert(sttTable.size()==1);
+        sttTable.updateFullSTTtable(archi,3.0);
+        assert(sttTable.getSTTtable().back().getNCladogenetic()==1);
+        assert(sttTable.getSTTtable().back().getNColonisations()==1);
+    }
+    {  // STT update after merging archipelago does delete 'I' duplicates
+        int n_islands = 2;
+        int islCarryingCap = 5;
+        Archipelago archi = Archipelago(n_islands, islCarryingCap);
+        archi.addSpecies(Species(3.9,SpeciesID(1),SpeciesID(1),'I',false,4.0,3.9,{}),0);
+        archi.addSpecies(Species(3.0,SpeciesID(1),SpeciesID(1),'I',true,4.0,3.9,{}),1);
+        STTtable sttTable = STTtable(1);
+        assert(sttTable.size()==1);
+        sttTable.updateFullSTTtable(archi,3.0);
+        assert(sttTable.getSTTtable().back().getNImmigrants()==1);
+        assert(sttTable.getSTTtable().back().getNColonisations()==1);
+    }
+    {  // STT update after merging archipelago does delete 'I' duplicates
+        // also when independent immigrations TODO: problem?
+        int n_islands = 2;
+        int islCarryingCap = 5;
+        Archipelago archi = Archipelago(n_islands, islCarryingCap);
+        archi.addSpecies(Species(3.9,SpeciesID(1),SpeciesID(1),'I',false,4.0,3.9,{}),0);
+        archi.addSpecies(Species(3.0,SpeciesID(1),SpeciesID(1),'I',false,4.0,3.0,{}),1);
+        STTtable sttTable = STTtable(1);
+        assert(sttTable.size()==1);
+        sttTable.updateFullSTTtable(archi,3.0);
+        assert(sttTable.getSTTtable().back().getNImmigrants()==1);
+        assert(sttTable.getSTTtable().back().getNColonisations()==1);
     }
 }

@@ -307,8 +307,8 @@ void Archipelago::goGlobalExtinct(const SpeciesID& speciesID)
     }
 }
 
-void Archipelago::doGlobalEvent(const event_type globalEvent,
-        const SpeciesID speciesID,
+void Archipelago::doGlobalEvent(const event_type& globalEvent,
+        const SpeciesID& speciesID,
         mt19937_64& prng,
         SpeciesID& maxSpeciesID)
 {
@@ -331,8 +331,8 @@ void Archipelago::doGlobalEvent(const event_type globalEvent,
     }
 }
 
-void Archipelago::doLocalEvent(const event_type localEvent,
-        const SpeciesID speciesID,
+void Archipelago::doLocalEvent(const event_type& localEvent,
+        const SpeciesID& speciesID,
         mt19937_64& prng,
         const double& time,
         SpeciesID& maxSpeciesID,
@@ -394,10 +394,10 @@ void Archipelago::doLocalEvent(const event_type localEvent,
     }
 }
 
-void Archipelago::doNextEvent(const event_type nextEvent,
+void Archipelago::doNextEvent(const event_type& nextEvent,
         const double& initialMigrationRate,
         mt19937_64& prng,
-        const double time,
+        const double& time,
         SpeciesID& maxSpeciesID,
         const vector<SpeciesID>& mainSpeciesIDs)
 {   // updates data frames; based on output of sampleNextEvent (event_type)

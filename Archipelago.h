@@ -38,7 +38,7 @@ public:
     std::vector<Species> findMostRecentSistersPops(const Species& species) const;
 
     void calculateAllRates(const std::vector<double>&,
-            const int n_mainlandSpecies, const int n_islands);
+            int n_mainlandSpecies, int n_islands);
                     // calculate per-island rates and global rates
                     // and save them in LocalRates and GlobalRates vector, resp.
                     // Also, output of sum of both global (.first) and local (.second) rates
@@ -56,32 +56,32 @@ public:
     void goGlobalExtinct(const SpeciesID&);  // island species
                     // goes extinct on all islands it occures on
 
-    void correctSisterTaxaLocal(const SpeciesID&, const int island);
+    void correctSisterTaxaLocal(const SpeciesID&, int island);
     void correctSisterTaxaGlobal(const SpeciesID& extinctSpID);
 
 
-    void doGlobalEvent(const event_type globalEvent,
-            const SpeciesID speciesID,
+    void doGlobalEvent(const event_type& globalEvent,
+            const SpeciesID& speciesID,
             std::mt19937_64& prng,
             SpeciesID& maxSpeciesID);
 
-    void doLocalEvent(const event_type localEvent,
-            const SpeciesID speciesID,
+    void doLocalEvent(const event_type& localEvent,
+            const SpeciesID& speciesID,
             std::mt19937_64& prng,
             const double& time,
             SpeciesID& maxSpeciesID,
-            const int island,
+            int island,
             const double& iniMigrationRate);
 
-    void doNextEvent(const event_type,
+    void doNextEvent(const event_type&,
             const double&,
             std::mt19937_64&,
-            const double,
+            const double&,
             SpeciesID& maxSpeciesID,
             const std::vector<SpeciesID>& mainSpeciesIDs); // switch-statement
                     // that calls event functions to update the island vector
 
-    void addSpecies(const Species&, const int);  // adds species to island
+    void addSpecies(const Species&, int);  // adds species to island
     void addArchi(const Archipelago&);  // add an island vector to this one / consolidate them
 
     Island makeArchiTo1Island() const;   // aggregate all islands in

@@ -53,7 +53,7 @@ Archipelago ArchiDAISIE_core(const double& islandAge,
                     maxSpeciesID, mainSpeciesIDs);
 
             // update STT
-            STT.updateSTTtable(archi,timeNow);
+            STT.updateFullSTTtable(archi,timeNow);
         }
         return archi;
     }
