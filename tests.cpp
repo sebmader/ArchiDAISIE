@@ -2701,7 +2701,7 @@ void test_STTtable()
         assert(sttTable.getSTTtable()[1].getTime()==4.0);
         assert(sttTable.getSTTtable()[1].getNColonisations()==1);
         // output:
-        cout << sttTable << '\n';
+        // cout << sttTable << '\n';
     }
     { // update function identifies and saves immigrant species on archipelago correctly
         int n_islands = 2;

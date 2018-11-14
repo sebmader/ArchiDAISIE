@@ -29,7 +29,11 @@ Archipelago ArchiDAISIE_core(const double& islandAge,
         SpeciesID& maxSpeciesID,
         STTtable& STT);
 
-std::vector<Island> ArchiDAISIE(const double& islandAge, const int n_mainlandSpecies, std::vector<double> initialParameters,
-        const int n_islands, const int replicates, const int n_timeSlicesSTT);
+std::vector<Island> ArchiDAISIE(const double& islandAge,
+        int n_mainlandSpecies,
+        std::vector<double> initialParameters,
+        int n_islands,
+        int replicates = 1,
+        int n_timeSlicesSTT = 25);
 
 #endif //ARCHIDAISIE_ARCHIDAISIE_H

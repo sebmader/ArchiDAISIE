@@ -9,8 +9,11 @@ using namespace std;
 Archipelago ArchiDAISIE_core(const double& islandAge,
         const vector<SpeciesID>& mainSpeciesIDs,
         const vector<double>& initialParameters,
-        const int archiCarryingCap, const int n_islands,
-        mt19937_64& prng, SpeciesID& maxSpeciesID, STTtable& STT)
+        const int archiCarryingCap,
+        const int n_islands,
+        mt19937_64& prng,
+        SpeciesID& maxSpeciesID,
+        STTtable& STT)
 {
     try {
         // initialise Archipelago data frame and
