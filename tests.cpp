@@ -7,7 +7,7 @@
 using namespace std;
 
 
-void test_other_functions()
+void test_other_functions() //!OCLINT indeed long function, don't care it is a test
 {
     // extractSumOfRates:
     { // extracting the sum of rates of empty island
@@ -157,7 +157,7 @@ void test_species()
     }
 }
 
-void test_island()
+void test_island() //!OCLINT indeed long function, don't care it is a test
 {
     {   // A default constructed island has a carrying capacity of zero
         const Island island;
@@ -756,7 +756,7 @@ void test_island()
 }
 
 
-void test_archi()
+void test_archi() //!OCLINT indeed long function, don't care it is a test
 {
     {  // default constructor creates empty archipelago with 0 islands,
         // 0 carrying cap and no species
@@ -2638,7 +2638,7 @@ void test_STT()
     }
 }
 
-void test_STTtable()
+void test_STTtable() //!OCLINT indeed long function, don't care it is a test
 {
     { // empty constructor creates empty STTtable
         STTtable sttTable = STTtable();
