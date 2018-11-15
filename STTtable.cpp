@@ -3,6 +3,7 @@
 //
 
 #include "STTtable.h"
+#include "free_functions.h"
 
 using namespace std;
 
@@ -105,14 +106,6 @@ void STTtable::updateFullSTTtable(const Archipelago& archi, const double& time)
         default:
             throw logic_error("Status of species is unknown.\n");
         }
-        bool lineagePresent = false;
-        for (auto& lineage : lineages) {
-            if (lineage.isSister(sp))
-                lineagePresent = true;
-        }
-        if(!lineagePresent)
-            lineages.push_back(sp);
     }
-    const int nColonisations = static_cast<int>(lineages.size());
-    mSTTtable.emplace_back(time,nImmigrants,nAnagenetic,nCladogenetic,nColonisations);
+    mSTTtable.emplace_back(time,nImmigrants,nAnagenetic,nCladogenetic,howManyLineages(species));
 }

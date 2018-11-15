@@ -19,7 +19,11 @@ Species findOldestSpecies(const std::vector<Species>& speciesVec);
 
 STTtable mergeSTTtables(const std::vector<STTtable>& STTvec, const int& n_samples);
 
-void outputBranching(const Island fullIsland, const std::string& fileName);
+int howManyLineages(const std::vector<Species>& species);
+
+std::vector<SpeciesID> whichMainAncestors(const std::vector<Species>& species);
+
+void outputBranching(const Island fullIsland, const std::string& fileName, const int islandAge, const int n_mainlandSp);
 
 void outputSTT(const STTtable& fullSTT, const std::string& fileName);
 
