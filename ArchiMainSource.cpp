@@ -52,16 +52,5 @@ int main() {
             replicates,
             25);
 
-    int i = 0;
-    for (auto& z : archipelago) {
-        ++i;
-        cout << "Island " << i << '\n';
-        cout << "BirT" << '\t' << "ParID" << '\t'
-             << "SpID" << '\t' << "Status" << '\t'
-             << "Mig" << '\t'  << "AncesT" << '\t'
-             << "ColoT" << '\t' << "CladoStac" << '\n';
-        z.printIsland();
-    }
-
     return 0;
 }

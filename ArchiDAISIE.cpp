@@ -130,7 +130,11 @@ std::vector<Island> ArchiDAISIE(const double& islandAge,
 
             const STTtable fullSTT = mergeSTTtables(sttPerColoniser, n_timeSlicesSTT);
             // TODO: output of merge STT per replicate to file
+
+            cout << "Island " << rep << '\n';
             cout << fullSTT << '\n';
+            islandReplicates[rep].printIsland();
+            cout << '\n';
         }
         return islandReplicates;
     }
