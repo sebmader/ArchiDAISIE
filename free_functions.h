@@ -7,6 +7,7 @@
 
 #include <vector>
 #include <cassert>
+#include <string>
 #include "Island.h"
 #include "STTtable.h"
 
@@ -17,5 +18,9 @@ double extractSumOfRates(const Island& island);
 Species findOldestSpecies(const std::vector<Species>& speciesVec);
 
 STTtable mergeSTTtables(const std::vector<STTtable>& STTvec, const int& n_samples);
+
+void outputBranching(const Island fullIsland, const std::string& fileName);
+
+void outputSTT(const STTtable& fullSTT, const std::string& fileName);
 
 #endif //ARCHIDAISIE_FREE_FUNCTIONS_H
