@@ -2,6 +2,7 @@
 // Created by Sebastian Mader on 29.09.2018.
 //
 
+#include <fstream>
 #include "free_functions.h"
 
 using namespace std;
@@ -97,29 +98,71 @@ vector<SpeciesID> whichMainAncestors(const vector<Species>& species)
     return mainlandAncestors;
 }
 
-void outputBranching(const Island fullIsland, const std::string& fileName,
-        const int islandAge, const int n_mainlandSp)
+void outputBranching(const Island fullIsland, const std::string& fileName)
 {  // output: datatable(clade name, status, missing species, branching times),
     // island age,
     // mainland species
     const vector<Species>& species = fullIsland.getSpecies();
+    ofstream ofs("/sims/"+fileName);
+    if(!ofs.is_open()) {
+        cerr << "Error: unable to open file." << '\n';
+        exit(EXIT_FAILURE);
+    }
     if (species.empty()) {
         // TODO: what if archipelago is empty? -> return output with empty data table
+        ofs << "" << ',' << "" << ',' << "" << ',' << "" << ',' << '\n';
     }
-    // data table
-      // how many clades -> size of datatable
-      // collect species of each clade
-    vector<SpeciesID> mainAncestors = whichMainAncestors(species);
-    vector<vector<Species> > clades(mainAncestors.size(), vector<Species>());
-    for (size_t i = 0; i < mainAncestors.size(); ++i) {
-        for (auto& sp : species) {
-            if (sp.getParID() == mainAncestors[i]) {
-                clades[i].push_back(sp);
+    else {
+        // data table
+          // how many clades -> size of datatable
+          // collect species of each clade
+        vector<SpeciesID> mainAncestors = whichMainAncestors(species);
+        const int n_mainColoniser = static_cast<int>(mainAncestors.size());
+        vector<vector<Species> > clades(n_mainColoniser, vector<Species>());
+        for (int i = 0; i < n_mainColoniser; ++i) {
+            for (auto& sp : species) {
+                if (sp.getParID() == mainAncestors[i]) {
+                    clades[i].push_back(sp);
+                }
             }
         }
+        // extract status -> endemic, nonendemic or both?
+        vector<string> status(mainAncestors.size());
+        for (int i = 0; i < n_mainColoniser; ++i) {
+            bool isEndemic = false;
+            bool isNonEndemic = false;
+            for (auto& sp : clades[i]) {
+                if (sp.getStatus() == 'I')
+                    isNonEndemic = true;
+                else if (sp.getStatus() == 'C' || sp.getStatus() == 'A')
+                    isEndemic = true;
+                else
+                    cout << "unknown status..\n";
+                    assert(!"Should never get here!"); //!OCLint
+            }
+            if (isEndemic && isNonEndemic)
+                status[i] = "Endemic&Non_Endemic";
+            else if (isEndemic && !isNonEndemic)
+                status[i] = "Endemic";
+            else if (!isEndemic && isNonEndemic)
+                status[i] = "Non_endemic";
+            else
+                cout << "unknown status..\n";
+            assert(!"Should never get here!"); //!OCLint
+        }
+        // extract birth times -> make string
+        vector<string> branchingTimes((unsigned)n_mainColoniser);
+        for (int i = 0; i < n_mainColoniser; ++i) {
+            for (auto& sp : clades[i]) {
+                branchingTimes[i] += to_string(sp.getBirth()) + ',';
+            }
+            branchingTimes[i].pop_back(); // no comma at the end
+        }
+        // names == mainland ancestor
+        // output to file
+        for (int k = 0; k < n_mainColoniser; ++k) {
+            ofs << mainAncestors[k].getSpeciesID() << ',' << status[k] << ','
+                << 0 << ',' << branchingTimes[k] << '\n';
+        }
     }
-    // extract birth times -> make string
-    // extract status -> endemic, nonendemic or both?
-    // names == mainland ancestor
-
 }

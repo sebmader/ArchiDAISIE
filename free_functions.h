@@ -8,6 +8,7 @@
 #include <vector>
 #include <cassert>
 #include <string>
+#include <fstream>
 #include "Island.h"
 #include "STTtable.h"
 
@@ -23,7 +24,7 @@ int howManyLineages(const std::vector<Species>& species);
 
 std::vector<SpeciesID> whichMainAncestors(const std::vector<Species>& species);
 
-void outputBranching(const Island fullIsland, const std::string& fileName, const int islandAge, const int n_mainlandSp);
+void outputBranching(const Island fullIsland, const std::string& fileName);
 
 void outputSTT(const STTtable& fullSTT, const std::string& fileName);
 
