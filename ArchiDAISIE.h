@@ -35,6 +35,7 @@ std::vector<Island> ArchiDAISIE(const double& islandAge,
         std::vector<double> initialParameters,
         int n_islands,
         int replicates = 1,
+        const std::string& output_dir = "sim",
         int n_timeSlicesSTT = 25);
 
 #endif //ARCHIDAISIE_ARCHIDAISIE_H

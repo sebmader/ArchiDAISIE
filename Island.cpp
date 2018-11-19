@@ -236,14 +236,13 @@ void Island::addIsland(const Island& islNew)
 {   // adds another island to THIS (for aggregating archipelagos)
 
     const vector<Species>& island2 = islNew.getSpecies();
-    // const vector<int>& vSpecAliveNew = islNew.returnIslSpecAlive();
 
     // add species vector to THIS island
     if (!island2.empty()) {
         mSpecies.reserve(mSpecies.size() + island2.size());
         mSpecies.insert(mSpecies.end(), island2.begin(), island2.end());
 
-        // delete duplicates; ### CAUTION ### : what birth time ?!
+        // delete duplicates
         for (int j = 0; j < getNSpecies(); ++j) {
             for (int k = j + 1; k < getNSpecies(); ++k) { ;
                 if (mSpecies[j].getSpecID() ==
@@ -270,14 +269,12 @@ void Island::addIsland(const Island& islNew)
                         }
                     }
                     else {  // if j is not immigrant OR has migrated!
-                        assert(!mSpecies[j].isImmigrant() || mSpecies[j].hasMigrated());
                                 // but k is -> k stays
                         if (mSpecies[k].isImmigrant() && !mSpecies[k].hasMigrated()) {
                             deleteSpecies(j);
                             --j;
                         }
-                        else {  // both not immigrants -> older one stays
-                            assert(mSpecies[j].hasMigrated() || mSpecies[k].hasMigrated());
+                        else {  // both not pure immigrants -> older one stays
                             if (mSpecies[j].getBirth() >= mSpecies[k].getBirth()) {
                                 deleteSpecies(k);
                                 --k;

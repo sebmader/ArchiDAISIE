@@ -1,0 +1,4 @@
+38,"Non_endemic",0,"2.877064"
+43,"Non_endemic",0,"1.338531"
+90,"Non_endemic",0,"0.797043"
+86,"Non_endemic",0,"0.529443"
