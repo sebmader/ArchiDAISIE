@@ -35,7 +35,7 @@ install:
 script: 
   # Build console test
   - qmake -qt=qt5 ArchiDAISIE.pro
-  - make -s debug
+  - make -s debug -lstdc++fs
   - ./ArchiDAISIE
   # cppcheck, be mild
   - cppcheck --quiet --error-exitcode=0 . 
