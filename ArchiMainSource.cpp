@@ -44,11 +44,11 @@ int main() {
         test_STT();
         test_STTtable();
 
-        const int n_sims = 3;
+        const int n_sims = 1;
         const int islandAge = 4;
         const int n_mainlandSp = 100;
         const int n_islands = 2;
-        const int replicates = 100;
+        const int replicates = 10;
 
         for (int i = 1; i <= n_sims; ++i) {
             string output_dir(fs::current_path().fs::path::parent_path().string()
