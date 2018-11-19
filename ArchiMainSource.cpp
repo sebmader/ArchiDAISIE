@@ -15,6 +15,7 @@
 #include <utility>
 #include <random>
 #include <exception>
+#include <experimental/filesystem>
 
 using namespace std;
 
@@ -32,25 +33,31 @@ using namespace std;
 
 int main() {
 
-    test_other_functions();
-    test_speciesID();
-    test_species();
-    test_island();
-    test_archi();
-    test_STT();
-    test_STTtable();
+    try {
+        test_other_functions();
+        test_speciesID();
+        test_species();
+        test_island();
+        test_archi();
+        test_STT();
+        test_STTtable();
 
-    const int islandAge = 4;
-    const int n_mainlandSp = 100;
-    const int n_islands = 4;
-    const int replicates = 1;
-    const vector<double> vPars( {0.01, 0.3, 0.2, 0.12, 0.2, 0.2, 0.1, 0.12, 50} );
-    const vector<Island> archipelago = ArchiDAISIE(islandAge,
-            n_mainlandSp,
-            vPars,
-            n_islands,
-            replicates,
-            25);
+        const int islandAge = 4;
+        const int n_mainlandSp = 100;
+        const int n_islands = 2;
+        const int replicates = 100;
+        const vector<double> vPars( {0.01, 0.3, 0.2, 0.12, 0.2, 0.2, 0.1, 0.12, 50} );
+        const vector<Island> archipelago = ArchiDAISIE(islandAge,
+                n_mainlandSp,
+                vPars,
+                n_islands,
+                replicates,
+                25);
+    }
+    catch (std::exception &error) {
+        std::cerr << "Main_Error: " << error.what() << '\n';
+        exit(1);
+    }
 
     return 0;
 }

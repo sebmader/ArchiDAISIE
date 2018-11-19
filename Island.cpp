@@ -291,11 +291,11 @@ void Island::addIsland(const Island& islNew)
                 }
             }
         }
-        // sort colonisation time
+        // sort by birth time
         const int newVecSize = static_cast<int>(mSpecies.size());
         for (int l = 0; l < newVecSize - 1; ++l) {
             for (int m = l + 1; m < newVecSize; ++m) {
-                if(mSpecies[l].getColonisationT() <mSpecies[m].getColonisationT()) {
+                if(mSpecies[l].getBirth() <mSpecies[m].getBirth()) {
                     const Species tmpSp = mSpecies[m];
                     mSpecies[m] = mSpecies[l];
                     mSpecies[l] = tmpSp;

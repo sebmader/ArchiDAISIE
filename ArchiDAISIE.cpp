@@ -129,13 +129,40 @@ std::vector<Island> ArchiDAISIE(const double& islandAge,
             islandReplicates[rep] = fullArchi.makeArchiTo1Island();
 
             const STTtable fullSTT = mergeSTTtables(sttPerColoniser, n_timeSlicesSTT);
-            // TODO: output of merge STT per replicate to file
+            // TODO: output of merged STT per replicate to file
+            ofstream ofsSTT("sims/rep_" + to_string(rep) + "_STT.txt");
+            if (!ofsSTT.is_open())
+                throw runtime_error("Unable to open output file.");
+            ofsSTT << fullSTT;
+            ofsSTT.close();
+            // TODO: output of branching data table per replicate
+            ofstream ofsBranching("sims/rep_" + to_string(rep) + "_branching.txt");
+            if (!ofsBranching.is_open())
+                throw runtime_error("Unable to open output file.");
+            outputBranching(islandReplicates[rep],ofsBranching);
+            ofsBranching.close();
 
-            cout << "Island " << rep << '\n';
-            cout << fullSTT << '\n';
-            islandReplicates[rep].printIsland();
-            cout << '\n';
+
         }
+        // TODO: simulation parameters + seed
+        ofstream ofsSimData("sims/sim_data.txt");
+        if (!ofsSimData.is_open())
+            throw runtime_error("Unable to open output file.");
+        ofsSimData << "Seed: " << seed << '\n'
+                   << "Island age: " << islandAge << '\n'
+                   << "N Islands: " << n_islands << '\n'
+                   << "N Mainland: " << n_mainlandSpecies << '\n'
+                   << "Parameter: " << '\n';
+        ofsSimData << "immi: " << initialParameters[0] << '\n'
+                   << "mig: " << initialParameters[1] << '\n'
+                   << "clado_l: " << initialParameters[2] << '\n'
+                   << "ana_l: " << initialParameters[3] << '\n'
+                   << "ext_l: " << initialParameters[4] << '\n'
+                   << "clado_g: " << initialParameters[5] << '\n'
+                   << "ana_g: " << initialParameters[6] << '\n'
+                   << "ext_g: " << initialParameters[7] << '\n'
+                   << "K: " << initialParameters[8] << '\n';
+
         return islandReplicates;
     }
     catch (std::exception &error) {

@@ -98,15 +98,13 @@ vector<SpeciesID> whichMainAncestors(const vector<Species>& species)
     return mainlandAncestors;
 }
 
-void outputBranching(const Island fullIsland, const std::string& fileName)
+void outputBranching(const Island& fullIsland, ofstream& ofs)
 {  // output: datatable(clade name, status, missing species, branching times),
     // island age,
     // mainland species
     const vector<Species>& species = fullIsland.getSpecies();
-    ofstream ofs("/sims/"+fileName);
     if(!ofs.is_open()) {
-        cerr << "Error: unable to open file." << '\n';
-        exit(EXIT_FAILURE);
+        throw runtime_error("unable to open file.");
     }
     if (species.empty()) {
         // TODO: what if archipelago is empty? -> return output with empty data table
@@ -137,8 +135,7 @@ void outputBranching(const Island fullIsland, const std::string& fileName)
                 else if (sp.getStatus() == 'C' || sp.getStatus() == 'A')
                     isEndemic = true;
                 else
-                    cout << "unknown status..\n";
-                    assert(!"Should never get here!"); //!OCLint
+                    throw logic_error("unknown status");
             }
             if (isEndemic && isNonEndemic)
                 status[i] = "Endemic&Non_Endemic";
@@ -147,8 +144,7 @@ void outputBranching(const Island fullIsland, const std::string& fileName)
             else if (!isEndemic && isNonEndemic)
                 status[i] = "Non_endemic";
             else
-                cout << "unknown status..\n";
-            assert(!"Should never get here!"); //!OCLint
+                throw logic_error("unknown status");
         }
         // extract birth times -> make string
         vector<string> branchingTimes((unsigned)n_mainColoniser);
@@ -161,8 +157,71 @@ void outputBranching(const Island fullIsland, const std::string& fileName)
         // names == mainland ancestor
         // output to file
         for (int k = 0; k < n_mainColoniser; ++k) {
-            ofs << mainAncestors[k].getSpeciesID() << ',' << status[k] << ','
-                << 0 << ',' << branchingTimes[k] << '\n';
+            ofs << mainAncestors[k].getSpeciesID() << ',' << '\"'+status[k]+'\"' << ','
+                << 0 << ',' << '\"'+branchingTimes[k]+'\"' << '\n';
+        }
+    }
+}
+
+
+void outputBranching(const Island& fullIsland, ostream& os)
+{  // output: datatable(clade name, status, missing species, branching times),
+    // island age,
+    // mainland species
+    const vector<Species>& species = fullIsland.getSpecies();
+    if (species.empty()) {
+        // TODO: what if archipelago is empty? -> return output with empty data table
+        os << "" << ',' << "" << ',' << "" << ',' << "" << ',' << '\n';
+    }
+    else {
+        // data table
+        // how many clades -> size of datatable
+        // collect species of each clade
+        vector<SpeciesID> mainAncestors = whichMainAncestors(species);
+        const int n_mainColoniser = static_cast<int>(mainAncestors.size());
+        vector<vector<Species> > clades(n_mainColoniser, vector<Species>());
+        for (int i = 0; i < n_mainColoniser; ++i) {
+            for (auto& sp : species) {
+                if (sp.getParID() == mainAncestors[i]) {
+                    clades[i].push_back(sp);
+                }
+            }
+        }
+        // extract status -> endemic, nonendemic or both?
+        vector<string> status(mainAncestors.size());
+        for (int i = 0; i < n_mainColoniser; ++i) {
+            bool isEndemic = false;
+            bool isNonEndemic = false;
+            for (auto& sp : clades[i]) {
+                if (sp.getStatus() == 'I')
+                    isNonEndemic = true;
+                else if (sp.getStatus() == 'C' || sp.getStatus() == 'A')
+                    isEndemic = true;
+                else
+                    throw logic_error("unknown status");
+            }
+            if (isEndemic && isNonEndemic)
+                status[i] = "Endemic&Non_Endemic";
+            else if (isEndemic && !isNonEndemic)
+                status[i] = "Endemic";
+            else if (!isEndemic && isNonEndemic)
+                status[i] = "Non_endemic";
+            else
+                throw logic_error("unknown status");
+        }
+        // extract birth times -> make string
+        vector<string> branchingTimes((unsigned)n_mainColoniser);
+        for (int i = 0; i < n_mainColoniser; ++i) {
+            for (auto& sp : clades[i]) {
+                branchingTimes[i] += to_string(sp.getBirth()) + ',';
+            }
+            branchingTimes[i].pop_back(); // no comma at the end
+        }
+        // names == mainland ancestor
+        // output to file
+        for (int k = 0; k < n_mainColoniser; ++k) {
+            os << mainAncestors[k].getSpeciesID() << ',' << '\"'+status[k]+'\"' << ','
+                << 0 << ',' << '\"'+branchingTimes[k]+'\"' << '\n';
         }
     }
 }

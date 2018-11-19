@@ -24,7 +24,9 @@ int howManyLineages(const std::vector<Species>& species);
 
 std::vector<SpeciesID> whichMainAncestors(const std::vector<Species>& species);
 
-void outputBranching(const Island fullIsland, const std::string& fileName);
+void outputBranching(const Island& fullIsland, std::ofstream& ofs);
+
+void outputBranching(const Island& fullIsland, std::ostream& os);
 
 void outputSTT(const STTtable& fullSTT, const std::string& fileName);
 
