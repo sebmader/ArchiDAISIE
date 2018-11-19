@@ -26,4 +26,3 @@ add_executable(ArchiDAISIE
         tests.cpp)
 
 target_link_libraries(${PROJECT_NAME} stdc++fs)
-set(CMAKE_CXX_FLAGS "-lstdc++fs")
