@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.12)
 project(ArchiDAISIE)
 
 set(CMAKE_CXX_STANDARD 14)
-#set(CMAKE_CXX_FLAGS "-libstdc++fs.a")
+set(CMAKE_CXX_FLAGS "-libstdc++fs.a")
 
 if(MSVC)
     add_compile_options(/W4)
