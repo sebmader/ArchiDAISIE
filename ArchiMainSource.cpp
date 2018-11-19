@@ -51,7 +51,7 @@ int main() {
         const int replicates = 100;
 
         for (int i = 1; i <= n_sims; ++i) {
-            string output_dir("../test_sims/sim_" + to_string(i));
+            string output_dir("./test_sims/sim_" + to_string(i));
             fs::create_directories(output_dir);
             const vector<double> vPars( {0.01, 0.3, 0.2, 0.12, 0.2, 0.2, 0.1, 0.12, 100} );
             const vector<Island> archipelago = ArchiDAISIE(islandAge,
