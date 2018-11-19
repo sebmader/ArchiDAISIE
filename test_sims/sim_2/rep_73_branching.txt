@@ -1,3 +1,0 @@
-28,"Non_endemic",0,"3.133563"
-1,"Endemic&Non_Endemic",0,"2.159647,1.042827"
-1,"Endemic&Non_Endemic",0,"2.159647,1.042827"
