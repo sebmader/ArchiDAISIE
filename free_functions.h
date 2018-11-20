@@ -22,7 +22,7 @@ STTtable mergeSTTtables(const std::vector<STTtable>& STTvec, const int& n_sample
 
 int howManyLineages(const std::vector<Species>& species);
 
-std::vector<SpeciesID> whichMainAncestors(const std::vector<Species>& species);
+std::vector<Species> whichLineageAncestors(const std::vector<Species>& species);
 
 void outputBranching(const Island& fullIsland, std::ofstream& ofs);
 
