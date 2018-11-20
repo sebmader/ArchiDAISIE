@@ -17,7 +17,7 @@
 class Archipelago {         // class for the whole archipelago
 public:
     explicit Archipelago(const int & = 0, const int & = 0);
-        // constructor of archipelago based on number of islands and archipelago-wide K
+        // constructor of archipelago based on number of islands and Island(!)-wide K
 //    void updateAliveSpec();    // updating the archipelago-wide vector of extant species
 
     int getNIslands() const noexcept;

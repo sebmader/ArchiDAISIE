@@ -20,7 +20,6 @@ public:
     const std::vector<STT>& getSTTtable() const noexcept;
     unsigned long size() const;
 
-    void push_back(const STT& newRow);
     void updateSTTtable(const Archipelago& archi, const double& time);
 
     void updateFullSTTtable(const Archipelago& archi, const double& time);

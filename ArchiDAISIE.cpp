@@ -5,11 +5,12 @@
 #include "ArchiDAISIE.h"
 
 using namespace std;
+namespace fs = experimental::filesystem;
 
 Archipelago ArchiDAISIE_core(const double& islandAge,
         const vector<SpeciesID>& mainSpeciesIDs,
         const vector<double>& initialParameters,
-        const int archiCarryingCap,
+        const int islCarryingCap,
         const int n_islands,
         mt19937_64& prng,
         SpeciesID& maxSpeciesID,
@@ -18,7 +19,7 @@ Archipelago ArchiDAISIE_core(const double& islandAge,
     try {
         // initialise Archipelago data frame and
         // set time to island age (= emergence time of island)
-        Archipelago archi(n_islands, archiCarryingCap);
+        Archipelago archi(n_islands, islCarryingCap);
         double timeNow = islandAge;
         const int n_mainland = static_cast<int>(mainSpeciesIDs.size());
 
@@ -29,13 +30,13 @@ Archipelago ArchiDAISIE_core(const double& islandAge,
             archi.calculateAllRates(initialParameters, n_mainland, n_islands);
 
             // draw time interval to next event
-            const std::vector<double> globalRates = archi.getGlobalRates();
+            const vector<double> globalRates = archi.getGlobalRates();
             double sumOfRates = globalRates[0] + globalRates[1] + globalRates[2];
             for (auto& island : archi.getIslands()) {
                 sumOfRates += extractSumOfRates(island);
             }
             if (sumOfRates <= 0)
-                throw std::runtime_error("Event rate is zero or below. "
+                throw runtime_error("Event rate is zero or below. "
                                     "No event can be drawn.\n");
 
             // draw time to next event and take it off the actual time
@@ -57,33 +58,33 @@ Archipelago ArchiDAISIE_core(const double& islandAge,
         }
         return archi;
     }
-    catch (std::string &str) {
-        std::cerr << "Warning: " << str;
+    catch (string &str) {
+        cerr << "Warning: " << str;
         assert(!"should never get here!");  //!OCLINT
         return Archipelago();
     }
 }
 
-std::vector<Island> ArchiDAISIE(const double& islandAge,
-        int n_mainlandSpecies,
-        std::vector<double> initialParameters,
-        int n_islands,
-        int replicates,
+vector<Island> ArchiDAISIE(const double& islandAge,
+        const int n_mainlandSpecies,
+        vector<double> initialParameters,
+        const int n_islands,
+        const int replicates,
         const string& output_dir,
-        int n_timeSlicesSTT)
+        const int n_timeSlicesSTT)
 {
     try {
         // check given parameters
         if (islandAge < 0)
-            throw std::logic_error("Age has to be higher than zero.");
+            throw logic_error("Age has to be higher than zero.");
         if (n_mainlandSpecies < 0)
-            throw std::logic_error("Simulation needs at least one mainland species.");
+            throw logic_error("Simulation needs at least one mainland species.");
         if(n_islands < 0)
-            throw std::logic_error("Simulation needs at least one island.");
+            throw logic_error("Simulation needs at least one island.");
         if(initialParameters.size() != 9)
-            throw std::logic_error("Provide 9 parameter values.");
+            throw logic_error("Provide 9 parameter values.");
         if(initialParameters[0] <= 0)
-            throw std::logic_error("Rate of colonisation is zero or below."
+            throw logic_error("Rate of colonisation is zero or below."
                               " The island cannot be colonised.");
 
         // declare and seed PRNG with system clock
@@ -98,15 +99,16 @@ std::vector<Island> ArchiDAISIE(const double& islandAge,
         // order of parameters (input):
         // gam_i, gam_m, lamb_cl, lamb_al, mu_l,
         // lamb_cg, lamb_ag, mu_g, archi-wide K
-        const int archiCarryingCap = static_cast<int>(initialParameters[8]);
+        const int islCarryingCap = static_cast<int>(initialParameters[8]);
         initialParameters.pop_back();
 
         // initialise main data frame
-        std::vector<Island> islandReplicates((unsigned)replicates);
+        vector<Island> islandReplicates((unsigned)replicates);
         // ### CAUTION ### : need to implement the exact same output as DAISIE_sim
         // how to combine the multiple data types? and which types btw?
 
         // output of simulation parameters & seed
+        fs::create_directories(output_dir);
         ofstream ofsSimData(output_dir + "/sim_data.txt");
         if (!ofsSimData.is_open())
             throw runtime_error("Unable to open output file.");
@@ -129,12 +131,14 @@ std::vector<Island> ArchiDAISIE(const double& islandAge,
         // loop through replicates
         for (int rep = 0; rep < replicates; ++rep) {
 
+            cout << "Simulating replicate " << rep << '\n';
+
             // initialise intermediate STT data frame
             vector<STTtable> sttPerColoniser((unsigned)n_mainlandSpecies,
                     STTtable(1,STT(islandAge)));
 
             // initialise intermediate archipelago data frame
-            Archipelago fullArchi(n_islands, archiCarryingCap);
+            Archipelago fullArchi(n_islands, islCarryingCap);
 
             // initialise max species ID
             SpeciesID maxSpeciesID(n_mainlandSpecies);
@@ -144,7 +148,7 @@ std::vector<Island> ArchiDAISIE(const double& islandAge,
 
                 const vector<SpeciesID> mainlandSpecies(1,SpeciesID(mainSp));
                 fullArchi.addArchi(ArchiDAISIE_core(islandAge, mainlandSpecies,
-                        initialParameters, archiCarryingCap,
+                        initialParameters, islCarryingCap,
                         n_islands, prng, maxSpeciesID,
                         sttPerColoniser[mainSp]));
             }
@@ -166,8 +170,8 @@ std::vector<Island> ArchiDAISIE(const double& islandAge,
         }
         return islandReplicates;
     }
-    catch (std::exception &error) {
-        std::cerr << "Error: " << error.what() << '\n';
+    catch (exception &error) {
+        cerr << "Error: " << error.what() << '\n';
         exit(1);
     }
 }

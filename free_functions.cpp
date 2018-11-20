@@ -81,19 +81,15 @@ int howManyLineages(const vector<Species>& species)
 
 vector<SpeciesID> whichMainAncestors(const vector<Species>& species)
 {
-    vector<Species> lineages;
+    vector<SpeciesID> mainlandAncestors;
     for (auto& sp : species) {
         bool lineagePresent = false;
-        for (auto& lineage : lineages) {
-            if (lineage.isSister(sp))
+        for (auto& mainAnc : mainlandAncestors) {
+            if (mainAnc == sp.getParID())
                 lineagePresent = true;
         }
         if(!lineagePresent)
-            lineages.push_back(sp);
-    }
-    vector<SpeciesID> mainlandAncestors(lineages.size());
-    for (size_t i = 0; i < lineages.size(); ++i) {
-        mainlandAncestors[i] = lineages[i].getParID();
+            mainlandAncestors.push_back(sp.getParID());
     }
     return mainlandAncestors;
 }

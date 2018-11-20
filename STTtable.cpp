@@ -12,11 +12,6 @@ STTtable::STTtable(const unsigned int& size, const STT& rowContent)
     mSTTtable = vector<STT>(size, rowContent);
 }
 
-void STTtable::push_back(const STT& newRow)
-{
-    mSTTtable.push_back(newRow);
-}
-
 unsigned long STTtable::size() const
 {
     return mSTTtable.size();

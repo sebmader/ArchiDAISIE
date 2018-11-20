@@ -13,7 +13,7 @@
 #include <chrono>
 #include <random>
 #include <exception>
-
+#include <experimental/filesystem>
 #include "SpeciesID.h"
 #include "Species.h"
 #include "Island.h"
@@ -24,7 +24,7 @@
 Archipelago ArchiDAISIE_core(const double& islandAge,
         const std::vector<SpeciesID>& mainSpeciesIDs,
         const std::vector<double>& initialParameters,
-        int archiCarryingCap,
+        int islCarryingCap,
         int n_islands,
         std::mt19937_64& prng,
         SpeciesID& maxSpeciesID,

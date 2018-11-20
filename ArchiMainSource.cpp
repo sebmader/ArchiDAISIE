@@ -36,6 +36,7 @@ namespace fs = experimental::filesystem;
 int main() {
 
     try {
+        /*
         test_other_functions();
         test_speciesID();
         test_species();
@@ -43,19 +44,20 @@ int main() {
         test_archi();
         test_STT();
         test_STTtable();
-
-        const int n_sims = 1;
-        const int islandAge = 4;
+        */
+        const int n_sims = 5;
+        const int islandAge = 10;
         const int n_mainlandSp = 100;
         const int n_islands = 2;
         const int replicates = 10;
+        const int islCarryingCap = 10;
 
         for (int i = 1; i <= n_sims; ++i) {
             string output_dir(fs::current_path().fs::path::parent_path().string()
                         + "/test_sims/sim_" + to_string(i));
-            fs::create_directories(output_dir);
-            const vector<double> vPars( {0.01, 0.3, 0.2, 0.12, 0.2, 0.2, 0.1, 0.12, 100} );
-            const vector<Island> archipelago = ArchiDAISIE(islandAge,
+            const vector<double> vPars( {0.1, 0.3, 0.2, 0.12, 0.2, 0.2, 0.1, 0.12,
+                                         islCarryingCap} );
+            ArchiDAISIE(islandAge,
                     n_mainlandSp,
                     vPars,
                     n_islands,
@@ -64,8 +66,8 @@ int main() {
                     25);
         }
     }
-    catch (std::exception &error) {
-        std::cerr << "Main_Error: " << error.what() << '\n';
+    catch (exception &error) {
+        cerr << "Main_Error: " << error.what() << '\n';
         exit(1);
     }
 
