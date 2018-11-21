@@ -1,4 +1,4 @@
-Seed: 328673984
+Seed: 3239694604
 Island age: 10
 N Islands: 2
 N Mainland: 100
