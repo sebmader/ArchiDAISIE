@@ -112,6 +112,8 @@ void outputBranching(const Island& fullIsland, ofstream& ofs)
     if(!ofs.is_open()) {
         throw runtime_error("unable to open file.");
     }
+    string column_names = "Clade_name,Status,Missing_species,Branching_times";
+    ofs << column_names << '\n';
     if (species.empty()) {
         ofs << "" << ',' << "" << ',' << "" << ',' << "" << ',' << '\n';
     }

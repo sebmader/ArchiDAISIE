@@ -36,7 +36,7 @@ namespace fs = experimental::filesystem;
 int main() {
 
     try {
-        /*
+
         test_other_functions();
         test_speciesID();
         test_species();
@@ -44,7 +44,7 @@ int main() {
         test_archi();
         test_STT();
         test_STTtable();
-        */
+
         const int n_sims = 5;
         const int islandAge = 10;
         const int n_mainlandSp = 100;
@@ -54,10 +54,13 @@ int main() {
 
         for (int i = 1; i <= n_sims; ++i) {
             string output_dir(fs::current_path().fs::path::parent_path().string()
-                        + "/test_sims/sim_" + to_string(i));
+                        + "/sims/sim_" + to_string(i));
             const vector<double> vPars( {0.1, 0.3, 0.2, 0.12, 0.2, 0.2, 0.1, 0.12,
                                          islCarryingCap} );
-            ArchiDAISIE(islandAge,
+            // immigration, migration, clado_local, ana_local, extinct_local,
+                // clado_global, ana_global, extinct_global, island carrying capacity
+
+                ArchiDAISIE(islandAge,
                     n_mainlandSp,
                     vPars,
                     n_islands,

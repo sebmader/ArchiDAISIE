@@ -117,21 +117,21 @@ vector<Island> ArchiDAISIE(const double& islandAge,
                    << "N Islands: " << n_islands << '\n'
                    << "N Mainland: " << n_mainlandSpecies << '\n'
                    << "Parameters: " << '\n';
-        ofsSimData << "immi: " << initialParameters[0] << '\n'
-                   << "mig: " << initialParameters[1] << '\n'
-                   << "clado_l: " << initialParameters[2] << '\n'
-                   << "ana_l: " << initialParameters[3] << '\n'
-                   << "ext_l: " << initialParameters[4] << '\n'
-                   << "clado_g: " << initialParameters[5] << '\n'
-                   << "ana_g: " << initialParameters[6] << '\n'
-                   << "ext_g: " << initialParameters[7] << '\n'
-                   << "K: " << initialParameters[8] << '\n';
+        ofsSimData << "immigration: " << initialParameters[0] << '\n'
+                   << "migration: " << initialParameters[1] << '\n'
+                   << "cladogenesis_local: " << initialParameters[2] << '\n'
+                   << "anagenesis_local: " << initialParameters[3] << '\n'
+                   << "extinction_local: " << initialParameters[4] << '\n'
+                   << "cladogenesis_global: " << initialParameters[5] << '\n'
+                   << "anagenesis_global: " << initialParameters[6] << '\n'
+                   << "extinction_global: " << initialParameters[7] << '\n'
+                   << "island K: " << initialParameters[8] << '\n';
         ofsSimData.close();
 
         // loop through replicates
         for (int rep = 0; rep < replicates; ++rep) {
 
-            cout << "Simulating replicate " << rep << '\n';
+            cout << "Simulating replicate " << rep+1 << '\n';
 
             // initialise intermediate STT data frame
             vector<STTtable> sttPerColoniser((unsigned)n_mainlandSpecies,

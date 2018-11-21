@@ -1,0 +1,14 @@
+Seed: 328673984
+Island age: 10
+N Islands: 2
+N Mainland: 100
+Parameters: 
+immigration: 0.1
+migration: 0.3
+cladogenesis_local: 0.2
+anagenesis_local: 0.12
+extinction_local: 0.2
+cladogenesis_global: 0.2
+anagenesis_global: 0.1
+extinction_global: 0.12
+island K: 10

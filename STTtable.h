@@ -28,7 +28,6 @@ public:
     STT& operator[](size_t n);
     const STT& operator[](size_t n) const;
 
-
 private:
     std::vector<STT> mSTTtable;
 };
