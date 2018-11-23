@@ -37,7 +37,6 @@ int main() {
 
     try {
 
-        /*
         test_other_functions();
         test_speciesID();
         test_species();
@@ -45,7 +44,6 @@ int main() {
         test_archi();
         test_STT();
         test_STTtable();
-         */
 
         const int n_sims = 10;
         const int islandAge = 10;

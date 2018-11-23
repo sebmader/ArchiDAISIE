@@ -244,7 +244,7 @@ void Island::addIsland(const Island& islNew)
 
         // delete duplicates
         for (int j = 0; j < getNSpecies(); ++j) {
-            for (int k = j + 1; k < getNSpecies(); ++k) { ;
+            for (int k = j + 1; k < getNSpecies(); ++k) {
                 if (mSpecies[j].getSpecID() ==
                         mSpecies[k].getSpecID()) {
                     if (mSpecies[j].isImmigrant() && !mSpecies[j].hasMigrated()) {
@@ -252,18 +252,22 @@ void Island::addIsland(const Island& islNew)
                                 // if both "pure" immigrants (= not migrated)
                                 // take the most recent -> re-immigration
                             if (mSpecies[j].getBirth() <= mSpecies[k].getBirth()) {
+                                assert(k >= 0);
                                 deleteSpecies(k);
                                 --k;
                             }
                             else {
+                                assert(j >= 0);
                                 deleteSpecies(j);
                                 --j;
+                                break;  // break out of inner loop to start the outer at same j
                             }
                         }
                         else {  // if j is pure immigrant but k is not
                                     // delete the non-immigrant (= migrant)
                             assert(mSpecies[k].hasMigrated());
                             assert(mSpecies[k].getStatus()=='I');
+                            assert(k >= 0);
                             deleteSpecies(k);
                             --k;
                         }
@@ -271,17 +275,22 @@ void Island::addIsland(const Island& islNew)
                     else {  // if j is not immigrant OR has migrated!
                                 // but k is -> k stays
                         if (mSpecies[k].isImmigrant() && !mSpecies[k].hasMigrated()) {
+                            assert(j >= 0);
                             deleteSpecies(j);
                             --j;
+                            break;  // break out of inner loop to start the outer at same j
                         }
                         else {  // both not pure immigrants -> older one stays
                             if (mSpecies[j].getBirth() >= mSpecies[k].getBirth()) {
+                                assert(k >= 0);
                                 deleteSpecies(k);
                                 --k;
                             }
                             else {
+                                assert(j >= 0);
                                 deleteSpecies(j);
                                 --j;
+                                break;  // break out of inner loop to start the outer at same j
                             }
                         }
                     }
@@ -317,6 +326,7 @@ vector<SpeciesID> Island::getSpeciesIDs() const
 
 void Island::deleteSpecies(const int& pos)
 {
+    assert(pos >= 0);
     mSpecies[pos] = mSpecies.back();
     mSpecies.pop_back();
 }
