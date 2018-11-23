@@ -1,0 +1,2 @@
+immi,mig,clado_l,ana_l,ext_l,clado_g,ana_g,ext_g,K,n_isl
+0.001,0.1,0.2,0.1,0.1,0.2,0.1,0.1,10,2

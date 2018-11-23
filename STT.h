@@ -9,7 +9,7 @@
 
 class STT {
 public:
-    explicit STT(const double& time = 0.0,
+    explicit STT(const double time = 0.0,
             const int& nImmigrants = 0,
             const int& nAnagenetic = 0,
             const int& nCladogenetic = 0,

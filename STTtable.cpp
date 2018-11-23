@@ -4,12 +4,15 @@
 
 #include "STTtable.h"
 #include "free_functions.h"
+#include <cmath>
 
 using namespace std;
 
 STTtable::STTtable(const unsigned int& size, const STT& rowContent)
 {
     mSTTtable = vector<STT>(size, rowContent);
+    if(size > 0)
+        assert(mSTTtable[0].getTime()==rowContent.getTime());
 }
 
 unsigned long STTtable::size() const

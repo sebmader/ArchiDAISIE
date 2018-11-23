@@ -136,6 +136,9 @@ vector<Island> ArchiDAISIE(const double& islandAge,
             // initialise intermediate STT data frame
             vector<STTtable> sttPerColoniser((unsigned)n_mainlandSpecies,
                     STTtable(1,STT(islandAge)));
+            for (auto& sttTable : sttPerColoniser) {
+                assert(sttTable.getSTTtable()[0].getTime()==islandAge);
+            }
 
             // initialise intermediate archipelago data frame
             Archipelago fullArchi(n_islands, islCarryingCap);
