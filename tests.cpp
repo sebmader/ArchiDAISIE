@@ -62,6 +62,20 @@ void test_other_functions() //!OCLINT indeed long function, don't care it is a t
         assert(whichMainAncestors(island.getSpecies())[0].isSister(sp1));
         assert(!whichMainAncestors(island.getSpecies())[0].isSister(sp2));
     }
+    { // if 3 species from same mainland ancestor but with different colonisation times
+        // then the older colonisation time will be saved
+        Island island = Island(10);
+        Species sp1 = Species(1.0,SpeciesID(3),SpeciesID(102),'0',false,3.2,3.2);
+        Species sp2 = Species(1.0,SpeciesID(3),SpeciesID(103),'0',false,1.0,1.0);
+        Species sp3 = Species(1.0,SpeciesID(3),SpeciesID(106),'0',false,2.3,2.3);
+        island.addSpecies(sp1);
+        island.addSpecies(sp2);
+        island.addSpecies(sp3);
+        assert(whichMainAncestors(island.getSpecies()).size()==1);
+        assert(whichMainAncestors(island.getSpecies())[0].isSister(sp1));
+        assert(!whichMainAncestors(island.getSpecies())[0].isSister(sp2));
+        assert(!whichMainAncestors(island.getSpecies())[0].isSister(sp3));
+    }
 }
 
 void test_speciesID() //!OCLINT indeed long function, don't care it is a test
