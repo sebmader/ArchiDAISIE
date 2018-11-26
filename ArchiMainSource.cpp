@@ -33,13 +33,10 @@ namespace fs = experimental::filesystem;
 
 // ------------ ArchiDAISIE FUNCTIONS ------------ //
 
-int main(int argc, char* argv[]) {
+int main() {
 
     try {
-        assert(argc == 2);
-        string parameterFile = "parameter_sets.txt";
-        assert(argv[1] == parameterFile);
-
+        
         test_other_functions();
         test_speciesID();
         test_species();
