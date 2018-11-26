@@ -149,15 +149,17 @@ void outputBranching(const Island& fullIsland, ofstream& ofs)
         // data table
           // how many clades -> size of datatable
           // collect species of each clade
-        vector<Species> mainAncestors = whichLineageAncestors(species);
+        vector<Species> mainAncestors = whichMainAncestors(species);
         const unsigned n_mainColoniser = static_cast<int>(mainAncestors.size());
-        vector<int> missingSpecies(n_mainColoniser,0);
+        vector<vector<Species> > missingSpecies(n_mainColoniser, vector<Species>());
         vector<vector<Species> > clades(n_mainColoniser, vector<Species>());
         for (size_t i = 0; i < n_mainColoniser; ++i) {
             for (auto& sp : species) {
                 if (sp.isSister(mainAncestors[i])) {
                     clades[i].push_back(sp);
                 }
+                else if (sp.getParID() == mainAncestors[i].getSpecID())
+                    missingSpecies[i].push_back(sp);
             }
         }
         // extract status -> endemic, nonendemic or both?
@@ -169,6 +171,14 @@ void outputBranching(const Island& fullIsland, ofstream& ofs)
                 if (sp.getStatus() == 'I')
                     isNonEndemic = true;
                 else if (sp.getStatus() == 'C' || sp.getStatus() == 'A')
+                    isEndemic = true;
+                else
+                    throw logic_error("unknown status");
+            }
+            for (auto& missSp : missingSpecies[i]) {
+                if (missSp.getStatus() == 'I')
+                    isNonEndemic = true;
+                else if (missSp.getStatus() == 'C' || missSp.getStatus() == 'A')
                     isEndemic = true;
                 else
                     throw logic_error("unknown status");
@@ -194,69 +204,7 @@ void outputBranching(const Island& fullIsland, ofstream& ofs)
         // output to file
         for (size_t k = 0; k < n_mainColoniser; ++k) {
             ofs << mainAncestors[k].getSpecID().getSpeciesID() << ',' << '\"'+status[k]+'\"' << ','
-                << 0 << ',' << '\"'+branchingTimes[k]+'\"' << '\n';
-        }
-    }
-}
-
-
-void outputBranching(const Island& fullIsland, ostream& os)
-{  // output: datatable(clade name, status, missing species, branching times),
-    // island age,
-    // mainland species
-    const vector<Species>& species = fullIsland.getSpecies();
-    if (species.empty()) {
-        os << "" << ',' << "" << ',' << "" << ',' << "" << ',' << '\n';
-    }
-    else {
-        // data table
-        // how many clades -> size of datatable
-        // collect species of each clade
-        vector<Species> mainAncestors = whichLineageAncestors(species);
-        const unsigned n_mainColoniser = static_cast<int>(mainAncestors.size());
-        vector<vector<Species> > clades(n_mainColoniser, vector<Species>());
-        for (size_t i = 0; i < n_mainColoniser; ++i) {
-            for (auto& sp : species) {
-                if (sp.isSister(mainAncestors[i])) {
-                    clades[i].push_back(sp);
-                }
-            }
-        }
-        // extract status -> endemic, nonendemic or both?
-        vector<string> status(mainAncestors.size());
-        for (size_t i = 0; i < n_mainColoniser; ++i) {
-            bool isEndemic = false;
-            bool isNonEndemic = false;
-            for (auto& sp : clades[i]) {
-                if (sp.getStatus() == 'I')
-                    isNonEndemic = true;
-                else if (sp.getStatus() == 'C' || sp.getStatus() == 'A')
-                    isEndemic = true;
-                else
-                    throw logic_error("unknown status");
-            }
-            if (isEndemic && isNonEndemic)
-                status[i] = "Endemic&Non_Endemic";
-            else if (isEndemic && !isNonEndemic)
-                status[i] = "Endemic";
-            else if (!isEndemic && isNonEndemic)
-                status[i] = "Non_endemic";
-            else
-                throw logic_error("unknown status");
-        }
-        // extract birth times -> make string
-        vector<string> branchingTimes(n_mainColoniser);
-        for (size_t i = 0; i < n_mainColoniser; ++i) {
-            for (auto& sp : clades[i]) {
-                branchingTimes[i] += to_string(sp.getBirth()) + ',';
-            }
-            branchingTimes[i].pop_back(); // no comma at the end
-        }
-        // names == mainland ancestor
-        // output to file
-        for (size_t k = 0; k < n_mainColoniser; ++k) {
-            os << mainAncestors[k].getSpecID().getSpeciesID() << ',' << '\"'+status[k]+'\"' << ','
-                << 0 << ',' << '\"'+branchingTimes[k]+'\"' << '\n';
+                << missingSpecies[k].size() << ',' << '\"'+branchingTimes[k]+'\"' << '\n';
         }
     }
 }

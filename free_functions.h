@@ -27,7 +27,5 @@ std::vector<Species> whichMainAncestors(const std::vector<Species>& species);
 
 void outputBranching(const Island& fullIsland, std::ofstream& ofs);
 
-void outputBranching(const Island& fullIsland, std::ostream& os);
-
 
 #endif //ARCHIDAISIE_FREE_FUNCTIONS_H
