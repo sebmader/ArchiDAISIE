@@ -31,6 +31,37 @@ void test_other_functions() //!OCLINT indeed long function, don't care it is a t
         island.immigrate(SpeciesID(),4.0);
         assert(getLogGrowth(island)==0.9);
     }
+    // whichMainAncestor
+    { // doesn't find any on emtpy island
+        Island island = Island();
+        assert(whichMainAncestors(island.getSpecies()).empty());
+    }
+    { // does find 1 on island with 1 species
+        Island island = Island(10);
+        island.addSpecies(Species());
+        assert(whichMainAncestors(island.getSpecies()).size()==1);
+    }
+    { // just finds 1 on island with 2 species that are sisters
+        Island island = Island(10);
+        Species sp1 = Species(3.2,SpeciesID(3),SpeciesID(102),'0',false,3.2,3.2);
+        Species sp2 = Species(3.0,SpeciesID(3),SpeciesID(103),'0',false,3.2,3.2);
+        island.addSpecies(sp1);
+        island.addSpecies(sp2);
+        assert(whichMainAncestors(island.getSpecies()).size()==1);
+        assert(whichMainAncestors(island.getSpecies())[0].isSister(sp1));
+        assert(whichMainAncestors(island.getSpecies())[0].isSister(sp2));
+    }
+    { // if 2 species from same mainland ancestor but with different colonisation times
+        // then the older colonisation time will be saved
+        Island island = Island(10);
+        Species sp1 = Species(1.0,SpeciesID(3),SpeciesID(102),'0',false,3.2,3.2);
+        Species sp2 = Species(1.0,SpeciesID(3),SpeciesID(103),'0',false,1.0,1.0);
+        island.addSpecies(sp1);
+        island.addSpecies(sp2);
+        assert(whichMainAncestors(island.getSpecies()).size()==1);
+        assert(whichMainAncestors(island.getSpecies())[0].isSister(sp1));
+        assert(!whichMainAncestors(island.getSpecies())[0].isSister(sp2));
+    }
 }
 
 void test_speciesID() //!OCLINT indeed long function, don't care it is a test

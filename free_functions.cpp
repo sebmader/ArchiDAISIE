@@ -104,6 +104,34 @@ vector<Species> whichLineageAncestors(const vector<Species>& species)
     return lineageAncestors;
 }
 
+vector<Species> whichMainAncestors(const vector<Species>& species)
+{  // outputs the reconstructed mainland ancestor (BirthTime, ID) of each lineage
+    // could reconstruct whole species, but then it wouldn't find itself anymore if extant
+    vector<Species> examplePerMainSpec;
+    for (auto& sp : species) {
+        bool lineagePresent = false;
+        for (auto& lineage : examplePerMainSpec) {
+            if (lineage.getParID() == sp.getParID()) {
+                lineagePresent = true;
+                if (lineage.getColonisationT() < sp.getColonisationT())
+                    lineage = sp;
+            }
+        }
+        if(!lineagePresent)
+            examplePerMainSpec.push_back(sp);
+    }
+    vector<Species> mainlandAncestors(examplePerMainSpec.size());
+    for (size_t i = 0; i < examplePerMainSpec.size(); ++i) {
+        Species mainAncestor = Species(examplePerMainSpec[i].getColonisationT(),
+                examplePerMainSpec[i].getParID(),
+                examplePerMainSpec[i].getParID(),
+                '0', false, 0.0,
+                examplePerMainSpec[i].getColonisationT());
+        mainlandAncestors[i] = mainAncestor;
+    }
+    return mainlandAncestors;
+}
+
 void outputBranching(const Island& fullIsland, ofstream& ofs)
 {  // output: datatable(clade name, status, missing species, branching times),
     // island age,
@@ -123,6 +151,7 @@ void outputBranching(const Island& fullIsland, ofstream& ofs)
           // collect species of each clade
         vector<Species> mainAncestors = whichLineageAncestors(species);
         const unsigned n_mainColoniser = static_cast<int>(mainAncestors.size());
+        vector<int> missingSpecies(n_mainColoniser,0);
         vector<vector<Species> > clades(n_mainColoniser, vector<Species>());
         for (size_t i = 0; i < n_mainColoniser; ++i) {
             for (auto& sp : species) {

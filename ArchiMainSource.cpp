@@ -33,9 +33,12 @@ namespace fs = experimental::filesystem;
 
 // ------------ ArchiDAISIE FUNCTIONS ------------ //
 
-int main() {
+int main(int argc, char* argv[]) {
 
     try {
+        assert(argc == 2);
+        string parameterFile = "parameter_sets.txt";
+        assert(argv[1] == parameterFile);
 
         test_other_functions();
         test_speciesID();
@@ -45,7 +48,9 @@ int main() {
         test_STT();
         test_STTtable();
 
-        const int n_sims = 10;
+/*
+
+        const int n_sims = 1;
         const int islandAge = 10;
         const int n_mainlandSp = 1000;
         const int n_islands = 2;
@@ -55,19 +60,19 @@ int main() {
         for (int i = 1; i <= n_sims; ++i) {
             string output_dir(fs::current_path().fs::path::parent_path().string()
                         + "/sims/sim_" + to_string(i));
-            const vector<double> vPars( {0.001, 0.1, 0.2, 0.1, 0.1, 0.2, 0.1, 0.1,
+            const vector<double> vPars( {0.001, 0.1, 0.2, 0.1, 0.1, 0.0, 0.0, 0.0,
                                          islCarryingCap} );
             // immigration, migration, clado_local, ana_local, extinct_local,
                 // clado_global, ana_global, extinct_global, island carrying capacity
-
-                ArchiDAISIE(islandAge,
-                    n_mainlandSp,
-                    vPars,
-                    n_islands,
-                    replicates,
-                    output_dir,
-                    25);
+            ArchiDAISIE(islandAge,
+                n_mainlandSp,
+                vPars,
+                n_islands,
+                replicates,
+                output_dir,
+                25);
         }
+    */
     }
     catch (exception &error) {
         cerr << "Main_Error: " << error.what() << '\n';
