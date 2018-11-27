@@ -45,6 +45,7 @@ int main() {
         test_STT();
         test_STTtable();
 
+        readParameterRowCSV("../parameter_sets_names.txt");
 /*
 
         const int n_sims = 1;

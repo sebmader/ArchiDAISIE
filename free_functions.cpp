@@ -208,3 +208,23 @@ void outputBranching(const Island& fullIsland, ofstream& ofs)
         }
     }
 }
+
+vector<double> readParameterRowCSV(const string& inputFile)
+{
+    ifstream ifs(inputFile);
+    if(!ifs.is_open())
+        throw runtime_error("unable to open input file.\n");
+
+    string row;
+    string cell;
+    vector<string> splittedRowCSV;
+    while (getline(ifs,cell,'\n')) {
+        splittedRowCSV.push_back(cell);
+    }
+
+    for (const auto& i : splittedRowCSV) {
+        cout << i << '\n';
+    }
+
+    return vector<double>();
+}

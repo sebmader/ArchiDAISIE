@@ -101,6 +101,7 @@ vector<Island> ArchiDAISIE(const double& islandAge,
         // lamb_cg, lamb_ag, mu_g, archi-wide K
         const int islCarryingCap = static_cast<int>(initialParameters[8]);
         initialParameters.pop_back();
+        assert(initialParameters.size() == 8);
 
         // initialise main data frame
         vector<Island> islandReplicates((unsigned)replicates);
@@ -125,7 +126,7 @@ vector<Island> ArchiDAISIE(const double& islandAge,
                    << "cladogenesis_global: " << initialParameters[5] << '\n'
                    << "anagenesis_global: " << initialParameters[6] << '\n'
                    << "extinction_global: " << initialParameters[7] << '\n'
-                   << "island K: " << initialParameters[8] << '\n';
+                   << "island K: " << islCarryingCap << '\n';
         ofsSimData.close();
 
         // loop through replicates

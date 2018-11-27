@@ -79,6 +79,20 @@ void test_other_functions() //!OCLINT indeed long function, don't care it is a t
         assert(!whichMainAncestors(island.getSpecies())[0].isSister(sp3));
         assert(whichMainAncestors(island.getSpecies())[0] != sp1);
     }
+    // outputBranching
+    /*
+    { // output of branching considers re-immigrant of existing clade as missing species
+        // and counts it as missing species -> works!
+        Island island = Island(10);
+        const int n_mainland = 20;
+        SpeciesID maxSpeciesID = SpeciesID(n_mainland);
+        island.immigrate(SpeciesID(),2.0);
+        island.speciateClado(SpeciesID(),1.5,maxSpeciesID);
+        island.immigrate(SpeciesID(),1.0);
+        ofstream ofs("test.txt");
+        outputBranching(island,ofs);
+    }
+    */
 }
 
 void test_speciesID() //!OCLINT indeed long function, don't care it is a test
