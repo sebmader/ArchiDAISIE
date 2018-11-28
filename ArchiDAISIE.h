@@ -31,9 +31,10 @@ Archipelago ArchiDAISIE_core(const double& islandAge,
         STTtable& STT);
 
 std::vector<Island> ArchiDAISIE(const double& islandAge,
-        int n_mainlandSpecies,
         std::vector<double> initialParameters,
-        int n_islands,
+        int n_mainlandSpecies = 1000,
+        int kPerIsl = 10,
+        int n_islands = 2,
         int replicates = 1,
         const std::string& output_dir = "sim",
         int n_timeSlicesSTT = 25);

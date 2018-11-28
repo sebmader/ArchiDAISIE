@@ -65,12 +65,13 @@ Archipelago ArchiDAISIE_core(const double& islandAge,
 }
 
 vector<Island> ArchiDAISIE(const double& islandAge,
-        const int n_mainlandSpecies,
         vector<double> initialParameters,
-        const int n_islands,
-        const int replicates,
+        int n_mainlandSpecies,
+        int kPerIsl,
+        int n_islands,
+        int replicates,
         const string& output_dir,
-        const int n_timeSlicesSTT)
+        int n_timeSlicesSTT)
 {
     try {
         // check given parameters
@@ -80,7 +81,9 @@ vector<Island> ArchiDAISIE(const double& islandAge,
             throw logic_error("Simulation needs at least one mainland species.");
         if(n_islands < 0)
             throw logic_error("Simulation needs at least one island.");
-        if(initialParameters.size() != 9)
+        if(kPerIsl < 0)
+            throw logic_error("The carrying capacity cannot be below 0.");
+        if(initialParameters.size() != 8)
             throw logic_error("Provide 9 parameter values.");
         if(initialParameters[0] <= 0)
             throw logic_error("Rate of colonisation is zero or below."
@@ -97,10 +100,7 @@ vector<Island> ArchiDAISIE(const double& islandAge,
 
         // order of parameters (input):
         // gam_i, gam_m, lamb_cl, lamb_al, mu_l,
-        // lamb_cg, lamb_ag, mu_g, archi-wide K
-        const int islCarryingCap = static_cast<int>(initialParameters[8]);
-        initialParameters.pop_back();
-        assert(initialParameters.size() == 8);
+        // lamb_cg, lamb_ag, mu_g
 
         // initialise main data frame
         vector<Island> islandReplicates((unsigned)replicates);
@@ -125,7 +125,7 @@ vector<Island> ArchiDAISIE(const double& islandAge,
                    << "cladogenesis_global: " << initialParameters[5] << '\n'
                    << "anagenesis_global: " << initialParameters[6] << '\n'
                    << "extinction_global: " << initialParameters[7] << '\n'
-                   << "island K: " << islCarryingCap << '\n';
+                   << "island K: " << kPerIsl << '\n';
         ofsSimData.close();
 
         // loop through replicates
@@ -141,7 +141,7 @@ vector<Island> ArchiDAISIE(const double& islandAge,
             }
 
             // initialise intermediate archipelago data frame
-            Archipelago fullArchi(n_islands, islCarryingCap);
+            Archipelago fullArchi(n_islands, kPerIsl);
 
             // initialise max species ID
             SpeciesID maxSpeciesID(n_mainlandSpecies);
@@ -151,7 +151,7 @@ vector<Island> ArchiDAISIE(const double& islandAge,
 
                 const vector<SpeciesID> mainlandSpecies(1,SpeciesID(mainSp));
                 fullArchi.addArchi(ArchiDAISIE_core(islandAge, mainlandSpecies,
-                        initialParameters, islCarryingCap,
+                        initialParameters, kPerIsl,
                         n_islands, prng, maxSpeciesID,
                         sttPerColoniser[mainSp]));
             }

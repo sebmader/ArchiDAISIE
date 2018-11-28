@@ -45,45 +45,46 @@ int main() {
         test_STT();
         test_STTtable();
 
-        string inputFileName = "parameter_sets_names.txt";
+        string inputFileName = "test.txt";
+
         const int count = countCSVFileRows(inputFileName);
-        cout << count << '\n';
         int it = 1;
         while(it < count) {
             ++it;
             ifstream ifs(inputFileName);
             vector<string> parameters = readParameterRowCSV(ifs,it);
-            assert(parameters.size() == 11);
+            assert(parameters.size() == 14);
             for (const auto& parameter : parameters) {
                 cout << parameter << '\t';
             }
             cout << '\n';
-        }
-/*
-
-        const int n_sims = 1;
-        const int islandAge = 10;
-        const int n_mainlandSp = 1000;
-        const int n_islands = 2;
-        const int replicates = 1000;
-        const int islCarryingCap = 10;
-
-        for (int i = 1; i <= n_sims; ++i) {
+            const string simName = parameters[0];
+            const double immi = stod(parameters[1]);
+            const double mig = stod(parameters[2]);
+            const double clado_l = stod(parameters[3]);
+            const double ana_l = stod(parameters[4]);
+            const double ext_l = stod(parameters[5]);
+            const double clado_g = stod(parameters[6]);
+            const double ana_g = stod(parameters[7]);
+            const double ext_g = stod(parameters[8]);
+            const int kPerIsl = stoi(parameters[9]);
+            const int n_isl = stoi(parameters[10]);
+            const double archi_age = stod(parameters[11]);
+            const int n_mainlandSp = stoi(parameters[12]);
+            const int replicates = stoi(parameters[13]);
+            vector<double> initialPars = { immi,mig,clado_l,ana_l,ext_l,clado_g,
+                                           ana_g,ext_g };
             string output_dir(fs::current_path().fs::path::parent_path().string()
-                        + "/sims/sim_" + to_string(i));
-            const vector<double> vPars( {0.001, 0.1, 0.2, 0.1, 0.1, 0.0, 0.0, 0.0,
-                                         islCarryingCap} );
-            // immigration, migration, clado_local, ana_local, extinct_local,
-                // clado_global, ana_global, extinct_global, island carrying capacity
-            ArchiDAISIE(islandAge,
-                n_mainlandSp,
-                vPars,
-                n_islands,
-                replicates,
-                output_dir,
-                25);
+                    + "/sims/" + simName);
+            ArchiDAISIE(archi_age,
+                    initialPars,
+                    n_mainlandSp,
+                    kPerIsl,
+                    n_isl,
+                    replicates,
+                    output_dir,
+                    25);
         }
-    */
     }
     catch (exception &error) {
         cerr << "Main_Error: " << error.what() << '\n';
