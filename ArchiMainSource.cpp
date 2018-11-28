@@ -45,8 +45,20 @@ int main() {
         test_STT();
         test_STTtable();
 
-        readParameterRowCSV(fs::current_path().fs::path::parent_path().string()
-                 + "/parameter_sets_names.txt");
+        string inputFileName = "parameter_sets_names.txt";
+        const int count = countCSVFileRows(inputFileName);
+        cout << count << '\n';
+        int it = 1;
+        while(it < count) {
+            ++it;
+            ifstream ifs(inputFileName);
+            vector<string> parameters = readParameterRowCSV(ifs,it);
+            assert(parameters.size() == 11);
+            for (const auto& parameter : parameters) {
+                cout << parameter << '\t';
+            }
+            cout << '\n';
+        }
 /*
 
         const int n_sims = 1;
@@ -77,6 +89,5 @@ int main() {
         cerr << "Main_Error: " << error.what() << '\n';
         exit(1);
     }
-
     return 0;
 }

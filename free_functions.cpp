@@ -3,6 +3,7 @@
 //
 
 #include <fstream>
+#include <sstream>
 #include "free_functions.h"
 
 using namespace std;
@@ -209,22 +210,36 @@ void outputBranching(const Island& fullIsland, ofstream& ofs)
     }
 }
 
-vector<double> readParameterRowCSV(const string& inputFile)
+vector<string> readParameterRowCSV(ifstream& inputFile, const int& lineWanted)
 {
-    ifstream ifs(inputFile);
-    if(!ifs.is_open())
+    if(!inputFile.is_open())
         throw runtime_error("unable to open input file.\n");
 
+    int lineNum = 0;
     string row;
-    string cell;
     vector<string> splittedRowCSV;
-    while (getline(ifs,cell,'\n')) {
-        splittedRowCSV.push_back(cell);
+    while (getline(inputFile,row)) {
+        ++lineNum;
+        if (lineNum == lineWanted) {
+            string cell;
+            istringstream buffer(row);
+            while (getline(buffer, cell, ',')) {
+                splittedRowCSV.push_back(cell);
+            }
+        }
     }
+    return splittedRowCSV;
+}
 
-    for (const auto& i : splittedRowCSV) {
-        cout << i << '\n';
+int countCSVFileRows(const std::string& fileName)
+{
+    ifstream ifs0(fileName);
+    if (!ifs0.is_open())
+        throw runtime_error("unable to open input file for counting lines.\n");
+    string str;
+    int count = 0;
+    while(getline(ifs0,str)){
+        ++count;
     }
-
-    return vector<double>();
+    return count;
 }

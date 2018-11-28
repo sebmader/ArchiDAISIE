@@ -27,6 +27,7 @@ std::vector<Species> whichMainAncestors(const std::vector<Species>& species);
 
 void outputBranching(const Island& fullIsland, std::ofstream& ofs);
 
-std::vector<double> readParameterRowCSV(const std::string& inputFile);
+int countCSVFileRows(const std::string& fileName);
+std::vector<std::string> readParameterRowCSV(std::ifstream& inputFile, const int& lineWanted);
 
 #endif //ARCHIDAISIE_FREE_FUNCTIONS_H
