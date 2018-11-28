@@ -45,7 +45,8 @@ int main() {
         test_STT();
         test_STTtable();
 
-        readParameterRowCSV("../parameter_sets_names.txt");
+        readParameterRowCSV(fs::current_path().fs::path::parent_path().string()
+                 + "/parameter_sets_names.txt");
 /*
 
         const int n_sims = 1;

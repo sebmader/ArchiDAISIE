@@ -58,10 +58,9 @@ Archipelago ArchiDAISIE_core(const double& islandAge,
         }
         return archi;
     }
-    catch (string &str) {
-        cerr << "Warning: " << str;
-        assert(!"should never get here!");  //!OCLINT
-        return Archipelago();
+    catch (exception &ex) {
+        cerr << "ArchiDAISIE_core_error: " << ex.what() << '\n';
+        exit(EXIT_FAILURE);
     }
 }
 
@@ -175,7 +174,7 @@ vector<Island> ArchiDAISIE(const double& islandAge,
         return islandReplicates;
     }
     catch (exception &error) {
-        cerr << "Error: " << error.what() << '\n';
-        exit(1);
+        cerr << "ArchiDAISIE_Error: " << error.what() << '\n';
+        exit(EXIT_FAILURE);
     }
 }
