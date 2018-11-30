@@ -17,8 +17,6 @@ Species::Species(const double birthTime,
         mStatus{status}, mMigrated{migrated}, mAncestralBT{ancestralBT},
         mColonisationT{colonisationT}, mCladoStates{cladoStates}
 {
-    assert(speciesId.getSpeciesID() >= 0);
-    assert(parentId.getSpeciesID() >= 0);
     assert(birthTime >= 0.0);
     assert(status == 'I' || status == 'A' || status == 'C' || status == '0');
     assert(ancestralBT >= 0.0);
@@ -81,22 +79,19 @@ bool Species::isMostRecentSis(const Species& potentialSis) const
 {
     if (!this->isSister(potentialSis) || mCladoStates.empty() ||
             potentialSis.getCladoStates().empty())
-        return false; // species/sis has to have speciated before
+        return false;
 
     vector<char> formerSpeciations = mCladoStates;
-    vector<char> sisFormerSpeciations = potentialSis.getCladoStates();
-    if (formerSpeciations.size() > sisFormerSpeciations.size())
-        return false; // sis has have speciated as least as often as this species
     formerSpeciations.pop_back();
+    vector<char> sisFormerSpeciations = potentialSis.getCladoStates();
     while(sisFormerSpeciations.size() > formerSpeciations.size())
         sisFormerSpeciations.pop_back();
 
     if (formerSpeciations != sisFormerSpeciations)
-        return false; // former speciations have to be the same
+        return false;
 
     const int posLastSpeciation = static_cast<int>(mCladoStates.size() - 1);
     return potentialSis.mCladoStates[posLastSpeciation] != mCladoStates[posLastSpeciation];
-     // but last one has to be different
 }
 
 void Species::printSpec() const
@@ -124,11 +119,4 @@ bool Species::operator==(const Species& rhs) const
 bool Species::operator!=(const Species& rhs) const
 {
     return !(rhs==*this);
-}
-
-bool Species::isValid() const
-{
-    return mBirthT >= 0.0 && mMainParentID.getSpeciesID() >= 0 && mSpeciesID.getSpeciesID() >= 0 &&
-            (mStatus == '0' || mStatus == 'A' || mStatus == 'C' || mStatus == 'I') &&
-            mAncestralBT >= 0.0 && mColonisationT >= 0.0;
 }

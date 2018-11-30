@@ -15,7 +15,7 @@
 #include <utility>
 #include <random>
 #include <exception>
-#include <experimental/filesystem>
+#include <filesystem>
 
 
 using namespace std;
@@ -33,7 +33,7 @@ namespace fs = experimental::filesystem;
 
 // ------------ ArchiDAISIE FUNCTIONS ------------ //
 
-int main(int argc, char* argv[]) {
+int main() {
 
     try {
 
@@ -45,13 +45,7 @@ int main(int argc, char* argv[]) {
         test_STT();
         test_STTtable();
 
-        cout << "Starting " << argv[0] << ".\n";
-
         string inputFileName = "test.txt";
-        if (argc > 1)
-            inputFileName = argv[1];
-
-        cout << "Reading parameter sets from '" << inputFileName << "'.\n";
 
         const int count = countCSVFileRows(inputFileName);
         int it = 1;
@@ -76,9 +70,9 @@ int main(int argc, char* argv[]) {
             const int replicates = stoi(parameters[13]);
             vector<double> initialPars = { immi,mig,clado_l,ana_l,ext_l,clado_g,
                                            ana_g,ext_g };
-            string output_dir("sims/" + simName);
+            string output_dir(fs::current_path().fs::path::parent_path().string()
+                    + "/sims/" + simName);
             cout << "Simulation " << it-1 << " / " << count-1 << '\n';
-
             ArchiDAISIE(archi_age,
                     initialPars,
                     n_mainlandSp,

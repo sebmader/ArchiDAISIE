@@ -1309,8 +1309,10 @@ void test_archi() //!OCLINT indeed long function, don't care it is a test
             int n_mainlandSp = 5;
             SpeciesID maxSpeciesID(n_mainlandSp);
             mt19937_64 prng;
-            archi.addSpecies(Species(1.0,SpeciesID(),SpeciesID(1)),1);
-            archi.speciateGlobalClado(SpeciesID(1),prng,maxSpeciesID);
+            archi.doGlobalEvent(event_type::global_cladogenesis,
+                    SpeciesID(1),
+                    prng,
+                    maxSpeciesID);
             assert(!"should not get here!\n"); //!OCLINT
         }
         catch (const std::exception& e)
@@ -1388,8 +1390,11 @@ void test_archi() //!OCLINT indeed long function, don't care it is a test
             Archipelago archi = Archipelago(n_islands, islCarryingCap);
             int n_mainlandSp = 5;
             SpeciesID maxSpeciesID(n_mainlandSp);
-            archi.addSpecies(Species(1.0, SpeciesID(),SpeciesID(1)),0);
-            archi.speciateGlobalAna(SpeciesID(1),maxSpeciesID);
+            mt19937_64 prng;
+            archi.doGlobalEvent(event_type::global_anagenesis,
+                    SpeciesID(1),
+                    prng,
+                    maxSpeciesID);
             assert(!"should not get here!\n"); //!OCLINT
         }
         catch (const std::exception& e)
@@ -1437,23 +1442,6 @@ void test_archi() //!OCLINT indeed long function, don't care it is a test
             int n_mainlandSp = 5;
             SpeciesID maxSpeciesID(n_mainlandSp);
             mt19937_64 prng;
-            archi.addSpecies(Species(2.0,SpeciesID(),SpeciesID(1)),0);
-            archi.goGlobalExtinct(SpeciesID(1));
-        }
-        catch (const exception &e)
-        {
-            assert(string(e.what()) == "Drawn species is present on less than 2 islands. "
-                                       "Something's wrong.. (global extinction)\n");
-        }
-    }
-    {   // doGlobalEvent throws exception if species is not on at least 2 islands
-        try {
-            int n_islands = 2;
-            int islCarryingCap = 5;
-            Archipelago archi = Archipelago(n_islands, islCarryingCap);
-            int n_mainlandSp = 5;
-            SpeciesID maxSpeciesID(n_mainlandSp);
-            mt19937_64 prng;
             archi.doGlobalEvent(event_type::global_extinction,
                     SpeciesID(1),
                     prng,
@@ -1462,7 +1450,7 @@ void test_archi() //!OCLINT indeed long function, don't care it is a test
         catch (const exception &e)
         {
             assert(string(e.what()) == "Drawn species is present on less than 2 islands. "
-                                        "Something's wrong.. (doGlobalEvent)\n");
+                                        "Something's wrong.. (global extinction)\n");
         }
     }
     {   // doGlobalEvent throws exception if not global event
@@ -1473,8 +1461,6 @@ void test_archi() //!OCLINT indeed long function, don't care it is a test
             int n_mainlandSp = 5;
             mt19937_64 prng;
             SpeciesID maxSpeciesID(n_mainlandSp);
-            archi.addSpecies(Species(1.1,SpeciesID(),SpeciesID(1)),0);
-            archi.addSpecies(Species(1.0,SpeciesID(),SpeciesID(1)),1);
             archi.doGlobalEvent(event_type::local_immigration,
                     SpeciesID(1),
                     prng,

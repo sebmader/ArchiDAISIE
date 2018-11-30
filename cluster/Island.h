@@ -52,7 +52,7 @@ public:
                     // in case a local event is drawn, sample island, event and species
                     // it happens to
 
-    void immigrate(const SpeciesID&, const double&);  // mainland species immigrates to that island
+    void immigrate(const SpeciesID&, double);  // mainland species immigrates to that island
     int drawMigDestinationIsland(
             int originIsland, //RJCB: doesn't Island have a const int ID?
             std::vector<double>& LogGrowthTerms, //RJCB: AFAICS, can be calculated when needed
