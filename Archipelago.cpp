@@ -539,15 +539,11 @@ void Archipelago::correctSisterTaxaGlobal(const SpeciesID& extinctSpID)
     assert(isGlobal(extinctSpID));
     // find oldest population of extinct species
     const vector<Species> extinctPops = findIslSpecies(extinctSpID);
-    Species oldestExtinctPop = extinctPops[0];
-    for (auto& pop : extinctPops) {
-        if (pop.getBirth() > oldestExtinctPop.getBirth())
-            oldestExtinctPop = pop;
-    }
+    Species oldestExtinctPop = findOldestSpecies(extinctPops);
     const int oldestPopIsl = whereIsSpecies(oldestExtinctPop);
-    // find real sister species (not other populations of extinct species)
+    // find real sister species (not other populations of extinct species):
     // while there are other populations of extinctSp in that vector
-    // delete the last daughter state of them
+    // delete the last daughter state of them -> get to first branching of other species
     bool isSameSpec;
     do {
         const vector<Species> sistersSpecies = findMostRecentSistersPops(oldestExtinctPop);

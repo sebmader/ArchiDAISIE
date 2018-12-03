@@ -1,0 +1,9 @@
+Clade_name,Status,Missing_species,Branching_times
+505,"Endemic",0,"9.937180"
+403,"Endemic",0,"7.187440"
+50,"Endemic",0,"5.911085,4.185827,0.196941"
+918,"Endemic",0,"4.261364,2.730001,1.448257"
+27,"Non_endemic",0,"4.135342"
+358,"Non_endemic",0,"1.959322"
+825,"Non_endemic",0,"1.693162"
+921,"Non_endemic",0,"1.327520"

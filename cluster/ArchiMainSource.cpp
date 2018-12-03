@@ -15,7 +15,7 @@
 #include <utility>
 #include <random>
 #include <exception>
-#include <filesystem>
+#include <experimental/filesystem>
 
 
 using namespace std;
@@ -45,7 +45,7 @@ int main() {
         test_STT();
         test_STTtable();
 
-        string inputFileName = "test.txt";
+        string inputFileName = "testOne.txt";
 
         const int count = countCSVFileRows(inputFileName);
         int it = 1;
@@ -70,8 +70,7 @@ int main() {
             const int replicates = stoi(parameters[13]);
             vector<double> initialPars = { immi,mig,clado_l,ana_l,ext_l,clado_g,
                                            ana_g,ext_g };
-            string output_dir(fs::current_path().fs::path::parent_path().string()
-                    + "/sims/" + simName);
+            string output_dir("sims/" + simName);
             cout << "Simulation " << it-1 << " / " << count-1 << '\n';
             ArchiDAISIE(archi_age,
                     initialPars,
