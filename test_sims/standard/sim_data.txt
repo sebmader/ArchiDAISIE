@@ -1,4 +1,4 @@
-Seed: 1171655723
+Seed: 2900754376
 Island age: 10
 N Islands: 2
 N Mainland: 1000
@@ -12,3 +12,5 @@ cladogenesis_global: 0.2
 anagenesis_global: 0.1
 extinction_global: 0.1
 island K: 10
+
+mean number of Colonisations: 7

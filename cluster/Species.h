@@ -47,6 +47,8 @@ public:
 
     void printSpec() const;
 
+    bool isValid() const;
+
 private:
     double mBirthT;     // birth time of species
     SpeciesID mMainParentID;      // ID of parent species TODO: test Mainland parent !!

@@ -10,6 +10,7 @@
 #include <cassert>
 #include <vector>
 #include <fstream>
+#include <iomanip>
 #include <chrono>
 #include <random>
 #include <exception>

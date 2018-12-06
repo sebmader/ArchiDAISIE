@@ -183,7 +183,7 @@ void outputBranching(const Island& fullIsland, ofstream& ofs)
                     throw logic_error("unknown status");
             }
             if (isEndemic && isNonEndemic)
-                status[i] = "Endemic&Non_Endemic";
+                status[i] = "Endemic&Non_endemic";
             else if (isEndemic && !isNonEndemic)
                 status[i] = "Endemic";
             else if (!isEndemic && isNonEndemic)

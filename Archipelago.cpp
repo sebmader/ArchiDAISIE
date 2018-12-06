@@ -16,6 +16,7 @@ Archipelago::Archipelago(const int &n_islands, const int &islCarryingCap)
         mIslands = vector<Island>((unsigned) n_islands,
                 Island(islCarryingCap));
         mK = islCarryingCap * n_islands;
+        mNColonisations = 0;
     try {
             if (n_islands == 0 || islCarryingCap == 0)
                 throw string("You are creating an archipelago without islands"
@@ -159,6 +160,38 @@ vector<Species> Archipelago::findIslSpecies(const SpeciesID& speciesID) const
             locations.push_back(isl.findSpecies(speciesID));
     }
     return locations;
+}
+
+vector<Species> Archipelago::findMostRecentSistersPops(const Species& species) const
+{  // including populations of same species
+    assert(species.isValid());
+    vector<Species> sisters;
+    for(auto& isl : mIslands) {
+        const vector<Species>& islSpecies = isl.getSpecies();
+        for(auto& sp : islSpecies) {
+            if (species.isMostRecentSis(sp))
+                sisters.push_back(sp);
+        }
+    }
+    return sisters;
+}
+
+void Archipelago::addSpecies(const Species& species, const int island)
+{
+    assert(species.isValid());
+    assert(island < getNIslands());
+    mIslands[island].addSpecies(species);
+}
+
+void Archipelago::updateNColonisations()
+{
+    // update number of archi-colonisations
+    int tmpNColo = 0;
+    for (int i = 0; i < getNIslands(); ++i) {
+        tmpNColo += mIslands[i].getNColonisations();
+    }
+    assert(tmpNColo >= mNColonisations);
+    mNColonisations = tmpNColo;
 }
 
 void Archipelago::calculateAllRates(
@@ -421,6 +454,7 @@ void Archipelago::doLocalEvent(const event_type& localEvent,
     default:
         throw logic_error("Event is not local.\n");
     }
+    updateNColonisations();
 }
 
 void Archipelago::doNextEvent(const event_type& nextEvent,
@@ -490,6 +524,7 @@ void Archipelago::addArchi(const Archipelago &newArchi)
             mIslands[i].addIsland(addArch[i]);
         }
     }
+    updateNColonisations();
 }
 
 Island Archipelago::makeArchiTo1Island() const
@@ -517,20 +552,6 @@ void Archipelago::printArchi()
              << "ColoT" << '\t' << "CladoStac" << '\n';
         z.printIsland();
     }
-}
-
-vector<Species> Archipelago::findMostRecentSistersPops(const Species& species) const
-{  // including populations of same species
-    assert(species.isValid());
-    vector<Species> sisters;
-    for(auto& isl : mIslands) {
-        const vector<Species>& islSpecies = isl.getSpecies();
-        for(auto& sp : islSpecies) {
-            if (species.isMostRecentSis(sp))
-                sisters.push_back(sp);
-        }
-    }
-    return sisters;
 }
 
 void Archipelago::correctSisterTaxaGlobal(const SpeciesID& extinctSpID)
@@ -598,11 +619,4 @@ void Archipelago::correctSisterTaxaLocal(const SpeciesID& extinctSpID, const int
                     == sis.getCladoStates().size()-1);
         }
     }
-}
-
-void Archipelago::addSpecies(const Species& species, const int island)
-{
-    assert(species.isValid());
-    assert(island < getNIslands());
-    mIslands[island].addSpecies(species);
 }

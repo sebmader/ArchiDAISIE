@@ -21,6 +21,7 @@ public:
 
     const std::vector<Species>& getSpecies() const { return mSpecies; }
     int getCarryingCap() const noexcept;
+    int getNColonisations() const noexcept;
     std::vector<SpeciesID> getSpeciesIDs() const;
     int getNSpecies() const noexcept;
     bool hasSpecies(const SpeciesID& speciesID) const;
@@ -83,6 +84,7 @@ private:
             // speed optimization yet. Calculate this when needed
     int mK; // Carrying capacity (should be const one day)
                     // for now: mIslandk = mK / n_islands
+    int mNColonisations;
 };
 
 #endif // ARCHIDAISIE_ISLAND_H

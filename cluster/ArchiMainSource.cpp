@@ -33,7 +33,7 @@ namespace fs = experimental::filesystem;
 
 // ------------ ArchiDAISIE FUNCTIONS ------------ //
 
-int main() {
+int main(int argc, char* argv[]) {
 
     try {
 
@@ -45,7 +45,13 @@ int main() {
         test_STT();
         test_STTtable();
 
+        cout << "Starting application ...\n" << argv[0] << "\n";
+
         string inputFileName = "testOne.txt";
+        if (argc > 1)
+            inputFileName = argv[1];
+
+        cout << "Reading parameter sets from '" << inputFileName << "'.\n";
 
         const int count = countCSVFileRows(inputFileName);
         int it = 1;
@@ -72,6 +78,7 @@ int main() {
                                            ana_g,ext_g };
             string output_dir("sims/" + simName);
             cout << "Simulation " << it-1 << " / " << count-1 << '\n';
+
             ArchiDAISIE(archi_age,
                     initialPars,
                     n_mainlandSp,

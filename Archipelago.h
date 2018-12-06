@@ -28,6 +28,7 @@ public:
     const std::vector<Island> & getIslands() const { return mIslands; }
     int getCarryingCap() const noexcept { return mK; }
     std::vector<double> getGlobalRates() const noexcept { return mGlobalRates; }
+    int getNColonisations() const noexcept { return mNColonisations; }
 
     bool isGlobal(const SpeciesID& speciesID) const;
     int whereIsSpecies(const Species& species) const;
@@ -36,6 +37,8 @@ public:
                                     // species (input) is within archipelago
     std::vector<Species> findIslSpecies(const SpeciesID& speciesID) const;
     std::vector<Species> findMostRecentSistersPops(const Species& species) const;
+    void addSpecies(const Species&, int);  // adds species to island
+    void updateNColonisations();
 
     void calculateAllRates(const std::vector<double>&,
             int n_mainlandSpecies, int n_islands);
@@ -81,7 +84,6 @@ public:
             const std::vector<SpeciesID>& mainSpeciesIDs); // switch-statement
                     // that calls event functions to update the island vector
 
-    void addSpecies(const Species&, int);  // adds species to island
     void addArchi(const Archipelago&);  // add an island vector to this one / consolidate them
 
     Island makeArchiTo1Island() const;   // aggregate all islands in
@@ -94,6 +96,7 @@ private:
                                        // (3 rates: lambC, lambA, mu)
     std::vector<Island> mIslands;  // vector of island phylogenies of whole archipelago
     int mK;    // carrying capacity of archipelago
+    int mNColonisations;  // cumulative number of independant colonisations
 };
 
 #endif //ARCHIDAISIE_ARCHIPELAGO_H

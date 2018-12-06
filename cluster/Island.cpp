@@ -13,6 +13,7 @@ using namespace std;
 Island::Island(const int k) : mK{k}
 {
     assert(k >= 0);
+    mNColonisations = 0;
 }
 
 int Island::getCarryingCap() const noexcept
@@ -20,11 +21,15 @@ int Island::getCarryingCap() const noexcept
     return mK;
 }
 
+int Island::getNColonisations() const noexcept
+{
+    return mNColonisations;
+}
+
 int Island::getNSpecies() const noexcept
 {
     return static_cast<int>(mSpecies.size());
 }
-
 
 void Island::printIsland() const
 {
@@ -36,6 +41,7 @@ void Island::printIsland() const
 int Island::findPos(const SpeciesID& speciesID) const
 {   // find the position of certain species (input) in species vector
         // if not present: output = -1
+    assert(speciesID.getSpeciesID() >= 0);
     const int n_species = static_cast<int>(mSpecies.size());
     for (int i = n_species-1; i >= 0; --i)
         if (mSpecies[i].getSpecID() == speciesID)
@@ -45,15 +51,17 @@ int Island::findPos(const SpeciesID& speciesID) const
 
 const Species& Island::findSpecies(const SpeciesID speciesID) const
 {
+    assert(speciesID.getSpeciesID() >= 0);
     const int index = findPos(speciesID);
-    assert(index >= 0);
+    assert(index >= 0 && index < getNSpecies());
     return mSpecies[index];
 }
 
 Species& Island::findRefSpecies(const SpeciesID& speciesID)
 {
+    assert(speciesID.getSpeciesID() >= 0);
     const int index = findPos(speciesID);
-    assert(index >= 0);
+    assert(index >= 0 && index < getNSpecies());
     return mSpecies[index];
 }
 
@@ -70,6 +78,7 @@ void Island::calculateIslRates(
     const int n_alive = getNSpecies();
 
     const double logGrowth = getLogGrowth(*this);
+    assert(logGrowth >= 0.0);
     // immigration to specific island:
     const double immigrationRate = max(0.0, islandParameters[0] * n_mainlandSpecies
             * logGrowth / n_islands);
@@ -84,6 +93,9 @@ void Island::calculateIslRates(
     const double localAnaRate = max(0.0, islandParameters[3] * n_alive);
     // local extinction:
     const double localExtinctRate = max(0.0, islandParameters[4] * n_alive);
+    assert(immigrationRate >= 0.0); assert(migrationRate >= 0.0);
+    assert(localCladoRate >= 0.0); assert(localAnaRate >= 0.0);
+    assert(localExtinctRate >= 0.0);
 
     // save in rate vector
     mLocalRates = { immigrationRate, migrationRate, localCladoRate,
@@ -97,16 +109,17 @@ event_type Island::sampleLocalEvent(mt19937_64& prng)
 }
 
 // local updates:
-void Island::immigrate(const SpeciesID& speciesID, double time)
+void Island::immigrate(const SpeciesID& speciesID, const double& time)
 {   // immigration from the mainland to THIS island
 
+    assert(speciesID.getSpeciesID() >= 0);
+    assert(time >= 0.0);
     Species newSpecies(time, speciesID, speciesID, 'I', false, time, time,
             vector<char>());
     if (hasSpecies(speciesID)) {  // if extant -> re-immigration
         // ("re-setting the clock" (= BirthT))
         const int pos = findPos(speciesID);
-        assert(pos < getNSpecies());
-        assert(pos >= 0);
+        assert(pos < getNSpecies() && pos >= 0);
         mSpecies[pos] = newSpecies;
     }
     else {
@@ -114,6 +127,7 @@ void Island::immigrate(const SpeciesID& speciesID, double time)
             throw logic_error("Immigration would make number of species"
                               " exceed carrying capacity.\n");
         addSpecies(newSpecies);
+        ++mNColonisations;
     }
 }
 
@@ -131,20 +145,24 @@ int Island::drawMigDestinationIsland(
     for (int k = 0; k < n_islands; ++k) {
         if (k == originIsland) {     // for the island it migrates from:
                         // migration rate = 0 -> this event doesn't happen
-            migrationRates[k] = 0;
+            migrationRates[k] = 0.0;
             continue;
         }
         migrationRates[k] = (initialMigrationRate * n_speciesAlive * LogGrowthTerms[k])
             / (n_islands*n_islands - n_islands);
+        assert(migrationRates[k] >= 0.0);
     }
     const int destinationIsland = drawDisEvent(migrationRates, prng);
     assert(destinationIsland != originIsland);
+    assert(destinationIsland >= 0 && destinationIsland < n_islands);
 
     return destinationIsland;
 }
 
 void Island::migrate(const Species& oldSpecies, const double& time)
 {
+    assert(oldSpecies.isValid());
+    assert(time >= 0.0);
     vector<char> newCladostates = oldSpecies.getCladoStates();
     newCladostates.push_back('b');
     Species newSpecies = Species(time, oldSpecies.getParID(),
@@ -152,7 +170,6 @@ void Island::migrate(const Species& oldSpecies, const double& time)
             oldSpecies.getAncestralBT(), oldSpecies.getColonisationT(),
             newCladostates);
     // inherit ancestral birthT of oldSpecies IF it has already migrated before
-    // -> if it hasn't migrated before ancBT == BT; so, just use ancBT instead
 
     const SpeciesID speciesID = oldSpecies.getSpecID();
     if(hasSpecies(speciesID)) {
@@ -180,8 +197,12 @@ void Island::speciateClado(const SpeciesID& speciesID, const double& time,
     if (getNSpecies() + 1 > mK)
         throw logic_error("Cladogenesis would make number of species"
                           " exceed carrying capacity.\n");
+    assert(speciesID.getSpeciesID() >= 0);
+    assert(time >= 0.0);
+
     // find species
     const Species oldSpecies = findSpecies(speciesID);
+    assert(oldSpecies.isValid());
 
     // 2 new species:
     vector<char> newCladoStates = oldSpecies.getCladoStates();
@@ -207,9 +228,11 @@ void Island::speciateAna(const SpeciesID& speciesID, SpeciesID& maxSpeciesID)
     // -> equivalent to global (=DAISIE) anagenesis
     if(!hasSpecies(speciesID))
         throw logic_error("Species does not exist on island.\n");
+    assert(speciesID.getSpeciesID() >= 0);
 
     // find species
     const Species oldSpecies = findSpecies(speciesID);
+    assert(oldSpecies.isValid());
     // new species
     Species newSpecies = Species(oldSpecies.getBirth(), oldSpecies.getParID(),
             maxSpeciesID.createNewSpeciesID(), 'A', false,
@@ -224,10 +247,10 @@ void Island::goExtinct(const SpeciesID& speciesID)
 {   // species goes extinct
     if(!hasSpecies(speciesID))
         throw logic_error("Species does not exist on island.\n");
-
+    assert(speciesID.getSpeciesID() >= 0);
     // find position of species
     const int pos = findPos(speciesID);
-    assert(pos >= 0);
+    assert(pos >= 0 && pos < getNSpecies());
     // remove species
     mSpecies.erase(mSpecies.begin() + pos);
 }
@@ -245,6 +268,7 @@ void Island::addIsland(const Island& islNew)
         // delete duplicates
         for (int j = 0; j < getNSpecies(); ++j) {
             for (int k = j + 1; k < getNSpecies(); ++k) {
+                assert(mSpecies[j].isValid() && mSpecies[k].isValid());
                 if (mSpecies[j].getSpecID() ==
                         mSpecies[k].getSpecID()) {
                     if (mSpecies[j].isImmigrant() && !mSpecies[j].hasMigrated()) {
@@ -308,11 +332,13 @@ void Island::addIsland(const Island& islNew)
                 }
             }
         }
+        mNColonisations += islNew.getNColonisations();
     }
 }
 
 void Island::addSpecies(const Species& newSpecies)
 {   // adds new species to island -> both species and alive species vector
+    assert(newSpecies.isValid());
     mSpecies.push_back(newSpecies);
 }
 
@@ -326,7 +352,7 @@ vector<SpeciesID> Island::getSpeciesIDs() const
 
 void Island::deleteSpecies(const int& pos)
 {
-    assert(pos >= 0);
+    assert(pos >= 0 && pos < getNSpecies());
     mSpecies[pos] = mSpecies.back();
     mSpecies.pop_back();
 }
@@ -339,5 +365,6 @@ std::vector<double> Island::getLocalRates() const noexcept
 bool Island::hasSpecies(const SpeciesID& speciesID) const
 {
     const int pos = findPos(speciesID);
+    assert(pos < getNSpecies());
     return pos >= 0;
 }

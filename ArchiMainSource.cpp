@@ -45,7 +45,7 @@ int main(int argc, char* argv[]) {
         test_STT();
         test_STTtable();
 
-        cout << "Starting " << argv[0] << ".\n";
+        cout << "Starting application ...\n" << argv[0] << "\n";
 
         string inputFileName = "testOne.txt";
         if (argc > 1)

@@ -21,6 +21,7 @@ public:
 
     const std::vector<Species>& getSpecies() const { return mSpecies; }
     int getCarryingCap() const noexcept;
+    int getNColonisations() const noexcept;
     std::vector<SpeciesID> getSpeciesIDs() const;
     int getNSpecies() const noexcept;
     bool hasSpecies(const SpeciesID& speciesID) const;
@@ -52,7 +53,7 @@ public:
                     // in case a local event is drawn, sample island, event and species
                     // it happens to
 
-    void immigrate(const SpeciesID&, double);  // mainland species immigrates to that island
+    void immigrate(const SpeciesID&, const double&);  // mainland species immigrates to that island
     int drawMigDestinationIsland(
             int originIsland, //RJCB: doesn't Island have a const int ID?
             std::vector<double>& LogGrowthTerms, //RJCB: AFAICS, can be calculated when needed
@@ -83,6 +84,7 @@ private:
             // speed optimization yet. Calculate this when needed
     int mK; // Carrying capacity (should be const one day)
                     // for now: mIslandk = mK / n_islands
+    int mNColonisations;
 };
 
 #endif // ARCHIDAISIE_ISLAND_H

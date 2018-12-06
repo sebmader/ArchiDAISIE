@@ -89,6 +89,10 @@ vector<Island> ArchiDAISIE(const double& islandAge,
             throw logic_error("Rate of colonisation is zero or below."
                               " The island cannot be colonised.");
 
+        // order of parameters (input):
+        // gam_i, gam_m, lamb_cl, lamb_al, mu_l,
+        // lamb_cg, lamb_ag, mu_g
+
         // declare and seed PRNG with system clock
         mt19937_64 prng;
         chrono::high_resolution_clock::time_point tp =
@@ -98,35 +102,9 @@ vector<Island> ArchiDAISIE(const double& islandAge,
         // ### CAUTION: ###   should print/output seed here
         prng.seed(seed);
 
-        // order of parameters (input):
-        // gam_i, gam_m, lamb_cl, lamb_al, mu_l,
-        // lamb_cg, lamb_ag, mu_g
-
         // initialise main data frame
         vector<Island> islandReplicates((unsigned)replicates);
-        // ### CAUTION ### : need to implement the exact same output as DAISIE_sim
-        // how to combine the multiple data types? and which types btw?
-
-        // output of simulation parameters & seed
-        fs::create_directories(output_dir);
-        ofstream ofsSimData(output_dir + "/sim_data.txt");
-        if (!ofsSimData.is_open())
-            throw runtime_error("Unable to open output file.");
-        ofsSimData << "Seed: " << seed << '\n'
-                   << "Island age: " << islandAge << '\n'
-                   << "N Islands: " << n_islands << '\n'
-                   << "N Mainland: " << n_mainlandSpecies << '\n'
-                   << "Parameters: " << '\n';
-        ofsSimData << "immigration: " << initialParameters[0] << '\n'
-                   << "migration: " << initialParameters[1] << '\n'
-                   << "cladogenesis_local: " << initialParameters[2] << '\n'
-                   << "anagenesis_local: " << initialParameters[3] << '\n'
-                   << "extinction_local: " << initialParameters[4] << '\n'
-                   << "cladogenesis_global: " << initialParameters[5] << '\n'
-                   << "anagenesis_global: " << initialParameters[6] << '\n'
-                   << "extinction_global: " << initialParameters[7] << '\n'
-                   << "island K: " << kPerIsl << '\n';
-        ofsSimData.close();
+        double sumColonisations = 0.0, sumStdDeviation = 0.0;
 
         // loop through replicates
         for (int rep = 0; rep < replicates; ++rep) {
@@ -155,8 +133,14 @@ vector<Island> ArchiDAISIE(const double& islandAge,
                         n_islands, prng, maxSpeciesID,
                         sttPerColoniser[mainSp]));
             }
+            sumColonisations += fullArchi.getNColonisations();
+            sumStdDeviation += fullArchi.getNColonisations() * fullArchi.getNColonisations();
             islandReplicates[rep] = fullArchi.makeArchiTo1Island();
+            assert(fullArchi.getNColonisations() == islandReplicates[rep].getNColonisations());
 
+            for (auto& sttTable : sttPerColoniser) {
+                assert(sttTable.getSTTtable()[0].getTime()==round(islandAge));
+            }
             const STTtable fullSTT = mergeSTTtables(sttPerColoniser, n_timeSlicesSTT);
             // output of merged STT per replicate to file
             ofstream ofsSTT(output_dir + "/rep_" + to_string(rep+1) + "_STT.txt");
@@ -171,6 +155,33 @@ vector<Island> ArchiDAISIE(const double& islandAge,
             outputBranching(islandReplicates[rep],ofsBranching);
             ofsBranching.close();
         }
+        // output of simulation parameters & seed
+        fs::create_directories(output_dir);
+        ofstream ofsSimData(output_dir + "/sim_data.txt");
+        if (!ofsSimData.is_open())
+            throw runtime_error("Unable to open output file.");
+        const double meanColonisations = sumColonisations/(double)replicates;
+        const double stdDeviation = sqrt((sumStdDeviation - replicates * meanColonisations
+                * meanColonisations) / (replicates - 1));
+        ofsSimData << "Seed: " << seed << '\n'
+                   << "Island age: " << islandAge << '\n'
+                   << "N Islands: " << n_islands << '\n'
+                   << "N Mainland: " << n_mainlandSpecies << '\n'
+                   << "Parameters: " << '\n';
+        ofsSimData << "immigration: " << initialParameters[0] << '\n'
+                   << "migration: " << initialParameters[1] << '\n'
+                   << "cladogenesis_local: " << initialParameters[2] << '\n'
+                   << "anagenesis_local: " << initialParameters[3] << '\n'
+                   << "extinction_local: " << initialParameters[4] << '\n'
+                   << "cladogenesis_global: " << initialParameters[5] << '\n'
+                   << "anagenesis_global: " << initialParameters[6] << '\n'
+                   << "extinction_global: " << initialParameters[7] << '\n'
+                   << "island K: " << kPerIsl << '\n';
+        ofsSimData << "\nmean number of Colonisations: " << setprecision(3)
+                   << meanColonisations << '\n'
+                   << "standard deviation: " << stdDeviation << '\n';
+        ofsSimData.close();
+
         return islandReplicates;
     }
     catch (exception &error) {

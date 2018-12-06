@@ -13,6 +13,7 @@ using namespace std;
 Island::Island(const int k) : mK{k}
 {
     assert(k >= 0);
+    mNColonisations = 0;
 }
 
 int Island::getCarryingCap() const noexcept
@@ -20,11 +21,15 @@ int Island::getCarryingCap() const noexcept
     return mK;
 }
 
+int Island::getNColonisations() const noexcept
+{
+    return mNColonisations;
+}
+
 int Island::getNSpecies() const noexcept
 {
     return static_cast<int>(mSpecies.size());
 }
-
 
 void Island::printIsland() const
 {
@@ -122,6 +127,7 @@ void Island::immigrate(const SpeciesID& speciesID, const double& time)
             throw logic_error("Immigration would make number of species"
                               " exceed carrying capacity.\n");
         addSpecies(newSpecies);
+        ++mNColonisations;
     }
 }
 
@@ -326,6 +332,7 @@ void Island::addIsland(const Island& islNew)
                 }
             }
         }
+        mNColonisations += islNew.getNColonisations();
     }
 }
 

@@ -34,3 +34,5 @@
 cmake-build-debug/
 *.pro.user
 .Rproj.user
+sims/
+test_sims/

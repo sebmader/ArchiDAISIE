@@ -9,24 +9,32 @@ library(readr)
 
 replicates <- 1000
 
+main_dir <- "../"
 dir_name_sims <- "sims/"
-sim_names <- dir(path = dir_name_sims)
-sim_names
+sim_names <- dir(path = paste(main_dir,dir_name_sims, sep= ""))
+num_species <- list()
+for(sim in 1:length(sim_names)) {
+  num_species[[sim]] = list(sim_name = sim_names[[sim]],
+                            median_endemic = vector(),
+                            median_nonend = vector(),
+                            median_total = vector())
+}
+num_species
+
 
 for(sim_name in sim_names) {
   island_replicates = list()
   for(rep in 1 : replicates) {
     island_replicates[[rep]] = list()
-    stt_all <- as.matrix(read_csv(paste(dir_name_sims, sim_name, "/rep_", as.character(rep), "_STT.txt", sep = "")))
+    stt_all <- as.matrix(read_csv(paste(main_dir, dir_name_sims, sim_name, "/rep_", as.character(rep), "_STT.txt", sep = "")))
     island_replicates[[rep]][[1]] = list(stt_all = stt_all)
   }
   island_replicates
   length(island_replicates)
-  png(filename = paste("figures/",sim_name,".png",sep=""), type = "cairo", units = "in",
+  png(filename = paste(main_dir,"figures_test/",sim_name,".png",sep=""), type = "cairo", units = "in",
       width = 6, height = 6, res = 300)
 
   ### part from DAISIE_plot_sims
-  replicates<-length(island_replicates)
   time<-max(island_replicates[[1]][[1]]$stt_all[,1])
   
   ###  STT ALL species

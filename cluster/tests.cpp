@@ -230,6 +230,10 @@ void test_island() //!OCLINT indeed long function, don't care it is a test
         const Island island(k);
         assert(k==island.getCarryingCap());
     }
+    {   // A constructed island has 0 colonisations
+        const Island island;
+        assert(island.getNColonisations() == 0);
+    }
     {   // Species cannot be found on empty island
         Island island(10);
         assert(!island.hasSpecies(SpeciesID()));
@@ -297,6 +301,12 @@ void test_island() //!OCLINT indeed long function, don't care it is a test
         Island island(10);
         island.immigrate(SpeciesID(42), 3.14);
         assert(island.findSpecies(SpeciesID(42)).getCladoStates().empty());
+    }
+    {   // Immigration increases colonisations of island
+        Island island(10);
+        assert(island.getNColonisations() == 0);
+        island.immigrate(SpeciesID(42), 3.14);
+        assert(island.getNColonisations() == 1);
     }
     {   // Species cannot be found on island before immigration
         Island island(10);
@@ -821,19 +831,22 @@ void test_island() //!OCLINT indeed long function, don't care it is a test
 void test_archi() //!OCLINT indeed long function, don't care it is a test
 {
     {  // default constructor creates empty archipelago with 0 islands,
-        // 0 carrying cap and no species
+        // 0 carrying cap, no species and 0 colonisations
         Archipelago archi = Archipelago();
         assert(archi.getNIslands() == 0);
         assert(archi.getNSpeciesID() == 0);
         assert(archi.getCarryingCap() == 0);
+        assert(archi.getNColonisations() == 0);
     }
     {  // non-default constructor with carryingCap of 0 and 1 island creates that archipelago
+
         int n_islands = 1;
         int islCarryingCap = 0;
         Archipelago archi = Archipelago(n_islands, islCarryingCap);
         assert(archi.getNIslands() == 1);
         assert(archi.getNSpeciesID() == 0);
         assert(archi.getCarryingCap() == n_islands*islCarryingCap);
+        assert(archi.getNColonisations() == 0);
     }
     {  // non-default constructor with 0 islands and a carryingcap creates that archipelago
         int n_islands = 0;
@@ -867,6 +880,23 @@ void test_archi() //!OCLINT indeed long function, don't care it is a test
                 0,
                 0.3);
         assert(archi.getNSpeciesID() == 1);
+    }
+    {  // immigration increases number of colonisations
+        int n_islands = 2;
+        int islCarryingCap = 5;
+        Archipelago archi = Archipelago(n_islands, islCarryingCap);
+        assert(archi.getNColonisations() == 0);
+        int n_mainlandSp = 5;
+        SpeciesID maxSpeciesID(n_mainlandSp);
+        mt19937_64 prng;
+        archi.doLocalEvent(event_type::local_immigration,
+                SpeciesID(1),
+                prng,
+                4.0,
+                maxSpeciesID,
+                0,
+                0.3);
+        assert(archi.getNColonisations() == 1);
     }
     {  // immigration of same species to second islands doesn't increase number of species
         int n_islands = 2;
@@ -1309,10 +1339,8 @@ void test_archi() //!OCLINT indeed long function, don't care it is a test
             int n_mainlandSp = 5;
             SpeciesID maxSpeciesID(n_mainlandSp);
             mt19937_64 prng;
-            archi.doGlobalEvent(event_type::global_cladogenesis,
-                    SpeciesID(1),
-                    prng,
-                    maxSpeciesID);
+            archi.addSpecies(Species(1.0,SpeciesID(),SpeciesID(1)),1);
+            archi.speciateGlobalClado(SpeciesID(1),prng,maxSpeciesID);
             assert(!"should not get here!\n"); //!OCLINT
         }
         catch (const std::exception& e)
@@ -1390,11 +1418,8 @@ void test_archi() //!OCLINT indeed long function, don't care it is a test
             Archipelago archi = Archipelago(n_islands, islCarryingCap);
             int n_mainlandSp = 5;
             SpeciesID maxSpeciesID(n_mainlandSp);
-            mt19937_64 prng;
-            archi.doGlobalEvent(event_type::global_anagenesis,
-                    SpeciesID(1),
-                    prng,
-                    maxSpeciesID);
+            archi.addSpecies(Species(1.0, SpeciesID(),SpeciesID(1)),0);
+            archi.speciateGlobalAna(SpeciesID(1),maxSpeciesID);
             assert(!"should not get here!\n"); //!OCLINT
         }
         catch (const std::exception& e)
@@ -1442,6 +1467,23 @@ void test_archi() //!OCLINT indeed long function, don't care it is a test
             int n_mainlandSp = 5;
             SpeciesID maxSpeciesID(n_mainlandSp);
             mt19937_64 prng;
+            archi.addSpecies(Species(2.0,SpeciesID(),SpeciesID(1)),0);
+            archi.goGlobalExtinct(SpeciesID(1));
+        }
+        catch (const exception &e)
+        {
+            assert(string(e.what()) == "Drawn species is present on less than 2 islands. "
+                                       "Something's wrong.. (global extinction)\n");
+        }
+    }
+    {   // doGlobalEvent throws exception if species is not on at least 2 islands
+        try {
+            int n_islands = 2;
+            int islCarryingCap = 5;
+            Archipelago archi = Archipelago(n_islands, islCarryingCap);
+            int n_mainlandSp = 5;
+            SpeciesID maxSpeciesID(n_mainlandSp);
+            mt19937_64 prng;
             archi.doGlobalEvent(event_type::global_extinction,
                     SpeciesID(1),
                     prng,
@@ -1450,7 +1492,7 @@ void test_archi() //!OCLINT indeed long function, don't care it is a test
         catch (const exception &e)
         {
             assert(string(e.what()) == "Drawn species is present on less than 2 islands. "
-                                        "Something's wrong.. (global extinction)\n");
+                                        "Something's wrong.. (doGlobalEvent)\n");
         }
     }
     {   // doGlobalEvent throws exception if not global event
@@ -1461,6 +1503,8 @@ void test_archi() //!OCLINT indeed long function, don't care it is a test
             int n_mainlandSp = 5;
             mt19937_64 prng;
             SpeciesID maxSpeciesID(n_mainlandSp);
+            archi.addSpecies(Species(1.1,SpeciesID(),SpeciesID(1)),0);
+            archi.addSpecies(Species(1.0,SpeciesID(),SpeciesID(1)),1);
             archi.doGlobalEvent(event_type::local_immigration,
                     SpeciesID(1),
                     prng,
@@ -1739,7 +1783,7 @@ void test_archi() //!OCLINT indeed long function, don't care it is a test
         }
     }
     {   // first event = immigration with doNextEvent function
-        // increases number of species on archipelago
+        // increases number of species on archipelago and colonisations
         int n_islands = 2;
         int islCarryingCap = 5;
         Archipelago archi = Archipelago(n_islands, islCarryingCap);
@@ -1754,6 +1798,7 @@ void test_archi() //!OCLINT indeed long function, don't care it is a test
                 4.0, maxSpeciesID,
                 vector<SpeciesID>( { SpeciesID(n_mainlandSp) } ));
         assert(archi.getNSpeciesID() == 1);
+        assert(archi.getNColonisations() == 1);
     }
     {   // archipelago with 3 islands, species inhabiting all,
         // doesn't create duplicates in global species vector
@@ -1771,14 +1816,15 @@ void test_archi() //!OCLINT indeed long function, don't care it is a test
                 4.0, maxSpeciesID,
                 vector<SpeciesID>( { SpeciesID(n_mainlandSp) } ));
         assert(archi.getNSpeciesID() == 1);
-        archi.calculateAllRates(iniPars, n_mainlandSp, n_islands);
         assert(archi.getGlobalSpeciesIDs().empty());
+        archi.calculateAllRates(iniPars, n_mainlandSp, n_islands);
         archi.doNextEvent(event_type::local_migration,
                 0.3,
                 prng,
                 3.5,
                 maxSpeciesID,
                 vector<SpeciesID>( { SpeciesID(n_mainlandSp) } ));
+        assert(archi.getNSpeciesID() == 1);
         assert(archi.getGlobalSpeciesIDs().size() == 1);
         archi.calculateAllRates(iniPars, n_mainlandSp, n_islands);
         archi.doNextEvent(event_type::local_migration,
@@ -1796,6 +1842,8 @@ void test_archi() //!OCLINT indeed long function, don't care it is a test
                 3.2,
                 maxSpeciesID,
                 vector<SpeciesID>( { SpeciesID(n_mainlandSp) } ));
+        assert(archi.getNSpeciesID() == 1);
+        assert(archi.getGlobalSpeciesIDs().size() == 1);
     }
     // most recent sister function
     {  // after migration migrant is found as sister of ancestral population (and vice versa)
@@ -2677,6 +2725,65 @@ void test_archi() //!OCLINT indeed long function, don't care it is a test
         Island consolidatedArchi = archi.makeArchiTo1Island();
         assert(consolidatedArchi.getNSpecies()==1);
         assert(consolidatedArchi.hasSpecies(SpeciesID(1)));
+    }
+    { // summed archipelago has sum of colonisations of both archis
+        int n_islands = 2;
+        int islCarryingCap = 5;
+        int n_mainlandSp = 5;
+        SpeciesID maxSpeciesID(n_mainlandSp);
+        mt19937_64 prng;
+        Archipelago archi1 = Archipelago(n_islands, islCarryingCap);
+        assert(archi1.getNColonisations() == 0);
+        archi1.doLocalEvent(event_type::local_immigration,
+                SpeciesID(1),
+                prng,
+                4.0,
+                maxSpeciesID,
+                0,
+                0.3);
+        assert(archi1.getNColonisations() == 1);
+        Archipelago archi2 = Archipelago(n_islands, islCarryingCap);
+        assert(archi2.getNColonisations() == 0);
+        archi2.doLocalEvent(event_type::local_immigration,
+                SpeciesID(2),
+                prng,
+                3.0,
+                maxSpeciesID,
+                0,
+                0.3);
+        assert(archi2.getNColonisations() == 1);
+        archi1.addArchi(archi2);
+        assert(archi1.getNColonisations() == 2);
+    }
+    { // summed archipelago has sum of colonisations of both archis
+        // also if same species
+        int n_islands = 2;
+        int islCarryingCap = 5;
+        int n_mainlandSp = 5;
+        SpeciesID maxSpeciesID(n_mainlandSp);
+        mt19937_64 prng;
+        Archipelago archi1 = Archipelago(n_islands, islCarryingCap);
+        assert(archi1.getNColonisations() == 0);
+        archi1.doLocalEvent(event_type::local_immigration,
+                SpeciesID(1),
+                prng,
+                4.0,
+                maxSpeciesID,
+                0,
+                0.3);
+        assert(archi1.getNColonisations() == 1);
+        Archipelago archi2 = Archipelago(n_islands, islCarryingCap);
+        assert(archi2.getNColonisations() == 0);
+        archi2.doLocalEvent(event_type::local_immigration,
+                SpeciesID(1),
+                prng,
+                3.0,
+                maxSpeciesID,
+                0,
+                0.3);
+        assert(archi2.getNColonisations() == 1);
+        archi1.addArchi(archi2);
+        assert(archi1.getNColonisations() == 2);
     }
 }
 
