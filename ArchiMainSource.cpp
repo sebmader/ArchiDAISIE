@@ -76,7 +76,11 @@ int main(int argc, char* argv[]) {
             const int replicates = stoi(parameters[13]);
             vector<double> initialPars = { immi,mig,clado_l,ana_l,ext_l,clado_g,
                                            ana_g,ext_g };
+<<<<<<< HEAD
             string output_dir("test_sims/" + simName);
+=======
+            string output_dir("sims/" + simName);
+>>>>>>> b1c3f578453c1a46c8b4aabfafd46b309172f63b
             cout << "Simulation " << it-1 << " / " << count-1 << '\n';
 
             ArchiDAISIE(archi_age,
