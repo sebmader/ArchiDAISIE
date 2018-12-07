@@ -76,7 +76,7 @@ int main(int argc, char* argv[]) {
             const int replicates = stoi(parameters[13]);
             vector<double> initialPars = { immi,mig,clado_l,ana_l,ext_l,clado_g,
                                            ana_g,ext_g };
-            string output_dir(fs::current_path().parent_path().string() + "/sims/" + simName);
+            string output_dir("test_sims/" + simName);
             cout << "Simulation " << it-1 << " / " << count-1 << '\n';
 
             ArchiDAISIE(archi_age,

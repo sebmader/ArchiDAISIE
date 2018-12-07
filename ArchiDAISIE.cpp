@@ -99,8 +99,10 @@ vector<Island> ArchiDAISIE(const double& islandAge,
                 chrono::high_resolution_clock::now();
         const unsigned seed = static_cast<unsigned>(
                 tp.time_since_epoch().count());
-        // ### CAUTION: ###   should print/output seed here
         prng.seed(seed);
+
+        // create output directory
+        fs::create_directories(output_dir);
 
         // initialise main data frame
         vector<Island> islandReplicates((unsigned)replicates);
@@ -145,21 +147,20 @@ vector<Island> ArchiDAISIE(const double& islandAge,
             // output of merged STT per replicate to file
             ofstream ofsSTT(output_dir + "/rep_" + to_string(rep+1) + "_STT.txt");
             if (!ofsSTT.is_open())
-                throw runtime_error("Unable to open output file.");
+                throw runtime_error("Unable to open STT output file.");
             ofsSTT << fullSTT;
             ofsSTT.close();
             // output of branching data table per replicate
             ofstream ofsBranching(output_dir + "/rep_" + to_string(rep+1) + "_branching.txt");
             if (!ofsBranching.is_open())
-                throw runtime_error("Unable to open output file.");
+                throw runtime_error("Unable to open branching output file.");
             outputBranching(islandReplicates[rep],ofsBranching);
             ofsBranching.close();
         }
         // output of simulation parameters & seed
-        fs::create_directories(output_dir);
         ofstream ofsSimData(output_dir + "/sim_data.txt");
         if (!ofsSimData.is_open())
-            throw runtime_error("Unable to open output file.");
+            throw runtime_error("Unable to open simulation data output file.");
         const double meanColonisations = sumColonisations/(double)replicates;
         const double stdDeviation = sqrt((sumStdDeviation - replicates * meanColonisations
                 * meanColonisations) / (replicates - 1));
