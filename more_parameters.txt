@@ -1,0 +1,4 @@
+name,immi,mig,clado_loc,ana_loc,ext_loc,clado_glo,ana_glo,ext_glo,1_isl_K(CS),n_isl,archi_age,mainland_sp,replicates
+double_only_global&low_mig,0.001,0.01,0.0,0.0,0.0,0.4,0.2,0.2,10,2,10,1000,1000
+double_only_global&high_mig,0.001,1,0.0,0.0,0.0,0.4,0.2,0.2,10,2,10,1000,1000
+double_only_global&extreme_mig,0.001,100,0.0,0.0,0.0,0.4,0.2,0.2,10,2,10,1000,1000

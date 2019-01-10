@@ -15,7 +15,7 @@ double getLogGrowth(const Island& island) noexcept
 double extractSumOfRates(const Island& island)
 {
     vector<double> localRates = island.getLocalRates();
-    double sumRates = 0;
+    double sumRates = 0.0;
     for (double rate : localRates)
         sumRates += rate;
     return sumRates;

@@ -39,19 +39,23 @@ for(sim_name in sim_names2) {
   for(rep in 1:archiReplicates) {  
     branching <- read_csv(paste(dir_name_sims, sim_name, "/rep_", rep, "_branching.txt", sep = ""), 
                                 col_names = TRUE)
-    prepData <- DAISIE_dataprep(branching,island_age = archiAge, M = archiMainlandSp)
-    for(i in 2:length(prepData)) {
-      prepData[[i]]$missing_species <- as.numeric(prepData[[i]]$missing_species)
+    if(!is.na.data.frame(branching)) {
+      prepData <- DAISIE_dataprep(branching,island_age = archiAge, M = archiMainlandSp)
+      for(i in 2:length(prepData)) {
+        prepData[[i]]$missing_species <- as.numeric(prepData[[i]]$missing_species)
+      }
+      replicate_estimates[rep] <- DAISIE_ML(datalist = prepData,
+                             datatype = "single",
+                             initparsopt = initOptPars,
+                             idparsopt = c(1,2,3,4,5),
+                             parsfix = c(),
+                             idparsfix = c())
     }
-    replicate_estimates[rep] <- DAISIE_ML(datalist = prepData,
-                           datatype = "single",
-                           initparsopt = initOptPars,
-                           idparsopt = c(1,2,3,4,5),
-                           parsfix = c(),
-                           idparsfix = c())
+    else {
+      replicate_estimates[rep] <- data.frame()
+    }
   }
   assertthat::are_equal(length(replicate_estimates),archiReplicates)
-  replicate_estimates
   save(replicate_estimates, parameters, initOptPars, 
        file = paste("estimates/",sim_name, "_estimates.Rdata", sep = ""))
 }

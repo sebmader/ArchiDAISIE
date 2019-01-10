@@ -252,14 +252,13 @@ void Archipelago::calculateAllRates(
 event_type Archipelago::sampleNextEvent(mt19937_64& prng)
 {   // which event will happen next
 
-    // draw local event
-    const int n_islands = static_cast<int>(mIslands.size());
-    int n_localEvents = static_cast<int>(mIslands[0].getLocalRates().size());
+    const int n_islands = getNIslands();
+    const int n_localEvents = static_cast<int>(mIslands[0].getLocalRates().size());
 
-    // sum of event rates over all islands
-    vector<double> sumRatesPerEvent(n_localEvents,0.0);
+    // sum of rates per local events over all islands
+    vector<double> sumRatesPerEvent((unsigned)n_localEvents,0.0);
     for (int i = 0; i < n_islands; ++i) {
-        vector<double> islRates = mIslands[i].getLocalRates();
+        const vector<double> islRates = mIslands[i].getLocalRates();
         assert(static_cast<int>(islRates.size()) == n_localEvents);
         for (int j = 0; j < n_localEvents; ++j)
             sumRatesPerEvent[j] += islRates[j];
@@ -482,6 +481,8 @@ void Archipelago::doNextEvent(const event_type& nextEvent,
             vector<SpeciesID> globalImmigrants;
             for (auto& globalSpID : globalSpecies) {
                 if (globalSpID <= mainSpeciesIDs.back()) {
+                    // works with 1-immigrant as well because that's the only species that
+                    // can be a non-endemic
                     globalImmigrants.push_back(globalSpID);
                 }
             }
