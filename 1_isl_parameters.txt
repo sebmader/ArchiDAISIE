@@ -1,0 +1,6 @@
+name,immi,mig,clado_loc,ana_loc,ext_loc,clado_glo,ana_glo,ext_glo,1_isl_K(CS),n_isl,archi_age,mainland_sp,replicates
+1_isl,0.001,0.1,0.2,0.1,0.1,0.2,0.1,0.1,10,1,10,1000,1000
+1_isl&only_local&0_mig,0.001,0.0,0.2,0.1,0.1,0.0,0.0,0.0,10,1,10,1000,1000
+1_isl&only_global&0_mig,0.001,0.0,0.0,0.0,0.0,0.2,0.1,0.1,10,1,10,1000,1000
+1_isl&only_local,0.001,0.1,0.2,0.1,0.1,0.0,0.0,0.0,10,1,10,1000,1000
+1_isl&only_global,0.001,0.1,0.0,0.0,0.0,0.2,0.1,0.1,10,1,10,1000,1000

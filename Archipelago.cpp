@@ -58,40 +58,40 @@ vector<SpeciesID> Archipelago::getSpeciesIDs()
 
 vector<SpeciesID> Archipelago::getGlobalSpeciesIDs() const
 {
-    vector<SpeciesID> aliveSpecies;
+    vector<SpeciesID> aliveSpeciesIDs;
     for(auto& island : mIslands) {
         vector<SpeciesID> tmpIDs = island.getSpeciesIDs();
         if (tmpIDs.empty())
             continue;
-        aliveSpecies.reserve(aliveSpecies.size() + tmpIDs.size());
-        aliveSpecies.insert(aliveSpecies.end(), tmpIDs.begin(), tmpIDs.end());
+        aliveSpeciesIDs.reserve(aliveSpeciesIDs.size() + tmpIDs.size());
+        aliveSpeciesIDs.insert(aliveSpeciesIDs.end(), tmpIDs.begin(), tmpIDs.end());
     }
-    // save duplicate species (= global species):
-    vector<SpeciesID> aliveGlobalSpecies;
-    const int vecSize = static_cast<int>(aliveSpecies.size());
+    // save duplicate species IDs (= global species):
+    vector<SpeciesID> aliveGlobalSpeciesIDs;
+    const int vecSize = static_cast<int>(aliveSpeciesIDs.size());
     for (int j = 0; j < vecSize - 1; ++j) {
         for (int k = j + 1; k < vecSize; ++k)
-            if (aliveSpecies[j] ==
-                    aliveSpecies[k]) {
-                aliveGlobalSpecies.push_back(aliveSpecies[j]);
+            if (aliveSpeciesIDs[j] ==
+                    aliveSpeciesIDs[k]) {
+                aliveGlobalSpeciesIDs.push_back(aliveSpeciesIDs[j]);
                 break;
             }
     }
     // if on more than 2 islands -> creates duplicates
     // remove duplicates:
-    for (int j = 0; j < static_cast<int>(aliveGlobalSpecies.size()) - 1; ++j) {
-        for (int k = j + 1; k < static_cast<int>(aliveGlobalSpecies.size()); ++k) {
+    for (int j = 0; j < static_cast<int>(aliveGlobalSpeciesIDs.size()) - 1; ++j) {
+        for (int k = j + 1; k < static_cast<int>(aliveGlobalSpeciesIDs.size()); ++k) {
             assert(k > j);
-            assert(k >= 0 && k < static_cast<int>(aliveGlobalSpecies.size()));
-            assert(j >= 0 && j < static_cast<int>(aliveGlobalSpecies.size()));
-            if (aliveGlobalSpecies[j] == aliveGlobalSpecies[k]) {
-                aliveGlobalSpecies[k] = aliveGlobalSpecies.back();
-                aliveGlobalSpecies.pop_back();
+            assert(k >= 0 && k < static_cast<int>(aliveGlobalSpeciesIDs.size()));
+            assert(j >= 0 && j < static_cast<int>(aliveGlobalSpeciesIDs.size()));
+            if (aliveGlobalSpeciesIDs[j] == aliveGlobalSpeciesIDs[k]) {
+                aliveGlobalSpeciesIDs[k] = aliveGlobalSpeciesIDs.back();
+                aliveGlobalSpeciesIDs.pop_back();
                 --k;
             }
         }
     }
-    return aliveGlobalSpecies;
+    return aliveGlobalSpeciesIDs;
 }
 
 int Archipelago::getNIslands() const noexcept
@@ -298,6 +298,7 @@ void Archipelago::speciateGlobalClado(const SpeciesID& speciesID,
     SpeciesID newSpeciesID2 = maxSpeciesID.createNewSpeciesID();
     // update data frame
     for (auto& isl : onWhichIslands) {
+        // parent populations are different on different islands (esp. birth time)
         const Species oldSpecies = mIslands[isl].findSpecies(speciesID);
         assert(oldSpecies.isValid());
         if (isl <= split) {   // split: after island with position equal to 'split'

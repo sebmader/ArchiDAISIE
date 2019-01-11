@@ -127,13 +127,13 @@ vector<Island> ArchiDAISIE(const double& islandAge,
             SpeciesID maxSpeciesID(n_mainlandSpecies);
 
             // run simulation for each mainland sp. separately -> clade-specific carrying capacity
-            for (int mainSp = 0; mainSp < n_mainlandSpecies; ++mainSp) {
+            for (int mainSp = 1; mainSp <= n_mainlandSpecies; ++mainSp) {
 
                 const vector<SpeciesID> mainlandSpecies(1,SpeciesID(mainSp));
                 fullArchi.addArchi(ArchiDAISIE_core(islandAge, mainlandSpecies,
                         initialParameters, kPerIsl,
                         n_islands, prng, maxSpeciesID,
-                        sttPerColoniser[mainSp]));
+                        sttPerColoniser[mainSp-1]));
             }
             sumColonisations += fullArchi.getNColonisations();
             sumStdDeviation += fullArchi.getNColonisations() * fullArchi.getNColonisations();
