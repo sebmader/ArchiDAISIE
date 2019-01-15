@@ -1,8 +1,0 @@
-Clade_name,Status,Missing_species,Branching_times
-442,"Non_endemic",0,"9.922018"
-248,"Non_endemic",0,"8.212438"
-667,"Non_endemic",0,"6.355056"
-795,"Non_endemic",0,"5.482119"
-76,"Non_endemic",0,"3.508679"
-967,"Non_endemic",0,"3.370405"
-602,"Non_endemic",0,"0.887812"

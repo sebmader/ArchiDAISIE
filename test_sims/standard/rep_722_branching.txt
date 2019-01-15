@@ -1,5 +1,0 @@
-Clade_name,Status,Missing_species,Branching_times
-695,"Endemic",0,"7.551720,6.221496,5.023000,3.664234,3.276026"
-789,"Endemic",0,"4.862440,1.947118"
-799,"Endemic",0,"2.277885,0.079816"
-41,"Non_endemic",0,"1.347458"

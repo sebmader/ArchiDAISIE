@@ -29,7 +29,9 @@ Archipelago ArchiDAISIE_core(const double& islandAge,
         int n_islands,
         std::mt19937_64& prng,
         SpeciesID& maxSpeciesID,
-        STTtable& STT);
+        STTtable& STT,
+        int& n_events,
+        int& n_globalEvents);
 
 std::vector<Island> ArchiDAISIE(const double& islandAge,
         std::vector<double> initialParameters,

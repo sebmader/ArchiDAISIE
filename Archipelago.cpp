@@ -216,7 +216,7 @@ void Archipelago::calculateAllRates(
     vector<SpeciesID> globalSpeciesIDs = getGlobalSpeciesIDs();
     int n_globalSpecies = static_cast<int>(globalSpeciesIDs.size());
 
-    // count alive immigrant species; only ones that can undergo anagenesis
+    // count global immigrant species; only ones that can undergo anagenesis
     int n_globalImmigrants = 0;
     for (auto& speciesID : globalSpeciesIDs)
         if (speciesID <= static_cast<SpeciesID>(n_mainlandSpecies))

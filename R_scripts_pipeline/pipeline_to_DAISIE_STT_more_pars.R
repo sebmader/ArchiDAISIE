@@ -1,4 +1,5 @@
 ### pipeline to analyse branching output of ArchiDAISIE ###
+### per parameter text file ###
 ### written by Sebastian Mader on the 20.11.2018, s.mader@student.rug.nl ###
 
 rm(list = ls())
@@ -9,10 +10,11 @@ library(readr)
 
 replicates <- 1000
 
-main_dir <- ""
-dir_name_sims <- "test_sims/"
-sim_names <- dir(path = paste(main_dir,dir_name_sims, sep= ""))
-length(sim_names)
+main_dir <- "../"
+parameter_file <- "more_parameters.txt"
+dir_name_sims <- "sims/"
+parameter_sets <- read.csv(file = paste(main_dir,parameter_file,sep = ""),header = T, sep = ",")
+sim_names <- parameter_sets$name
 num_species <- list()
 for(sim in 1:length(sim_names)) {
   num_species[[sim]] = list(sim_name = sim_names[[sim]],
@@ -32,9 +34,9 @@ for(sim_name in sim_names) {
   }
   island_replicates
   length(island_replicates)
-  png(filename = paste(main_dir,"test_figures/",sim_name,".png",sep=""), type = "cairo", units = "in",
+  png(filename = paste(main_dir,"figures/",sim_name,".png",sep=""), type = "cairo", units = "in",
       width = 6, height = 6, res = 300)
-
+  
   ### part from DAISIE_plot_sims
   time<-max(island_replicates[[1]][[1]]$stt_all[,1])
   
