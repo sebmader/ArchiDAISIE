@@ -107,6 +107,7 @@ vector<Island> ArchiDAISIE(const double& islandAge,
         // initialise main data frame
         vector<Island> islandReplicates((unsigned)replicates);
 
+        double sumNSpecies = 0.0, sumNSpStdDev = 0.0;
         double sumColonisations = 0.0, sumColoStdDev = 0.0;
         double sumGlobalRatio = 0.0, sumGlobalStdDev = 0.0;
         int n_events = 0, n_global_events = 0;
@@ -139,6 +140,8 @@ vector<Island> ArchiDAISIE(const double& islandAge,
                         sttPerColoniser[mainSp-1], n_events, n_global_events));
             }
             // stats
+            sumNSpecies += fullArchi.getNSpecies();
+            sumNSpStdDev += fullArchi.getNSpecies() * fullArchi.getNSpecies();
             sumColonisations += fullArchi.getNColonisations();
             sumColoStdDev += fullArchi.getNColonisations() * fullArchi.getNColonisations();
             const double globalRatio = (double)n_global_events/(double)n_events;
@@ -169,6 +172,10 @@ vector<Island> ArchiDAISIE(const double& islandAge,
         ofstream ofsSimData(output_dir + "/sim_data.txt");
         if (!ofsSimData.is_open())
             throw runtime_error("Unable to open simulation data output file.");
+        // calculate stats:
+        const double meanNSpecies = sumNSpecies/(double)replicates;
+        const double nSpeciesStdDev = sqrt((sumNSpStdDev - replicates * meanNSpecies
+                * meanNSpecies) / (replicates - 1));
         const double meanColonisations = sumColonisations/(double)replicates;
         const double coloStdDeviation = sqrt((sumColoStdDev - replicates * meanColonisations
                 * meanColonisations) / (replicates - 1));
@@ -190,12 +197,15 @@ vector<Island> ArchiDAISIE(const double& islandAge,
                    << "anagenesis_global: " << initialParameters[6] << '\n'
                    << "extinction_global: " << initialParameters[7] << '\n'
                    << "island K: " << kPerIsl << '\n';
-        ofsSimData << "\nmean number of colonisations: " << setprecision(3)
+        ofsSimData << "\nmean number of species: " << setprecision(3)
+                   << meanNSpecies << '\n'
+                   << "species standard deviation: " << nSpeciesStdDev << '\n';
+        ofsSimData << "mean number of colonisations: " << setprecision(3)
                    << meanColonisations << '\n'
-                   << "standard deviation: " << coloStdDeviation << '\n';
-        ofsSimData << "mean ratio of global events: " << setprecision(3)
+                   << "colonisations standard deviation: " << coloStdDeviation << '\n';
+        ofsSimData << "mean ratio of global events: " << setprecision(4)
                    << meanGlobalRatio << '\n'
-                   << "standard deviation: " << globalRatioStdDeviation << '\n';
+                   << "ratio Global standard deviation: " << globalRatioStdDeviation << '\n';
         ofsSimData.close();
 
         return islandReplicates;
