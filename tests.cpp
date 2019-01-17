@@ -645,8 +645,16 @@ void test_island() //!OCLINT indeed long function, don't care it is a test
         Island island(1);
         island.migrate(Species(5.7), 4.0);
         assert(island.findSpecies(SpeciesID()).getBirth() == 4.0);
-        island.migrate(Species(5.7), 2.0);
+        island.migrate(Species(6.0), 2.0);
         assert(island.findSpecies(SpeciesID()).getBirth() == 2.0);
+    }
+    {   // re-migration of already present species doesn't overwrite birth time
+        // if coloniser is younger than resident
+        Island island(1);
+        island.migrate(Species(5.7), 4.0);
+        assert(island.findSpecies(SpeciesID()).getBirth() == 4.0);
+        island.migrate(Species(3.5), 2.0);
+        assert(island.findSpecies(SpeciesID()).getBirth() == 4.0);
     }
     {   // migration of absent species saves old birthT as ancestral birthT
         Island island1(1);

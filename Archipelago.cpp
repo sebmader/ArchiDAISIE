@@ -413,8 +413,9 @@ void Archipelago::doLocalEvent(const event_type& localEvent,
     {
         assert(getEventInt(localEvent) == 1);
         // save the logarithmic growth terms for all islands per island
+        // to draw the island of destination
         const int n_islands = getNIslands();
-        vector<double> vLogs(n_islands, 0);
+        vector<double> vLogs((unsigned) n_islands, 0.0);
         for (int j = 0; j < n_islands; ++j) {
             vLogs[j] = getLogGrowth(mIslands[j]);
         }
@@ -427,10 +428,10 @@ void Archipelago::doLocalEvent(const event_type& localEvent,
         // old population gets the new clado state 'a'
         Species oldSpecies = mIslands[island].findSpecies(speciesID);
         if(!mIslands[destinationIsland].hasSpecies(speciesID)) {
-            Species& refSpecies = mIslands[island].findRefSpecies(speciesID);
-            vector<char> newCladoStates = refSpecies.getCladoStates();
+            Species& refOldSpecies = mIslands[island].findRefSpecies(speciesID);
+            vector<char> newCladoStates = refOldSpecies.getCladoStates();
             newCladoStates.push_back('a');
-            refSpecies.setCladoStates(newCladoStates);
+            refOldSpecies.setCladoStates(newCladoStates);
             assert(mIslands[island].findSpecies(speciesID).getCladoStates().size()
                      == newCladoStates.size());
         }

@@ -174,11 +174,12 @@ void Island::migrate(const Species& oldSpecies, const double& time)
     const SpeciesID speciesID = oldSpecies.getSpecID();
     if(hasSpecies(speciesID)) {
         if (findSpecies(speciesID).getBirth() < oldSpecies.getBirth()) {
-            // if re-migration: re-set clock if resident is younger
+            // if re-migration: re-set clock if resident is younger than migrant
             // otherwise circular re-migration would make species younger and younger
             const int pos = findPos(speciesID);
             assert(pos >= 0 && pos < getNSpecies());
             mSpecies[pos].setBirth(time);
+            // TODO: correct the daughter states ?!
         }
     }
     else {  // if first migration: add species to island
