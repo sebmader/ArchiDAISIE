@@ -406,6 +406,9 @@ void Archipelago::doLocalEvent(const event_type& localEvent,
     case event_type::local_immigration:
     {
         assert(getEventInt(localEvent) == 0);
+        if(mIslands[island].hasSpecies(speciesID)) {
+            correctSisterTaxaLocal(speciesID, island);
+        }
         mIslands[island].immigrate(speciesID, time);
         break;
     }

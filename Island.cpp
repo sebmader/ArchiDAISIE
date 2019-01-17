@@ -116,8 +116,8 @@ void Island::immigrate(const SpeciesID& speciesID, const double& time)
     assert(time >= 0.0);
     Species newSpecies(time, speciesID, speciesID, 'I', false, time, time,
             vector<char>());
-    if (hasSpecies(speciesID)) {  // if extant -> re-immigration
-        // ("re-setting the clock" (= BirthT))
+    if (hasSpecies(speciesID)) {  // if extant -> re-immigration = replace
+        // ("re-setting the clock": birthT, ancT, coloT, cladoStates)
         const int pos = findPos(speciesID);
         assert(pos < getNSpecies() && pos >= 0);
         mSpecies[pos] = newSpecies;
