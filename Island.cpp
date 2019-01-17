@@ -260,63 +260,44 @@ void Island::addIsland(const Island& islNew)
 {   // adds another island to THIS (for aggregating archipelagos)
 
     const vector<Species>& island2 = islNew.getSpecies();
-
     // add species vector to THIS island
     if (!island2.empty()) {
-        mSpecies.reserve(mSpecies.size() + island2.size());
+        mSpecies.reserve(mSpecies.size()+island2.size());
         mSpecies.insert(mSpecies.end(), island2.begin(), island2.end());
 
         // delete duplicates
         for (int j = 0; j < getNSpecies(); ++j) {
-            for (int k = j + 1; k < getNSpecies(); ++k) {
+            for (int k = j+1; k < getNSpecies(); ++k) {
                 assert(mSpecies[j].isValid() && mSpecies[k].isValid());
-                if (mSpecies[j].getSpecID() ==
-                        mSpecies[k].getSpecID()) {
-                    if (mSpecies[j].isImmigrant() && !mSpecies[j].hasMigrated()) {
-                        if (mSpecies[k].isImmigrant() && !mSpecies[k].hasMigrated()) {
-                                // if both "pure" immigrants (= not migrated)
-                                // take the most recent -> re-immigration
-                            if (mSpecies[j].getBirth() <= mSpecies[k].getBirth()) {
-                                assert(k >= 0);
-                                deleteSpecies(k);
-                                --k;
-                            }
-                            else {
-                                assert(j >= 0);
-                                deleteSpecies(j);
-                                --j;
-                                break;  // break out of inner loop to start the outer at same j
-                            }
-                        }
-                        else {  // if j is pure immigrant but k is not
-                                    // delete the non-immigrant (= migrant)
-                            assert(mSpecies[k].hasMigrated());
-                            assert(mSpecies[k].getStatus()=='I');
+                if (mSpecies[j].getSpecID()==mSpecies[k].getSpecID()) {
+                    if (mSpecies[j].getColonisationT()!=mSpecies[k].getColonisationT()) {
+                        // if they are independent colonisers -> younger one stays
+                        // (same ID && different colonisation time -> only mainland ancestor)
+                        if (mSpecies[j].getColonisationT() <= mSpecies[k].getColonisationT()) {
                             assert(k >= 0);
                             deleteSpecies(k);
                             --k;
                         }
-                    }
-                    else {  // if j is not immigrant OR has migrated!
-                                // but k is -> k stays
-                        if (mSpecies[k].isImmigrant() && !mSpecies[k].hasMigrated()) {
+                        else {
                             assert(j >= 0);
                             deleteSpecies(j);
                             --j;
                             break;  // break out of inner loop to start the outer at same j
                         }
-                        else {  // both not pure immigrants -> older one stays
-                            if (mSpecies[j].getBirth() >= mSpecies[k].getBirth()) {
-                                assert(k >= 0);
-                                deleteSpecies(k);
-                                --k;
-                            }
-                            else {
-                                assert(j >= 0);
-                                deleteSpecies(j);
-                                --j;
-                                break;  // break out of inner loop to start the outer at same j
-                            }
+                    }
+                    else {  // if both species are from the same coloniser
+                        // -> older one stays
+                        assert(mSpecies[j].isSister(mSpecies[k]));
+                        if (mSpecies[j].getBirth() >= mSpecies[k].getBirth()) {
+                            assert(k >= 0);
+                            deleteSpecies(k);
+                            --k;
+                        }
+                        else {
+                            assert(j >= 0);
+                            deleteSpecies(j);
+                            --j;
+                            break;  // break out of inner loop to start the outer at same j
                         }
                     }
                 }
@@ -324,17 +305,17 @@ void Island::addIsland(const Island& islNew)
         }
         // sort by birth time
         const int newVecSize = static_cast<int>(mSpecies.size());
-        for (int l = 0; l < newVecSize - 1; ++l) {
-            for (int m = l + 1; m < newVecSize; ++m) {
-                if(mSpecies[l].getBirth() <mSpecies[m].getBirth()) {
+        for (int l = 0; l < newVecSize-1; ++l) {
+            for (int m = l+1; m < newVecSize; ++m) {
+                if (mSpecies[l].getBirth() < mSpecies[m].getBirth()) {
                     const Species tmpSp = mSpecies[m];
                     mSpecies[m] = mSpecies[l];
                     mSpecies[l] = tmpSp;
                 }
             }
         }
-        mNColonisations += islNew.getNColonisations();
     }
+    mNColonisations += islNew.getNColonisations();
 }
 
 void Island::addSpecies(const Species& newSpecies)

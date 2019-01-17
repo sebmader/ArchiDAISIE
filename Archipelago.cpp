@@ -154,12 +154,12 @@ vector<Species> Archipelago::findIslSpecies(const SpeciesID& speciesID) const
 // returns vector with island IDs (position in mIslands vector)
 {
     assert(speciesID.getSpeciesID() >= 0);
-    vector<Species> locations;
+    vector<Species> populations;
     for (auto& isl : mIslands) {
         if (isl.hasSpecies(speciesID))
-            locations.push_back(isl.findSpecies(speciesID));
+            populations.push_back(isl.findSpecies(speciesID));
     }
-    return locations;
+    return populations;
 }
 
 vector<Species> Archipelago::findMostRecentSistersPops(const Species& species) const

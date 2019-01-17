@@ -741,8 +741,8 @@ void test_island() //!OCLINT indeed long function, don't care it is a test
         assert(is_local(event));
         assert(getEventInt(event) == 0);
     }
-    {   // add island to another: one immigrant on both islands
-        // -> most recent birth time
+    {   // add island to another: one pop of mainland species on both islands
+        // -> most recent coloniser stays (-> re-immigration)
         Island island1(10);
         Island island2(10);
         island1.immigrate(SpeciesID(), 4.0);
@@ -751,8 +751,8 @@ void test_island() //!OCLINT indeed long function, don't care it is a test
         assert(island1.getNSpecies() == 1);
         assert(island1.findSpecies(SpeciesID()).getBirth() == 2.0);
     }
-    {   // add island to another: one immigrant on both islands (other way around)
-        // -> most recent birth time
+    {   // add island to another: one pop of mainland species on both islands (other way around)
+        // -> most recent coloniser stays (-> re-immigration)
         Island island1(10);
         Island island2(10);
         island1.immigrate(SpeciesID(), 2.0);
@@ -760,6 +760,58 @@ void test_island() //!OCLINT indeed long function, don't care it is a test
         island1.addIsland(island2);
         assert(island1.getNSpecies() == 1);
         assert(island1.findSpecies(SpeciesID()).getBirth() == 2.0);
+    }
+    {   // add 3 islands together: one pop of mainland species on both islands
+        // -> oldest pop of most recent coloniser stays (-> re-immigration)
+        Island island1(10);
+        Island island2(10);
+        Island island3(10);
+        island1.immigrate(SpeciesID(), 4.0);
+        island2.immigrate(SpeciesID(), 2.0);
+        island3.migrate(island2.findSpecies(SpeciesID()),1.0);
+        island1.addIsland(island3);
+        assert(island1.getNSpecies() == 1);
+        assert(island1.findSpecies(SpeciesID()).getBirth() == 1.0);
+        assert(island1.findSpecies(SpeciesID()).getColonisationT() == 2.0);
+        island1.addIsland(island2);
+        assert(island1.getNSpecies() == 1);
+        assert(island1.findSpecies(SpeciesID()).getBirth() == 2.0);
+        assert(island1.findSpecies(SpeciesID()).getColonisationT() == 2.0);
+    }
+    {   // add 3 islands together: one pop of mainland species on both islands (other way around)
+        // -> oldest pop of most recent coloniser stays (-> re-immigration)
+        Island island1(10);
+        Island island2(10);
+        Island island3(10);
+        island3.immigrate(SpeciesID(), 4.0);
+        island2.immigrate(SpeciesID(), 2.0);
+        island1.migrate(island2.findSpecies(SpeciesID()),1.0);
+        island1.addIsland(island3);
+        assert(island1.getNSpecies() == 1);
+        assert(island1.findSpecies(SpeciesID()).getBirth() == 1.0);
+        assert(island1.findSpecies(SpeciesID()).getColonisationT() == 2.0);
+        island1.addIsland(island2);
+        assert(island1.getNSpecies() == 1);
+        assert(island1.findSpecies(SpeciesID()).getBirth() == 2.0);
+        assert(island1.findSpecies(SpeciesID()).getColonisationT() == 2.0);
+    }
+    {   // add 3 islands together: independent pops of mainland species on each islands
+        // -> oldest pop of most recent coloniser stays (-> re-immigration)
+        Island island1(10);
+        Island island2(10);
+        Island island3(10);
+        island1.immigrate(SpeciesID(), 4.0);
+        island2.immigrate(SpeciesID(), 2.0);
+        island3.migrate(island2.findSpecies(SpeciesID()),1.0);
+        island2.immigrate(SpeciesID(), 0.9);
+        island1.addIsland(island3);
+        assert(island1.getNSpecies() == 1);
+        assert(island1.findSpecies(SpeciesID()).getBirth() == 1.0);
+        assert(island1.findSpecies(SpeciesID()).getColonisationT() == 2.0);
+        island1.addIsland(island2);
+        assert(island1.getNSpecies() == 1);
+        assert(island1.findSpecies(SpeciesID()).getBirth() == 0.9);
+        assert(island1.findSpecies(SpeciesID()).getColonisationT() == 0.9);
     }
     {   // add island to another: immigrant migrated to other island
         // -> colonisation == birth time
@@ -820,7 +872,7 @@ void test_island() //!OCLINT indeed long function, don't care it is a test
         assert(island1.getNSpecies() == 1);
         assert(island1.findSpecies(maxSpeciesID).getBirth() == 4.0);
     }
-    {   // add island to another: cladogenetic sp. migrated to other island (other way around)
+    {   // add island to another: anagenetic sp. migrated to other island (other way around)
         // -> cladogenesis == birth time
         Island island1(10);
         Island island2(10);
@@ -2669,26 +2721,65 @@ void test_archi() //!OCLINT indeed long function, don't care it is a test
         int n_islands = 2;
         int islCarryingCap = 5;
         Archipelago archi1 = Archipelago(n_islands, islCarryingCap);
-        archi1.addSpecies(Species(4.0,SpeciesID(1),SpeciesID(1),'I',false,4.0,4.0,{}),0);
+        Species sp1 = Species(4.0,SpeciesID(1),SpeciesID(1),'I',false,4.0,4.0,{});
+        archi1.addSpecies(sp1,0);
         Archipelago archi2 = Archipelago(n_islands, islCarryingCap);
-        archi2.addSpecies(Species(4.0,SpeciesID(2),SpeciesID(2),'I',false,4.0,4.0,{}),1);
+        Species sp2 = Species(4.0,SpeciesID(2),SpeciesID(2),'I',false,4.0,4.0,{});
+        archi2.addSpecies(sp2,1);
         archi1.addArchi(archi2);
         assert(archi1.getNSpeciesID() == 2);
         assert(archi1.hasSpecies(SpeciesID(1)));
+        assert(archi1.findIslSpecies(sp1.getSpecID())[0] == sp1);
         assert(archi1.hasSpecies(SpeciesID(2)));
+        assert(archi1.findIslSpecies(sp2.getSpecID())[0] == sp2);
+    }
+    { // summed archipelago has species that both archipelagos had
+        // different kinds of species
+        int n_islands = 2;
+        int islCarryingCap = 5;
+        Archipelago archi1 = Archipelago(n_islands, islCarryingCap);
+        Species sp1 = Species(4.0,SpeciesID(1),SpeciesID(1),'C',false,4.0,4.0,{ 'a' });
+        archi1.addSpecies(sp1,0);
+        Archipelago archi2 = Archipelago(n_islands, islCarryingCap);
+        Species sp2 = Species(3.0,SpeciesID(2),SpeciesID(2),'C',true,4.0,4.0,{ 'b' });
+        archi2.addSpecies(sp2,1);
+        archi1.addArchi(archi2);
+        assert(archi1.getNSpeciesID() == 2);
+        assert(archi1.hasSpecies(SpeciesID(1)));
+        assert(archi1.findIslSpecies(sp1.getSpecID())[0] == sp1);
+        assert(archi1.hasSpecies(SpeciesID(2)));
+        assert(archi1.findIslSpecies(sp2.getSpecID())[0] == sp2);
     }
     { // summed archipelago has just one species present when same species is
         // present on the same island on respective archipelago
         int n_islands = 2;
         int islCarryingCap = 5;
         Archipelago archi1 = Archipelago(n_islands, islCarryingCap);
-        archi1.addSpecies(Species(4.0,SpeciesID(1),SpeciesID(1),'I',false,4.0,4.0,{}),0);
+        Species sp1 = Species(4.0,SpeciesID(1),SpeciesID(1),'I',false,4.0,4.0,{});
+        archi1.addSpecies(sp1, 0);
         Archipelago archi2 = Archipelago(n_islands, islCarryingCap);
-        archi2.addSpecies(Species(3.4,SpeciesID(1),SpeciesID(1),'I',false,4.0,4.0,{}),0);
+        Species sp2 = Species(3.4,SpeciesID(1),SpeciesID(1),'I',true,4.0,4.0,{});
+        archi2.addSpecies(sp2, 0);
         archi1.addArchi(archi2);
-        assert(archi1.getNSpeciesID() == 1);
         assert(archi1.getNSpecies() == 1);
         assert(archi1.hasSpecies(SpeciesID(1)));
+        assert(archi1.findIslSpecies(SpeciesID(1))[0] == sp1);
+    }
+    { // summed archipelago has just one species present when same species is
+        // present on the same island on respective archipelago
+        // different kind of species -> older BT but younger coloT stays
+        int n_islands = 2;
+        int islCarryingCap = 5;
+        Archipelago archi1 = Archipelago(n_islands, islCarryingCap);
+        Species sp1 = Species(2.0,SpeciesID(1),SpeciesID(1),'I',true,4.0,4.0,{});
+        archi1.addSpecies(sp1, 0);
+        Archipelago archi2 = Archipelago(n_islands, islCarryingCap);
+        Species sp2 = Species(2.8,SpeciesID(1),SpeciesID(1),'I',true,3.4,3.4,{});
+        archi2.addSpecies(sp2, 0);
+        archi1.addArchi(archi2);
+        assert(archi1.getNSpecies() == 1);
+        assert(archi1.hasSpecies(SpeciesID(1)));
+        assert(archi1.findIslSpecies(SpeciesID(1))[0] == sp2);
     }
     { // summed archipelago has both species when same species is present
         // on different islands on respective archipelagos
@@ -2697,7 +2788,7 @@ void test_archi() //!OCLINT indeed long function, don't care it is a test
         Archipelago archi1 = Archipelago(n_islands, islCarryingCap);
         archi1.addSpecies(Species(4.0,SpeciesID(1),SpeciesID(1),'I',false,4.0,4.0,{}),0);
         Archipelago archi2 = Archipelago(n_islands, islCarryingCap);
-        archi2.addSpecies(Species(3.4,SpeciesID(1),SpeciesID(1),'I',false,4.0,4.0,{}),1);
+        archi2.addSpecies(Species(3.4,SpeciesID(1),SpeciesID(1),'I',true,4.0,4.0,{}),1);
         archi1.addArchi(archi2);
         assert(archi1.getNSpeciesID() == 1);
         assert(archi1.getNSpecies() == 2);
@@ -2707,32 +2798,42 @@ void test_archi() //!OCLINT indeed long function, don't care it is a test
         int n_islands = 2;
         int islCarryingCap = 5;
         Archipelago archi = Archipelago(n_islands, islCarryingCap);
-        archi.addSpecies(Species(4.0,SpeciesID(1),SpeciesID(1),'I',false,4.0,4.0,{}),0);
-        archi.addSpecies(Species(3.5,SpeciesID(2),SpeciesID(2),'I',false,4.0,4.0,{}),1);
+        Species sp1 = Species(4.0,SpeciesID(1),SpeciesID(1),'I',false,4.0,4.0,{});
+        archi.addSpecies(sp1,0);
+        Species sp2 = Species(3.5,SpeciesID(2),SpeciesID(2),'I',false,3.5,3.5,{});
+        archi.addSpecies(sp2,1);
         Island consolidatedArchi = archi.makeArchiTo1Island();
         assert(consolidatedArchi.getNSpecies()==2);
         assert(consolidatedArchi.hasSpecies(SpeciesID(1)));
+        assert(consolidatedArchi.findSpecies(SpeciesID(1)) == sp1);
         assert(consolidatedArchi.hasSpecies(SpeciesID(2)));
+        assert(consolidatedArchi.findSpecies(SpeciesID(2)) == sp2);
     }
-    { // consolidated archipelago deletes duplicates
+    { // consolidated archipelago deletes duplicates -> older pop stays
         int n_islands = 2;
         int islCarryingCap = 5;
         Archipelago archi = Archipelago(n_islands, islCarryingCap);
-        archi.addSpecies(Species(4.0,SpeciesID(1),SpeciesID(1),'I',false,4.0,4.0,{}),0);
-        archi.addSpecies(Species(3.5,SpeciesID(1),SpeciesID(1),'I',false,4.0,4.0,{}),1);
+        Species sp1 = Species(4.0,SpeciesID(1),SpeciesID(1),'I',false,4.0,4.0,{});
+        archi.addSpecies(sp1,0);
+        Species sp2 = Species(3.5,SpeciesID(1),SpeciesID(1),'I',true,4.0,4.0,{});
+        archi.addSpecies(sp2,1);
         Island consolidatedArchi = archi.makeArchiTo1Island();
         assert(consolidatedArchi.getNSpecies()==1);
         assert(consolidatedArchi.hasSpecies(SpeciesID(1)));
+        assert(consolidatedArchi.findSpecies(SpeciesID(1)) == sp1);
     }
-    { // consolidated archipelago deletes duplicates
+    { // consolidated archipelago deletes duplicates -> younger coloniser stays
         int n_islands = 2;
         int islCarryingCap = 5;
         Archipelago archi = Archipelago(n_islands, islCarryingCap);
-        archi.addSpecies(Species(4.0,SpeciesID(1),SpeciesID(1),'I',false,4.0,4.0,{}),0);
-        archi.addSpecies(Species(3.5,SpeciesID(1),SpeciesID(1),'I',false,4.0,4.0,{}),1);
+        Species sp1 = Species(4.0,SpeciesID(1),SpeciesID(1),'I',false,4.0,4.0,{});
+        archi.addSpecies(sp1,0);
+        Species sp2 = Species(3.5,SpeciesID(1),SpeciesID(1),'I',false,3.5,3.5,{});
+        archi.addSpecies(sp2,1);
         Island consolidatedArchi = archi.makeArchiTo1Island();
         assert(consolidatedArchi.getNSpecies()==1);
         assert(consolidatedArchi.hasSpecies(SpeciesID(1)));
+        assert(consolidatedArchi.findSpecies(SpeciesID(1)) == sp2);
     }
     { // summed archipelago has sum of colonisations of both archis
         int n_islands = 2;
