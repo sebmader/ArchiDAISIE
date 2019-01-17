@@ -421,12 +421,25 @@ void Archipelago::doLocalEvent(const event_type& localEvent,
         }
         int destinationIsland = mIslands[island].drawMigDestinationIsland(
                 island, vLogs, iniMigrationRate, prng);
-        // output: position of island in mIslands where the species
-        // migrates to
+            // output: position of island in mIslands where the species
+            // migrates to
 
+        Species oldSpecies = mIslands[island].findSpecies(speciesID);
+        // if the same species but an older coloniser is present
+        // replace it with the younger coloniser
+        if(mIslands[destinationIsland].hasSpecies(speciesID)) {
+            Species resident = mIslands[destinationIsland].findSpecies(speciesID);
+            if(oldSpecies.getColonisationT() < resident.getColonisationT() ||
+                    oldSpecies.getBirth() > resident.getBirth()) {
+                // in case of re-migration: need to correct the former sister's
+                // daughter states -> might change the whole phylogeny
+                correctSisterTaxaLocal(speciesID,destinationIsland);
+                mIslands[destinationIsland].goExtinct(speciesID);
+            }
+        }
+        oldSpecies = mIslands[island].findSpecies(speciesID);
         // if species is not present on island of destination
         // old population gets the new clado state 'a'
-        Species oldSpecies = mIslands[island].findSpecies(speciesID);
         if(!mIslands[destinationIsland].hasSpecies(speciesID)) {
             Species& refOldSpecies = mIslands[island].findRefSpecies(speciesID);
             vector<char> newCladoStates = refOldSpecies.getCladoStates();

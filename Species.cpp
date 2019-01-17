@@ -86,7 +86,7 @@ bool Species::isMostRecentSis(const Species& potentialSis) const
     vector<char> formerSpeciations = mCladoStates;
     vector<char> sisFormerSpeciations = potentialSis.getCladoStates();
     if (formerSpeciations.size() > sisFormerSpeciations.size())
-        return false; // sis has have speciated as least as often as this species
+        return false; // sis has to have speciated as least as often as this species
     formerSpeciations.pop_back();
     while(sisFormerSpeciations.size() > formerSpeciations.size())
         sisFormerSpeciations.pop_back();

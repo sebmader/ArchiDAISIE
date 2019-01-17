@@ -169,24 +169,18 @@ void Island::migrate(const Species& oldSpecies, const double& time)
             oldSpecies.getSpecID(), oldSpecies.getStatus(), true,
             oldSpecies.getAncestralBT(), oldSpecies.getColonisationT(),
             newCladostates);
-    // inherit ancestral birthT of oldSpecies IF it has already migrated before
-
     const SpeciesID speciesID = oldSpecies.getSpecID();
-    if(hasSpecies(speciesID)) {
-        if (findSpecies(speciesID).getBirth() < oldSpecies.getBirth()) {
-            // if re-migration: re-set clock if resident is younger than migrant
-            // otherwise circular re-migration would make species younger and younger
-            const int pos = findPos(speciesID);
-            assert(pos >= 0 && pos < getNSpecies());
-            mSpecies[pos].setBirth(time);
-            // TODO: correct the daughter states ?!
-        }
-    }
-    else {  // if first migration: add species to island
+    if(!hasSpecies(speciesID)) {  // if first migration: add species to island
         if (getNSpecies()+1 > mK)
             throw logic_error("Migration would make number of species"
                               " exceed carrying capacity.\n");
         addSpecies(newSpecies);
+    }
+    else {
+        // nothing happens
+        if (findSpecies(speciesID).getBirth() < oldSpecies.getBirth())
+            assert(!"Shouldn't get here!");  //!OCLint
+            // dealt with it a scope higher
     }
 }
 
