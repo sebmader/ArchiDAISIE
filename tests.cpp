@@ -1015,6 +1015,39 @@ void test_archi() //!OCLINT indeed long function, don't care it is a test
         assert(archi.getIslands()[0].findSpecies(SpeciesID(1)).getCladoStates().empty());
         assert(archi.getIslands()[1].findSpecies(SpeciesID(1)).getCladoStates().empty());
     }
+    {  // re-immigration of same species replaces migrant and corrects cladoStates
+        // of population on original island of origin (more cladoStates)
+        int n_islands = 2;
+        int islCarryingCap = 5;
+        Archipelago archi = Archipelago(n_islands, islCarryingCap);
+        assert(archi.getNSpeciesID() == 0);
+        int n_mainlandSp = 5;
+        SpeciesID maxSpeciesID(n_mainlandSp);
+        mt19937_64 prng;
+        Species sp1 = Species(4.0,SpeciesID(1),SpeciesID(1),'I',true,4.0,4.0,{ 'b','b','b' });
+        archi.addSpecies(sp1,0);
+        archi.doLocalEvent(event_type::local_migration,
+                SpeciesID(1),
+                prng,
+                3.5,
+                maxSpeciesID,
+                0,
+                0.3);
+        assert(archi.getIslands()[0].findSpecies(SpeciesID(1)).getCladoStates().size()==4);
+        assert(archi.getIslands()[0].findSpecies(SpeciesID(1)).getCladoStates()[3]=='a');
+        assert(archi.getIslands()[1].findSpecies(SpeciesID(1)).getCladoStates().size()==4);
+        assert(archi.getIslands()[1].findSpecies(SpeciesID(1)).getCladoStates()[3]=='b');
+        archi.doLocalEvent(event_type::local_immigration,
+                SpeciesID(1),
+                prng,
+                3.0,
+                maxSpeciesID,
+                1,
+                0.3);
+        assert(archi.getIslands()[0].findSpecies(SpeciesID(1)).getCladoStates().size()==3);
+        assert(archi.getIslands()[0].findSpecies(SpeciesID(1)).getCladoStates()[2]=='b');
+        assert(archi.getIslands()[1].findSpecies(SpeciesID(1)).getCladoStates().empty());
+    }
     {  // migration does increase number of species
         // but not SpeciesIDs
         int n_islands = 2;
@@ -1042,7 +1075,7 @@ void test_archi() //!OCLINT indeed long function, don't care it is a test
         assert(archi.getNSpeciesID() == 1);
     }
     {   // re-migration of already present species overwrites birth time
-        // if coloniser is older than resident
+        // if migrant is older than resident
         int n_islands = 2;
         int islCarryingCap = 5;
         Archipelago archi = Archipelago(n_islands, islCarryingCap);
@@ -1074,7 +1107,7 @@ void test_archi() //!OCLINT indeed long function, don't care it is a test
         assert(archi.getIslands()[1].findSpecies(SpeciesID(1)).getBirth() == 3.0);
     }
     {   // re-migration of already present species doesn't overwrite birth time
-        // if coloniser is younger than resident
+        // if migrant is younger than resident
         int n_islands = 2;
         int islCarryingCap = 5;
         Archipelago archi = Archipelago(n_islands, islCarryingCap);
@@ -1106,6 +1139,7 @@ void test_archi() //!OCLINT indeed long function, don't care it is a test
         assert(archi.getIslands()[0].findSpecies(SpeciesID(1)).getBirth() == 4.0);
     }
     {  // migration does add clado state 'a' to population on island of origin
+        // and 'b' to population on island of destination
         int n_islands = 2;
         int islCarryingCap = 5;
         Archipelago archi = Archipelago(n_islands, islCarryingCap);
@@ -1173,9 +1207,10 @@ void test_archi() //!OCLINT indeed long function, don't care it is a test
     }
     {   // re-migration of already present species does correct daughter state of original
         // migrant if new migrant (re-migrant) comes from another island of origin
-        // TODO: how?
+        // TODO: how to test that?
     }
     {  // migration does replace already present species if migrant is re-immigrant
+        // = more recent colonisation
         int n_islands = 2;
         int islCarryingCap = 5;
         Archipelago archi = Archipelago(n_islands, islCarryingCap);
