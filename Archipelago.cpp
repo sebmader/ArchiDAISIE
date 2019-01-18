@@ -269,6 +269,11 @@ event_type Archipelago::sampleNextEvent(mt19937_64& prng)
     sumRatesPerEvent.insert(sumRatesPerEvent.end(), mGlobalRates.begin(), mGlobalRates.end());
     assert(sumRatesPerEvent.size() == mGlobalRates.size() + n_localEvents);
 
+    for (double i : sumRatesPerEvent) {
+        cout << i << ", ";
+    }
+    cout << '\n';
+
     return static_cast<event_type>(drawDisEvent(sumRatesPerEvent, prng));
 }
 

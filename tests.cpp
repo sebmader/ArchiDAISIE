@@ -2974,6 +2974,42 @@ void test_archi() //!OCLINT indeed long function, don't care it is a test
         assert(archi.getGlobalSpeciesIDs().size()==1);
         assert(archi.getGlobalSpeciesIDs()[0]==SpeciesID(1));
     }
+    { // getGlobalSpeciesIDs recognises multiple global species on differnt islands
+        int n_islands = 4;
+        int islCarryingCap = 5;
+        Archipelago archi = Archipelago(n_islands, islCarryingCap);
+        archi.addSpecies(Species(4.0,SpeciesID(1),SpeciesID(1),'I',false,4.0,4.0,{'a'}),0);
+        archi.addSpecies(Species(3.9,SpeciesID(1),SpeciesID(1),'I',true,4.0,4.0,{'b'}),1);
+        archi.addSpecies(Species(3.8,SpeciesID(2),SpeciesID(2),'I',false,4.0,4.0,{'a'}),2);
+        archi.addSpecies(Species(3.5,SpeciesID(2),SpeciesID(2),'I',true,4.0,4.0,{'b'}),3);
+        assert(archi.getGlobalSpeciesIDs().size()==2);
+        assert(archi.getGlobalSpeciesIDs()[0]==SpeciesID(1));
+        assert(archi.getGlobalSpeciesIDs()[1]==SpeciesID(2));
+    }
+    { // getGlobalSpeciesIDs recognises multiple global species on same islands
+        int n_islands = 2;
+        int islCarryingCap = 5;
+        Archipelago archi = Archipelago(n_islands, islCarryingCap);
+        archi.addSpecies(Species(4.0,SpeciesID(1),SpeciesID(1),'I',false,4.0,4.0,{'a'}),0);
+        archi.addSpecies(Species(3.9,SpeciesID(1),SpeciesID(1),'I',true,4.0,4.0,{'b'}),1);
+        archi.addSpecies(Species(3.8,SpeciesID(2),SpeciesID(2),'I',false,4.0,4.0,{'a'}),0);
+        archi.addSpecies(Species(3.5,SpeciesID(2),SpeciesID(2),'I',true,4.0,4.0,{'b'}),1);
+        assert(archi.getGlobalSpeciesIDs().size()==2);
+        assert(archi.getGlobalSpeciesIDs()[0]==SpeciesID(1));
+        assert(archi.getGlobalSpeciesIDs()[1]==SpeciesID(2));
+    }
+    { // getGlobalSpeciesIDs recognises multiple global endemic species on same islands
+        int n_islands = 2;
+        int islCarryingCap = 5;
+        Archipelago archi = Archipelago(n_islands, islCarryingCap);
+        archi.addSpecies(Species(4.0,SpeciesID(1),SpeciesID(6),'C',false,4.0,4.0,{'a','a'}),0);
+        archi.addSpecies(Species(3.9,SpeciesID(1),SpeciesID(6),'C',true,4.0,4.0,{'a','b'}),1);
+        archi.addSpecies(Species(3.8,SpeciesID(2),SpeciesID(7),'C',false,3.8,3.8,{'b','a'}),0);
+        archi.addSpecies(Species(3.5,SpeciesID(2),SpeciesID(7),'C',true,3.8,3.8,{'b','b'}),1);
+        assert(archi.getGlobalSpeciesIDs().size()==2);
+        assert(archi.getGlobalSpeciesIDs()[0]==SpeciesID(6));
+        assert(archi.getGlobalSpeciesIDs()[1]==SpeciesID(7));
+    }
     // adding/consolidating archipelagos
     { // summed archipelago has species that both archipelagos had
         int n_islands = 2;

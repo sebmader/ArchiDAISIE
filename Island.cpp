@@ -127,8 +127,8 @@ void Island::immigrate(const SpeciesID& speciesID, const double& time)
             throw logic_error("Immigration would make number of species"
                               " exceed carrying capacity.\n");
         addSpecies(newSpecies);
-        ++mNColonisations;
     }
+    ++mNColonisations;
 }
 
 int Island::drawMigDestinationIsland(
