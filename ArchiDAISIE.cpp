@@ -41,7 +41,6 @@ Archipelago ArchiDAISIE_core(const double& islandAge, const std::vector<SpeciesI
             if (timeNow <= 0)  // when timeNow passes the present, stop simulation
                 break;
 
-            cout << timeNow << ": ";
             // sample which event happens
             event_type nextEvent = archi.sampleNextEvent(prng);
 
