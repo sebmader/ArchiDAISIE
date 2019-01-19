@@ -157,8 +157,10 @@ void outputBranching(const Island& fullIsland, ofstream& ofs)
                 if (sp.isSister(mainAncestors[i])) {
                     clades[i].push_back(sp);
                 }
-                else if (sp.getParID() == mainAncestors[i].getSpecID())
+                // re-immigrants = missing species
+                else if (sp.getSpecID() == mainAncestors[i].getSpecID()) {
                     missingSpecies[i].push_back(sp);
+                }
             }
         }
         // extract status -> endemic, nonendemic or both?
