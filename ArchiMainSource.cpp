@@ -37,6 +37,7 @@ int main(int argc, char* argv[]) {
 
     try {
 
+
         test_other_functions();
         test_speciesID();
         test_species();
@@ -44,6 +45,7 @@ int main(int argc, char* argv[]) {
         test_archi();
         test_STT();
         test_STTtable();
+
 
         cout << "Starting application ...\n" << argv[0] << "\n";
 

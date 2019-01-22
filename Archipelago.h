@@ -40,8 +40,8 @@ public:
     void addSpecies(const Species&, int);  // adds species to island
     void updateNColonisations();
 
-    void calculateAllRates(const std::vector<double>&,
-            int n_mainlandSpecies, int n_islands);
+    void calculateAllRates(const std::vector<double>& initialParameters,
+            const std::vector<SpeciesID>& mainSpeciesIDs, const int n_islands);
                     // calculate per-island rates and global rates
                     // and save them in LocalRates and GlobalRates vector, resp.
                     // Also, output of sum of both global (.first) and local (.second) rates

@@ -196,7 +196,7 @@ void Archipelago::updateNColonisations()
 
 void Archipelago::calculateAllRates(
         const vector<double>& initialParameters,
-        const int n_mainlandSpecies,
+        const vector<SpeciesID>& mainSpeciesIDs,
         const int n_islands)
 {   // the rates for each event (local/global) are calculated and saved in class object
     // order of parameters (input): gam_i (0), gam_m (1), lamb_cl (2),
@@ -219,7 +219,7 @@ void Archipelago::calculateAllRates(
     // count global immigrant species; only ones that can undergo anagenesis
     int n_globalImmigrants = 0;
     for (auto& speciesID : globalSpeciesIDs)
-        if (speciesID <= static_cast<SpeciesID>(n_mainlandSpecies))
+        if (speciesID <= mainSpeciesIDs.back())
             ++n_globalImmigrants;
 
     // count all alive species -> for carrying capacity
@@ -245,7 +245,7 @@ void Archipelago::calculateAllRates(
         const double sumLogGrowthWOThis = sumLogGrowth - getLogGrowth(i); // sum
                     // of log-growth of all islands except THIS (i)
         i.calculateIslRates(initialIslandPars,
-                n_mainlandSpecies, n_islands, sumLogGrowthWOThis);
+                (int)mainSpeciesIDs.size(), n_islands, sumLogGrowthWOThis);
     }
 }
 
@@ -612,7 +612,7 @@ void Archipelago::correctSisterTaxaLocal(const SpeciesID& extinctSpID, const int
     const Species extinctSp = mIslands[island].findSpecies(extinctSpID);
     vector<char> extDaughterStates = extinctSp.getCladoStates();
     if (!extDaughterStates.empty()) {
-        // if extinct species underwent cladogenesis at some point
+        // if extinct species underwent cladogenesis or migration at some point
         // all descendant sisters loose respective daughter state
         const vector<Species> sistersPops = findMostRecentSistersPops(extinctSp);
         Species oldestSisPop = findOldestSpecies(sistersPops);
@@ -620,7 +620,7 @@ void Archipelago::correctSisterTaxaLocal(const SpeciesID& extinctSpID, const int
         for (auto& sis : sistersPops) {
             const int isl = whereIsSpecies(sis);
             Species& refSis = mIslands[isl].findRefSpecies(sis.getSpecID());
-            if (sis==oldestSisPop && extDaughterStates.back() == 'a') { // TODO: correct?
+            if (sis==oldestSisPop && extDaughterStates.back() == 'a') {
                   // if daughter 'a' goes extinct, respective sister/population 'b' inherits
                   // its birth time and has not migrated
                 refSis.setBirth(extinctSp.getBirth());

@@ -7,22 +7,28 @@
 using namespace std;
 namespace fs = experimental::filesystem;
 
-Archipelago ArchiDAISIE_core(const double& islandAge, const std::vector<SpeciesID>& mainSpeciesIDs,
-        const std::vector<double>& initialParameters, int islCarryingCap, int n_islands, std::mt19937_64& prng,
-        SpeciesID& maxSpeciesID, STTtable& STT, int& n_events, int& n_globalEvents)
+Archipelago ArchiDAISIE_core(const double& islandAge,
+        const std::vector<SpeciesID>& mainSpeciesIDs,
+        const std::vector<double>& initialParameters,
+        int islCarryingCap,
+        int n_islands,
+        std::mt19937_64& prng,
+        SpeciesID& maxSpeciesID,
+        STTtable& STT,
+        int& n_events,
+        int& n_globalEvents)
 {
     try {
         // initialise Archipelago data frame and
         // set time to island age (= emergence time of island)
         Archipelago archi(n_islands, islCarryingCap);
         double timeNow = islandAge;
-        const int n_mainland = static_cast<int>(mainSpeciesIDs.size());
 
         // start looping through time
         for (;;) {
 
             // calculate the rates of events
-            archi.calculateAllRates(initialParameters, n_mainland, n_islands);
+            archi.calculateAllRates(initialParameters, mainSpeciesIDs, n_islands);
 
             // draw time interval to next event
             const vector<double> globalRates = archi.getGlobalRates();

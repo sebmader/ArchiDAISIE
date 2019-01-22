@@ -9,10 +9,11 @@ library(readr)
 
 replicates <- 1000
 
-main_dir <- "../"
+main_dir <- "../cmake-build-debug/"
+parameter_file <- "testOne.txt"
 dir_name_sims <- "test_sims/"
-sim_names <- dir(path = paste(main_dir,dir_name_sims, sep= ""))
-length(sim_names)
+parameter_sets <- read.csv(file = paste(main_dir,parameter_file,sep = ""),header = T, sep = ",")
+sim_names <- parameter_sets$name
 num_species <- list()
 for(sim in 1:length(sim_names)) {
   num_species[[sim]] = list(sim_name = sim_names[[sim]],
@@ -62,7 +63,7 @@ for(sim_name in sim_names) {
   colnames(stt_q0.975_all)<-c("Time","nI","nA","nC","Endemic","Total")
   
   par(mfrow=c(1,1)) 
-  suppressWarnings(plot(NULL,NULL,xlim=rev(c(0, time)),ylim=c(1,60),ylab="No of species + 1",bty="l", xaxs="i",xlab="Time before present",main="Species-through-time - All species",log='y',cex.lab=1.2,cex.main=1.2,cex.axis=1.2))
+  suppressWarnings(plot(NULL,NULL,xlim=rev(c(0, time)),ylim=c(1,30),ylab="No of species + 1",bty="l", xaxs="i",xlab="Time before present",main="Species-through-time - All species",log='y',cex.lab=1.2,cex.main=1.2,cex.axis=1.2))
   polygon(c(stt_average_all[,"Time"],rev(stt_average_all[,"Time"])),c(stt_q0.025_all[,"Total"]+1,rev(stt_q0.975_all[,"Total"]+1)),col="light grey",border=NA)
   polygon(c(stt_average_all[,"Time"],rev(stt_average_all[,"Time"])),c(stt_q0.25_all[,"Total"]+1,rev(stt_q0.75_all[,"Total"]+1)),col="dark grey",border=NA)
   lines(stt_average_all[,"Time"],stt_average_all[,"Total"]+1,lwd=2)

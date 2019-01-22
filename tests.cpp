@@ -1397,11 +1397,15 @@ void test_archi() //!OCLINT indeed long function, don't care it is a test
         int islCarryingCap = 5;
         Archipelago archi = Archipelago(n_islands, islCarryingCap);
         assert(archi.getNSpeciesID() == 0);
-        int n_mainlandSp = 5;
+        int n_mainlandSp(5);
+        vector<SpeciesID> mainlandSpIDs(n_mainlandSp);
+        for(size_t i = 0; i < mainlandSpIDs.size(); ++i) {
+            mainlandSpIDs[i] = SpeciesID(i);
+        }
         SpeciesID maxSpeciesID(n_mainlandSp);
         mt19937_64 prng;
         vector<double> iniPars { 0.05, 0.5, 0.2, 0.1, 0.2, 0.1, 0.05, 0.1 };
-        archi.calculateAllRates(iniPars, n_mainlandSp, n_islands);
+        archi.calculateAllRates(iniPars, mainlandSpIDs, n_islands);
         archi.doNextEvent(event_type::local_immigration,
                 0.3,
                 prng,
@@ -1409,7 +1413,7 @@ void test_archi() //!OCLINT indeed long function, don't care it is a test
                 maxSpeciesID,
                 vector<SpeciesID>( { SpeciesID(n_mainlandSp) } ));
         assert(archi.getNSpeciesID() == 1);
-        archi.calculateAllRates(iniPars, n_mainlandSp, n_islands);
+        archi.calculateAllRates(iniPars, mainlandSpIDs, n_islands);
         archi.doNextEvent(event_type::local_cladogenesis,
                 0.3,
                 prng,
@@ -1424,10 +1428,14 @@ void test_archi() //!OCLINT indeed long function, don't care it is a test
         Archipelago archi = Archipelago(n_islands, islCarryingCap);
         assert(archi.getNSpeciesID() == 0);
         int n_mainlandSp = 5;
+        vector<SpeciesID> mainlandSpIDs(n_mainlandSp);
+        for(size_t i = 0; i < mainlandSpIDs.size(); ++i) {
+            mainlandSpIDs[i] = SpeciesID(i);
+        }
         SpeciesID maxSpeciesID(n_mainlandSp);
         mt19937_64 prng;
         vector<double> iniPars { 0.05, 0.5, 0.2, 0.1, 0.2, 0.1, 0.05, 0.1 };
-        archi.calculateAllRates(iniPars, n_mainlandSp, n_islands);
+        archi.calculateAllRates(iniPars, mainlandSpIDs, n_islands);
         archi.doNextEvent(event_type::local_immigration,
                 0.3,
                 prng,
@@ -1435,7 +1443,7 @@ void test_archi() //!OCLINT indeed long function, don't care it is a test
                 maxSpeciesID,
                 vector<SpeciesID>( { SpeciesID(n_mainlandSp) } ));
         assert(archi.getNSpeciesID() == 1);
-        archi.calculateAllRates(iniPars,n_mainlandSp, n_islands);
+        archi.calculateAllRates(iniPars,mainlandSpIDs, n_islands);
         archi.doNextEvent(event_type::local_anagenesis,
                 0.3,
                 prng,
@@ -1450,10 +1458,14 @@ void test_archi() //!OCLINT indeed long function, don't care it is a test
         Archipelago archi = Archipelago(n_islands, islCarryingCap);
         assert(archi.getNSpeciesID() == 0);
         int n_mainlandSp = 5;
+        vector<SpeciesID> mainlandSpIDs(n_mainlandSp);
+        for(size_t i = 0; i < mainlandSpIDs.size(); ++i) {
+            mainlandSpIDs[i] = SpeciesID(i);
+        }
         SpeciesID maxSpeciesID(n_mainlandSp);
         mt19937_64 prng;
         vector<double> iniPars { 0.05, 0.5, 0.2, 0.1, 0.2, 0.1, 0.05, 0.1 };
-        archi.calculateAllRates(iniPars, n_mainlandSp, n_islands);
+        archi.calculateAllRates(iniPars, mainlandSpIDs, n_islands);
         archi.doNextEvent(event_type::local_immigration,
                 0.3,
                 prng,
@@ -1461,7 +1473,7 @@ void test_archi() //!OCLINT indeed long function, don't care it is a test
                 maxSpeciesID,
                 vector<SpeciesID>( { SpeciesID(n_mainlandSp) } ));
         assert(archi.getNSpeciesID() == 1);
-        archi.calculateAllRates(iniPars, n_mainlandSp, n_islands);
+        archi.calculateAllRates(iniPars, mainlandSpIDs, n_islands);
         archi.doNextEvent(event_type::local_extinction,
                 0.3,
                 prng,
@@ -1476,11 +1488,15 @@ void test_archi() //!OCLINT indeed long function, don't care it is a test
         Archipelago archi = Archipelago(n_islands, islCarryingCap);
         vector<double> iniPars { 0.05, 0.5, 0.2, 0.1, 0.2, 0.1, 0.05, 0.1 };
         int n_mainlandSp = 5;
+        vector<SpeciesID> mainlandSpIDs(n_mainlandSp);
+        for(size_t i = 0; i < mainlandSpIDs.size(); ++i) {
+            mainlandSpIDs[i] = SpeciesID(i);
+        }
         assert(archi.getGlobalRates().empty());
         vector<Island> tmpIsls1 = archi.getIslands();
         assert(tmpIsls1[0].getLocalRates().empty());
         assert(tmpIsls1[1].getLocalRates().empty());
-        archi.calculateAllRates(iniPars, n_mainlandSp, n_islands);
+        archi.calculateAllRates(iniPars, mainlandSpIDs, n_islands);
         assert(archi.getGlobalRates().size() == 3);
         vector<Island> tmpIsls2 = archi.getIslands();
         assert(tmpIsls2[0].getLocalRates().size() == 5);
@@ -1492,8 +1508,12 @@ void test_archi() //!OCLINT indeed long function, don't care it is a test
         Archipelago archi = Archipelago(n_islands, islCarryingCap);
         vector<double> iniPars { 0.05, 0.5, 0.2, 0.1, 0.2, 0.1, 0.05, 0.1 };
         int n_mainlandSp = 5;
+        vector<SpeciesID> mainlandSpIDs(n_mainlandSp);
+        for(size_t i = 0; i < mainlandSpIDs.size(); ++i) {
+            mainlandSpIDs[i] = SpeciesID(i);
+        }
         assert(archi.getGlobalRates().empty());
-        archi.calculateAllRates(iniPars, n_mainlandSp, n_islands);
+        archi.calculateAllRates(iniPars, mainlandSpIDs, n_islands);
         assert(archi.getGlobalRates().size() == 3);
         assert(archi.getGlobalRates()[0] == 0.0);
         assert(archi.getGlobalRates()[1] == 0.0);
@@ -1516,8 +1536,12 @@ void test_archi() //!OCLINT indeed long function, don't care it is a test
         Archipelago archi = Archipelago(n_islands, islCarryingCap);
         vector<double> iniPars { 0.05, 0.5, 0.2, 0.1, 0.2, 0.1, 0.05, 0.1 };
         int n_mainlandSp = 5;
+        vector<SpeciesID> mainlandSpIDs(n_mainlandSp);
+        for(size_t i = 0; i < mainlandSpIDs.size(); ++i) {
+            mainlandSpIDs[i] = SpeciesID(i);
+        }
         assert(archi.getGlobalRates().empty());
-        archi.calculateAllRates(iniPars, n_mainlandSp, n_islands);
+        archi.calculateAllRates(iniPars, mainlandSpIDs, n_islands);
         mt19937_64 prng;
         event_type event = archi.sampleNextEvent(prng);
         assert(event == event_type::local_immigration);
@@ -1528,6 +1552,10 @@ void test_archi() //!OCLINT indeed long function, don't care it is a test
         int islCarryingCap = 5;
         Archipelago archi = Archipelago(n_islands, islCarryingCap);
         int n_mainlandSp = 5;
+        vector<SpeciesID> mainlandSpIDs(n_mainlandSp);
+        for(size_t i = 0; i < mainlandSpIDs.size(); ++i) {
+            mainlandSpIDs[i] = SpeciesID(i);
+        }
         SpeciesID maxSpeciesID(n_mainlandSp);
         mt19937_64 prng;
         archi.doLocalEvent(event_type::local_immigration,
@@ -1547,7 +1575,7 @@ void test_archi() //!OCLINT indeed long function, don't care it is a test
                 0.3);
         assert(archi.getGlobalSpeciesIDs().size() == 1);
         vector<double> iniPars { 0.05, 0.5, 0.2, 0.1, 0.2, 0.1, 0.05, 0.1 };
-        archi.calculateAllRates(iniPars, n_mainlandSp, n_islands);
+        archi.calculateAllRates(iniPars, mainlandSpIDs, n_islands);
         for (int i = 0; i < (int)archi.getGlobalRates().size(); ++i) {
             assert(archi.getGlobalRates()[i] > 0);
         }
@@ -2106,10 +2134,14 @@ void test_archi() //!OCLINT indeed long function, don't care it is a test
         int islCarryingCap = 5;
         Archipelago archi = Archipelago(n_islands, islCarryingCap);
         int n_mainlandSp = 5;
+        vector<SpeciesID> mainlandSpIDs(n_mainlandSp);
+        for(size_t i = 0; i < mainlandSpIDs.size(); ++i) {
+            mainlandSpIDs[i] = SpeciesID(i);
+        }
         SpeciesID maxSpeciesID(n_mainlandSp);
         vector<double> iniPars { 0.05, 0.5, 0.2, 0.1, 0.2, 0.1, 0.05, 0.1 };
         mt19937_64 prng;
-        archi.calculateAllRates(iniPars, n_mainlandSp, n_islands);
+        archi.calculateAllRates(iniPars, mainlandSpIDs, n_islands);
         event_type event = archi.sampleNextEvent(prng);
         assert(archi.getNSpeciesID() == 0);
         archi.doNextEvent(event, iniPars[1], prng,
@@ -2124,10 +2156,14 @@ void test_archi() //!OCLINT indeed long function, don't care it is a test
         int islCarryingCap = 5;
         Archipelago archi = Archipelago(n_islands, islCarryingCap);
         int n_mainlandSp = 5;
+        vector<SpeciesID> mainlandSpIDs(n_mainlandSp);
+        for(size_t i = 0; i < mainlandSpIDs.size(); ++i) {
+            mainlandSpIDs[i] = SpeciesID(i);
+        }
         SpeciesID maxSpeciesID(n_mainlandSp);
         vector<double> iniPars { 0.05, 0.5, 0.2, 0.1, 0.2, 0.1, 0.05, 0.1 };
         mt19937_64 prng;
-        archi.calculateAllRates(iniPars, n_mainlandSp, n_islands);
+        archi.calculateAllRates(iniPars, mainlandSpIDs, n_islands);
         event_type event = archi.sampleNextEvent(prng);
         assert(archi.getNSpeciesID() == 0);
         archi.doNextEvent(event, iniPars[1], prng,
@@ -2135,7 +2171,7 @@ void test_archi() //!OCLINT indeed long function, don't care it is a test
                 vector<SpeciesID>( { SpeciesID(n_mainlandSp) } ));
         assert(archi.getNSpeciesID() == 1);
         assert(archi.getGlobalSpeciesIDs().empty());
-        archi.calculateAllRates(iniPars, n_mainlandSp, n_islands);
+        archi.calculateAllRates(iniPars, mainlandSpIDs, n_islands);
         archi.doNextEvent(event_type::local_migration,
                 0.3,
                 prng,
@@ -2144,7 +2180,7 @@ void test_archi() //!OCLINT indeed long function, don't care it is a test
                 vector<SpeciesID>( { SpeciesID(n_mainlandSp) } ));
         assert(archi.getNSpeciesID() == 1);
         assert(archi.getGlobalSpeciesIDs().size() == 1);
-        archi.calculateAllRates(iniPars, n_mainlandSp, n_islands);
+        archi.calculateAllRates(iniPars, mainlandSpIDs, n_islands);
         archi.doNextEvent(event_type::local_migration,
                 0.3,
                 prng,
@@ -2153,7 +2189,7 @@ void test_archi() //!OCLINT indeed long function, don't care it is a test
                 vector<SpeciesID>( { SpeciesID(n_mainlandSp) } ));
         assert(archi.getNSpeciesID() == 1);
         assert(archi.getGlobalSpeciesIDs().size() == 1);
-        archi.calculateAllRates(iniPars, n_mainlandSp, n_islands);
+        archi.calculateAllRates(iniPars, mainlandSpIDs, n_islands);
         archi.doNextEvent(event_type::local_migration,
                 0.3,
                 prng,
