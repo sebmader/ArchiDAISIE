@@ -84,7 +84,7 @@ void Island::calculateIslRates(
             * logGrowth / n_islands);
     // migration from this island to all other islands:
     const double migrationRate = max(0.0, (islandParameters[1] * n_alive
-            * sumLogGrowthWOThis) / (n_islands*n_islands - n_islands));
+            * sumLogGrowthWOThis) / (n_islands - 1));
                 // one-way ('/iNumIsl^2 - iNumIsl') times sum of log growths of all other islands
                 // TODO: test just dividing by n_islands-1
     // local cladogenesis:
@@ -150,7 +150,7 @@ int Island::drawMigDestinationIsland(
             continue;
         }
         migrationRates[k] = (initialMigrationRate * n_speciesAlive * LogGrowthTerms[k])
-            / (n_islands*n_islands - n_islands);  // TODO: test just dividing by n_islands-1
+            / (n_islands - 1);  // TODO: test just dividing by n_islands-1
         assert(migrationRates[k] >= 0.0);
     }
     const int destinationIsland = drawDisEvent(migrationRates, prng);
